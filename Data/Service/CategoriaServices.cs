@@ -6,20 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FactuSystem.Data.Services;
 
-public class ProductoServices : IProductoServices
+public class CategoriaServices : ICategoriaServices
 {
     private readonly IMyDbContext dbContext;
 
-    public ProductoServices(IMyDbContext dbContext)
+    public CategoriaServices(IMyDbContext dbContext)
     {
         this.dbContext = dbContext;
     }
 
-    public async Task<Result<List<ProductoResponse>>> Consultar(string filtro)
+    public async Task<Result<List<CategoriaResponse>>> Consultar(string filtro)
     {
         try
         {
-            var contactos = await dbContext.Productos
+            var contactos = await dbContext.Categorias
                 .Where(c =>
                     (c.Nombre)
                     .ToLower()
@@ -28,7 +28,7 @@ public class ProductoServices : IProductoServices
                 )
                 .Select(c => c.ToResponse())
                 .ToListAsync();
-            return new Result<List<ProductoResponse>>()
+            return new Result<List<CategoriaResponse>>()
             {
                 Message = "Ok",
                 Success = true,
@@ -37,7 +37,7 @@ public class ProductoServices : IProductoServices
         }
         catch (Exception E)
         {
-            return new Result<List<ProductoResponse>>
+            return new Result<List<CategoriaResponse>>
             {
                 Message = E.Message,
                 Success = false
@@ -45,12 +45,12 @@ public class ProductoServices : IProductoServices
         }
     }
 
-    public async Task<Result> Crear(ProductoRequest request)
+    public async Task<Result> Crear(CategoriaRequest request)
     {
         try
         {
-            var contacto = Producto.Crear(request);
-            dbContext.Productos.Add(contacto);
+            var contacto = Categoria.Crear(request);
+            dbContext.Categorias.Add(contacto);
             await dbContext.SaveChangesAsync();
             return new Result() { Message = "Ok", Success = true };
         }
@@ -60,11 +60,11 @@ public class ProductoServices : IProductoServices
             return new Result() { Message = E.Message, Success = false };
         }
     }
-    public async Task<Result> Modificar(ProductoRequest request)
+    public async Task<Result> Modificar(CategoriaRequest request)
     {
         try
         {
-            var contacto = await dbContext.Productos
+            var contacto = await dbContext.Categorias
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
                 return new Result() { Message = "No se encontro el proveedor", Success = false };
@@ -81,16 +81,16 @@ public class ProductoServices : IProductoServices
         }
     }
 
-    public async Task<Result> Eliminar(ProductoRequest request)
+    public async Task<Result> Eliminar(CategoriaRequest request)
     {
         try
         {
-            var contacto = await dbContext.Productos
+            var contacto = await dbContext.Categorias
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
                 return new Result() { Message = "No se encontro el producto", Success = false };
 
-            dbContext.Productos.Remove(contacto);
+            dbContext.Categorias.Remove(contacto);
             await dbContext.SaveChangesAsync();
             return new Result() { Message = "Ok", Success = true };
         }
@@ -102,10 +102,10 @@ public class ProductoServices : IProductoServices
     }
 }
 
-public interface IProductoServices
+public interface ICategoriaServices
 {
-    Task<Result<List<ProductoResponse>>> Consultar(string filtro);
-    Task<Result> Crear(ProductoRequest request);
-    Task<Result> Modificar(ProductoRequest request);
-    Task<Result> Eliminar(ProductoRequest request);
+    Task<Result<List<CategoriaResponse>>> Consultar(string filtro);
+    Task<Result> Crear(CategoriaRequest request);
+    Task<Result> Modificar(CategoriaRequest request);
+    Task<Result> Eliminar(CategoriaRequest request);
 }
