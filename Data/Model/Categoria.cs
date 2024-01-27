@@ -1,4 +1,5 @@
 ﻿using FactuSystem.Data.Response;
+using FactuSystem.Data.Request;
 using System.ComponentModel.DataAnnotations;
 
 namespace FactuSystem.Data.Model;
@@ -14,4 +15,20 @@ public class Categoria
         Id = Id,
         Nombre = Nombre
     };
+
+    public static Categoria Crear(CategoriaRequest item)
+        => new()
+        {
+            Nombre = item.Nombre
+        };
+        public bool Mofidicar(CategoriaRequest item)
+        {
+            var cambio = false;
+            if(Nombre != item.Nombre)
+            {
+                Nombre = item.Nombre;
+                cambio = true;
+            }
+            return cambio;
+        }
 }
