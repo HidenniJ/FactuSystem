@@ -14,5 +14,5 @@ public class FacturaDetalleResponse
     [NotMapped]
     public decimal SubTotal => Cantidad * Precio;
     [NotMapped]
-    public decimal TotalDesc => Cantidad * Precio * (Descuento / 100 );
+    public decimal TotalDesc => SubTotal * (Descuento / 100 );
 }

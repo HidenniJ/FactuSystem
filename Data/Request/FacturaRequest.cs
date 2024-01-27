@@ -13,7 +13,7 @@ public class FacturaRequest
         :
         0;
 
-    public decimal Descuento =>
+    public decimal TotalDesc =>
         Detalles != null ? //IF
         Detalles.Sum(d => d.TotalDesc) //Verdadero
         :
@@ -32,5 +32,5 @@ public class FacturaDetalleRequest
     public decimal Precio { get; set; }
     public decimal Descuento { get; set; }
     public decimal SubTotal => Cantidad * Precio;
-    public decimal TotalDesc => Cantidad * Precio * (Descuento / 100 );
+    public decimal TotalDesc => SubTotal * (Descuento / 100 );
 }

@@ -26,7 +26,7 @@ public class FacturaDetalle
     [NotMapped]
     public decimal SubTotal => Cantidad * Precio;
     [NotMapped]
-    public decimal TotalDesc => Cantidad * Precio * (Descuento / 100 );
+    public decimal TotalDesc => SubTotal * (Descuento / 100 );
 
     public static FacturaDetalle Crear(FacturaDetalleRequest request)
     => new()

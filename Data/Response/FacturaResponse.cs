@@ -18,7 +18,7 @@ public class FacturaResponse
         0;//Falso
 
     [NotMapped]
-    public decimal Descuento =>
+    public decimal TotalDesc =>
         Detalles != null ? //IF
         Detalles.Sum(d => d.TotalDesc) //Verdadero
         :
