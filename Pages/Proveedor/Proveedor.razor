@@ -1,0 +1,198 @@
+@page "/proveedor"
+
+<h1>Proveedores</h1>
+
+<div class="modal" style="display: @(showCard ? "block" : "none")" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>@TituloForm</b></h5>
+                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                    <span aria-hidden="true" class="oi oi-x"></span>
+                </button>
+            </div>
+
+            <EditForm Model="proveedorRequest" OnValidSubmit="Send">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nombreCompleto">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="proveedorRequest.NombreEmp" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Correo</label>
+                        <input type="email" class="form-control" id="correo" @bind-value="proveedorRequest.Email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Telefono</label>
+                        <input class="form-control" id="correo" @bind-value="proveedorRequest.Telefono" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Direccion</label>
+                        <input class="form-control" id="correo" @bind-value="proveedorRequest.Direccion" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    </div>
+                </div>
+            </EditForm>
+
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="card w-75">
+        <div class="card-body">
+            <!-- Button trigger modal -->
+            <button class="btn btn-outline-success" @onclick="ShowCard">
+                <span class="oi oi-plus"></span>
+                Nuevo proveedor
+            </button>
+            
+            <div class="row">
+                <div class="col-7"></div>
+                <div class="col-5">
+                    <div class="col input-group">
+                        <input type="text" placeholder="Nombre del proveedor" @bind="Filtro">
+
+                        <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                            <span class="oi oi-magnifying-glass"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-12 mt-2">
+                <table class="table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre completo</th>
+                            <th>Correo</th>
+                            <th>Telefono</th>
+                            <th>Direccion</th>
+                            <th>...</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var proveedorRow in Proveedores)
+                        {
+                            <tr>
+                                <td>@proveedorRow.Id</td>
+                                <td>@proveedorRow.NombreEmp</td>
+                                <td>@proveedorRow.Email</td>
+                                <td>@proveedorRow.Telefono</td>
+                                <td>@proveedorRow.Direccion</td>
+                                <td>
+                                    <button @onclick="()=>Seleccionar(proveedorRow.Id)"
+                                        class="btn btn-outline-warning">
+                                        <span class="oi oi-pencil"></span>
+                                    </button>
+                                    <button @onclick="()=>Eliminar(proveedorRow)"
+                                        class="btn btn-outline-danger">
+                                        <span class="oi oi-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    public string TituloForm => proveedorRequest.Id == 0 ? 
+    "Agregar proveedor" : "Modificar proveedor";
+    
+    public string Filtro { get; set; } = "";
+    public bool ShowForm { get; set; } = false;
+    public List<ProveedorResponse> Proveedores { get; set; } = new();
+    public ProveedorRequest proveedorRequest { get; set; } = new();
+    public bool showCard { get; set; } = false;
+
+    void ShowCard()
+    {
+        showCard = true;
+    }
+
+    void CloseCard()
+    {
+        proveedorRequest  = new ProveedorRequest();
+        showCard = false;
+    }
+
+    async Task CargarContactos()
+    {
+        var resultado =
+        await proveedorServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Proveedores = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarContactos();
+    }
+
+    void Cancelar()
+    {
+        proveedorRequest  = new ProveedorRequest();
+        showCard = false;
+    }
+    public async Task Send()
+    {
+        if(proveedorRequest.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await proveedorServices.Crear(proveedorRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await proveedorServices.Modificar(proveedorRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        showCard = true;
+        proveedorRequest = Proveedores
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new ProveedorRequest();
+    }
+    public async Task Eliminar(ProveedorResponse item)
+    {
+        var resultado = await proveedorServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+
+}
