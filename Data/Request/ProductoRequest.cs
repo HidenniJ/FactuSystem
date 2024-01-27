@@ -1,0 +1,14 @@
+﻿using FactuSystem.Data.Model;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FactuSystem.Data.Request;
+
+public class ProductoRequest
+{
+    public int Id { get; set; }
+    public string? Codigo { get; set; }
+    public int ProveedorID { get; set; }
+    public string Nombre { get; set; } = null!;
+    public int CategoriaID { get; set; }
+    public decimal Precio { get; set; }
+}

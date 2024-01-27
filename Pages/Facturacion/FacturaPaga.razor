@@ -1,0 +1,80 @@
+@page "/factura/paga"
+
+<style>
+    .table thead {
+        background-color: black;
+        color: rgb(223, 223, 223);
+    }
+</style>
+
+<PageTitle>Módulo de facturas pagas</PageTitle>
+<div class="row">
+    <div class="col-11">
+        <h3 class="d-print-none">Módulo de facturas pagas</h3>
+        <h3 class="d-none d-print-block">Reporte de facturaciones</h3>
+    </div>
+    <div class="col-1">
+        <button 
+            class="btn btn-outline-success" 
+            @onclick='()=>{urlHelper.NavigateTo("/facturacion/vender");}'>
+            <span class="oi oi-plus"></span>
+        </button>
+    </div>
+</div>
+@if (Facturas != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">ITBIS</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">...</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in Facturas)
+            {
+                if(f.SaldoPendiente == 0)
+                {
+                    <tr>
+                        <th scope="row">@f.Id</th>
+                        <td>@f.Cliente.Nombre @f.Cliente.Apellidos</td>
+                        <td>
+                            <span style="white-space: nowrap;">
+                                @($"{(f.SubTotal * 0.18m):N2}")
+                            </span>
+                        </td>
+                        <td>@f.SubTotal.ToString("N2")</td>
+                        <td>@f.Fecha</td>
+                        <td>
+                            <button
+                                class="btn btn-outline-danger">
+                                <span class="oi oi-trash"></span>
+                                Borrar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+@code {
+    async Task Consultar()
+    {
+        var resultado = await facturaServices.Consultar();
+        if (resultado.Success)
+        {
+            Facturas = resultado.Data??new List<FacturaResponse>();
+        }
+        StateHasChanged();
+    }
+    public List<FacturaResponse> Facturas { get; set; } = new();
+    protected override async Task OnInitializedAsync()
+    {
+        await Consultar();
+    }
+}
