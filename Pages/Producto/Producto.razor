@@ -13,33 +13,34 @@
             </div>
 
             <EditForm Model="productoRequest" OnValidSubmit="Send">
-                <DataAnnotationsValidator/>
-                <ValidationSummary/>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="productoRequest.Codigo" required />
+                        <label for="nombreCompleto">Codigo</label>
+                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="productoRequest.Codigo" />
                     </div>
                     <div class="form-group">
-                        <label for="correo">Correo</label>
-                        <input type="text" class="form-control" id="correo" @bind-value="productoRequest.Nombre" required />
+                        <label for="correo">Descripción</label>
+                        <input type="text" class="form-control" id="correo" @bind-value="productoRequest.Nombre" />
                     </div>
                     <div class="form-group">
-                        <label class="input-group-text">Ciudad</label>
-                        <select class="form-control" @bind="productoRequest.CategoriaID">
-                            <option disabled>Categoria:</option>
-                            @foreach (var ciudad in Categorias)
-                            {
-                                <option value="@ciudad.Id">
-                                    @ciudad.Nombre
-                                    </option>
-                            }
-                        </select>
+                        <label>Categoria:</label>
+                        <div class="input-group">
+                            <select class="form-control" @bind="productoRequest.CategoriaID">
+                                <option disabled selected>Seleccione una categoria</option>
+                                @foreach (var ciudad in Categorias)
+                                {
+                                    <option value="@ciudad.Id">
+                                        @ciudad.Nombre
+                                        </option>
+                                }
+                            </select>
+                            <button class="btn btn-outline-success" @onclick="GoCategoria"><span class="oi oi-plus"></span></button>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label class="input-group-text">Ciudad</label>
+                        <label>Proveedores:</label>
                         <select class="form-control" @bind="productoRequest.ProveedorID">
-                            <option disabled>Proveedor:</option>
+                            <option disabled selected>Seleccione un Proveedor</option>
                             @foreach (var ciudad in Proveedores)
                             {
                                 <option value="@ciudad.Id">
@@ -49,8 +50,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="correo">Precio/Venta</label>
-                        <input class="form-control" id="correo" @bind-value="productoRequest.PrecioCompra" required />
+                        <label for="correo">Precio/Compra</label>
+                        <input class="form-control" id="correo" @bind-value="productoRequest.PrecioCompra" />
                     </div>
                 </div>
 
@@ -68,7 +69,7 @@
 </div>
 
 <div class="table-container">
-    <div class="card w-75">
+    <div class="card col-10">
         <div class="card-body">
             <!-- Button trigger modal -->
             <button class="btn btn-outline-success" @onclick="ShowCard">
@@ -93,7 +94,6 @@
                 <table class="table">
                     <thead class="table-dark">
                         <tr>
-                            <th>#</th>
                             <th>Codigo</th>
                             <th>Nombre</th>
                             <th>Categoria</th>
@@ -107,7 +107,6 @@
                         @foreach (var productoRow in Productos)
                         {
                             <tr>
-                                <td>@productoRow.Id</td>
                                 <td>@productoRow.Codigo</td>
                                 <td>@productoRow.Nombre</td>
                                 <td>@productoRow.NombreCategoriatexto</td>
@@ -146,6 +145,10 @@
     public ProductoRequest productoRequest { get; set; } = new();
     public bool showCard { get; set; } = false;
 
+    void GoCategoria()
+    {
+        urlHelper.NavigateTo("category",true);
+    }
     void ShowCard()
     {
         showCard = true;
@@ -199,9 +202,9 @@
     }
     public async Task Send()
     {
-        if(productoRequest.Id == 0)
+        if (productoRequest.Id == 0)
         {
-            //Debo registrar el contacto..
+            productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
             var r = await productoServices.Crear(productoRequest);
             if (r.Success)
             {
@@ -212,7 +215,8 @@
         }
         else
         {
-            //Debo solicitar modificar el contacto...
+            productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
+            // Debo solicitar modificar el producto.
             var r = await productoServices.Modificar(productoRequest);
             if (r.Success)
             {
@@ -222,6 +226,7 @@
             }
         }
     }
+
 
     public void Seleccionar(int Id)
     {
@@ -239,6 +244,11 @@
             await CargarContactos();
             StateHasChanged();
         }
+    }
+
+    public void PrecioAum()
+    {
+        productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * (30/100));
     }
 
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FactuSystem.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240127043006_ProductoPrecioCompra")]
-    partial class ProductoPrecioCompra
+    [Migration("20240127045847_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -11,7 +11,7 @@ public class FacturaDetalle
     public int Id { get; set; }
     public int FacturaId { get; set; }
     public int ProductoId { get; set; }
-    public int Cantidad { get; set; }
+    public int Cantidad { get; set; } = 1;
     [Column(TypeName = "decimal(18,2)")]
     public decimal Precio { get; set; }
     public decimal Descuento { get; set; }
@@ -26,7 +26,7 @@ public class FacturaDetalle
     [NotMapped]
     public decimal SubTotal => Cantidad * Precio;
     [NotMapped]
-    public decimal TotalDesc => SubTotal * (Descuento / 100 );
+    public decimal TotalDesc => Cantidad * Precio * (Descuento / 100 );
 
     public static FacturaDetalle Crear(FacturaDetalleRequest request)
     => new()
@@ -34,6 +34,7 @@ public class FacturaDetalle
         ProductoId = request.ProductoId,
         Cantidad = request.Cantidad,
         Precio = request.Precio,
+        Descuento = request.Descuento
     };
     
     public FacturaDetalleResponse ToResponse()
@@ -43,6 +44,7 @@ public class FacturaDetalle
             Producto = Producto.ToResponse(),
             Cantidad = Cantidad,
             Precio = Precio,
+            Descuento = Descuento,
             FacturaId = FacturaId
         };
 }

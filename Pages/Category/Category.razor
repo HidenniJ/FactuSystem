@@ -1,0 +1,189 @@
+@page "/category"
+
+<div class="row">
+    <div class="col-11">
+        <h1>Categorias</h1>
+    </div>
+    <div class="col-1">
+        <button class="btn btn-danger" @onclick="Producto">Back</button>
+    </div>
+</div>
+
+<div class="modal" style="display: @(showCard ? "block" : "none")" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>@TituloForm</b></h5>
+                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                    <span aria-hidden="true" class="oi oi-x"></span>
+                </button>
+            </div>
+
+            <EditForm Model="categoriaRequest" OnValidSubmit="Send">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nombreCompleto">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    </div>
+                </div>
+            </EditForm>
+
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="card w-75">
+        <div class="card-body">
+            <!-- Button trigger modal -->
+            <button class="btn btn-outline-success" @onclick="ShowCard">
+                <span class="oi oi-plus"></span>
+                Nuevo proveedor
+            </button>
+            
+            <div class="row">
+                <div class="col-7"></div>
+                <div class="col-5">
+                    <div class="col input-group">
+                        <input type="text" placeholder="Nombre del proveedor" @bind="Filtro">
+
+                        <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                            <span class="oi oi-magnifying-glass"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-12 mt-2">
+                <table class="table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>...</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Categorias)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Nombre</td>
+                                <td>
+                                    <button @onclick="()=>Seleccionar(item.Id)"
+                                        class="btn btn-outline-warning">
+                                        <span class="oi oi-pencil"></span>
+                                    </button>
+                                    <button @onclick="()=>Eliminar(item)"
+                                        class="btn btn-outline-danger">
+                                        <span class="oi oi-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    public string TituloForm => categoriaRequest.Id == 0 ? 
+    "Agregar proveedor" : "Modificar proveedor";
+    
+    public string Filtro { get; set; } = "";
+    public bool ShowForm { get; set; } = false;
+    public List<CategoriaResponse> Categorias { get; set; } = new();
+    public CategoriaRequest categoriaRequest { get; set; } = new();
+    public bool showCard { get; set; } = false;
+
+    void Producto()
+    {
+        urlHelper.NavigateTo("producto", true);
+    }
+    void ShowCard()
+    {
+        showCard = true;
+    }
+
+    void CloseCard()
+    {
+        categoriaRequest  = new CategoriaRequest();
+        showCard = false;
+    }
+
+    async Task CargarContactos()
+    {
+        var resultado =
+        await categoriaServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Categorias = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarContactos();
+    }
+
+    void Cancelar()
+    {
+        categoriaRequest  = new CategoriaRequest();
+        showCard = false;
+    }
+    public async Task Send()
+    {
+        if(categoriaRequest.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await categoriaServices.Crear(categoriaRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await categoriaServices.Modificar(categoriaRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        showCard = true;
+        categoriaRequest = Categorias
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new CategoriaRequest();
+    }
+    public async Task Eliminar(CategoriaResponse item)
+    {
+        var resultado = await categoriaServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+
+}

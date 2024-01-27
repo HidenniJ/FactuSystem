@@ -292,6 +292,7 @@
     public ProductoResponse AnimalEnConfirmacion { get; set; } = new();
     public decimal Precio { get; set; } = 0;
     public int Cantidad { get; set; } = 1;
+    public int Descuento { get; set; } = 0;
     public int IdProducto { get; set; } = 0;
 
     void BuscarSeleccionarCliente(string Cliente)
@@ -304,11 +305,11 @@
     { 
         //Llenar la lista de contactos para mostrar al usuario...
 
-        // var r = await animalServices.Consultar("");
-        // if (r.Exitoso)
-        // {
-        //     Productos = r.Datos!;
-        // }
+        var r = await productoServices.Consultar("");
+        if (r.Success)
+        {
+            Productos = r.Data!;
+        }
     }
     async Task CargarContacto()
     { 
@@ -356,7 +357,8 @@
                     ProductoId = IdProducto,
                     Descripcion = r!.Nombre,
                     Precio = r.Precio,
-                    Cantidad = Cantidad
+                    Cantidad = Cantidad,
+                    Descuento = Descuento
                 });
         }
     }
