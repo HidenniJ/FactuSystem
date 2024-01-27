@@ -1,4 +1,5 @@
 ﻿using FactuSystem.Data.Model;
+using FactuSystem.Data.Request;
 
 namespace FactuSystem.Data.Response;
 
@@ -9,6 +10,7 @@ public class ProductoResponse
     public int ProveedorID { get; set; }
     public string Nombre { get; set; } = null!;
     public int CategoriaID { get; set; }
+    public decimal PrecioCompra { get; set; }
     public decimal Precio { get; set; }
     public ProveedorResponse? Proveedor { get; set; }
     public CategoriaResponse? Categoria { get; set; }
@@ -17,4 +19,18 @@ public class ProductoResponse
     public string NombreCategoriatexto => Categoria != null ? Categoria.Nombre : "N/A";
 
     public string CodigoDescripcion => $"({Codigo}) {Nombre}";
+
+    public ProductoRequest ToRequest() 
+    {
+        return new ProductoRequest
+        {
+            Id = Id,
+            Codigo = Codigo,
+            Nombre = Nombre,
+            CategoriaID = CategoriaID,
+            ProveedorID = ProveedorID,
+            PrecioCompra = PrecioCompra,
+            Precio = Precio,
+        };
+    }
 }

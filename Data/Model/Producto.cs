@@ -15,6 +15,8 @@ public class Producto
     public string Nombre { get; set; } = null!;
     public int CategoriaID { get; set; }
     [Column(TypeName = "decimal(18,2)")]
+    public decimal PrecioCompra { get; set; }
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Precio { get; set; }
 
     [ForeignKey("ProveedorID")]
@@ -29,6 +31,7 @@ public class Producto
             ProveedorID = item.ProveedorID,
             Nombre = item.Nombre,
             CategoriaID = item.CategoriaID,
+            PrecioCompra = item.PrecioCompra,
             Precio = item.Precio
         };
 
@@ -55,6 +58,11 @@ public class Producto
             CategoriaID = item.CategoriaID;
             cambio = true;
         }
+        if (PrecioCompra != item.PrecioCompra)
+        {
+            PrecioCompra = item.PrecioCompra;
+            cambio = true;
+        }
         if (Precio != item.Precio)
         {
             Precio = item.Precio;
@@ -69,6 +77,7 @@ public class Producto
             Id = Id,
             Codigo = Codigo,
             Nombre = Nombre,
+            PrecioCompra = PrecioCompra,
             Precio = Precio,
             CategoriaID = CategoriaID,
             Categoria = Categoria != null? Categoria!.ToResponse():null,

@@ -10,5 +10,6 @@ public class ProductoRequest
     public int ProveedorID { get; set; }
     public string Nombre { get; set; } = null!;
     public int CategoriaID { get; set; }
+    public decimal PrecioCompra { get; set; }
     public decimal Precio { get; set; }
 }
