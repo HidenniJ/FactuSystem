@@ -15,6 +15,7 @@ builder.Services.AddScoped<IMyDbContext,MyDbContext>();
 builder.Services.AddScoped<IFacturaServices,FacturaServices>();
 builder.Services.AddScoped<IProductoServices,ProductoServices>();
 builder.Services.AddScoped<IProveedorServices,ProveedorServices>();
+builder.Services.AddScoped<ICategoriaServices,CategoriaServices>();
 
 var app = builder.Build();
 
