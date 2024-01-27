@@ -1,0 +1,244 @@
+@page "/producto"
+
+<h1>Productos</h1>
+
+<div class="modal" style="display: @(showCard ? "block" : "none")" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>@TituloForm</b></h5>
+                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                    <span aria-hidden="true" class="oi oi-x"></span>
+                </button>
+            </div>
+
+            <EditForm Model="productoRequest" OnValidSubmit="Send">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nombreCompleto">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="productoRequest.Codigo" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Correo</label>
+                        <input type="text" class="form-control" id="correo" @bind-value="productoRequest.Nombre" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="input-group-text">Ciudad</label>
+                        <select class="form-control" @bind="productoRequest.CategoriaID">
+                            <option disabled>Categoria:</option>
+                            @foreach (var ciudad in Categorias)
+                            {
+                                <option value="@ciudad.Id">
+                                    @ciudad.Nombre
+                                    </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="input-group-text">Ciudad</label>
+                        <select class="form-control" @bind="productoRequest.ProveedorID">
+                            <option disabled>Proveedor:</option>
+                            @foreach (var ciudad in Proveedores)
+                            {
+                                <option value="@ciudad.Id">
+                                    @ciudad.NombreEmp
+                                    </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Precio/Venta</label>
+                        <input class="form-control" id="correo" @bind-value="productoRequest.PrecioCompra" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    </div>
+                </div>
+            </EditForm>
+
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="card w-75">
+        <div class="card-body">
+            <!-- Button trigger modal -->
+            <button class="btn btn-outline-success" @onclick="ShowCard">
+                <span class="oi oi-plus"></span>
+                Nuevo producto
+            </button>
+            
+            <div class="row">
+                <div class="col-7"></div>
+                <div class="col-5">
+                    <div class="col input-group">
+                        <input type="text" placeholder="Nombre del producto" @bind="Filtro">
+
+                        <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                            <span class="oi oi-magnifying-glass"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-12 mt-2">
+                <table class="table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Codigo</th>
+                            <th>Nombre</th>
+                            <th>Categoria</th>
+                            <th>Proveedor</th>
+                            <th>Precio/Compra</th>
+                            <th>Precio/Venta</th>
+                            <th>...</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var productoRow in Productos)
+                        {
+                            <tr>
+                                <td>@productoRow.Id</td>
+                                <td>@productoRow.Codigo</td>
+                                <td>@productoRow.Nombre</td>
+                                <td>@productoRow.NombreCategoriatexto</td>
+                                <td>@productoRow.NombreProveedortexto</td>
+                                <td>@productoRow.PrecioCompra</td>
+                                <td>@productoRow.Precio</td>
+                                <td>
+                                    <button @onclick="()=>Seleccionar(productoRow.Id)"
+                                        class="btn btn-outline-warning">
+                                        <span class="oi oi-pencil"></span>
+                                    </button>
+                                    <button @onclick="()=>Eliminar(productoRow)"
+                                        class="btn btn-outline-danger">
+                                        <span class="oi oi-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    public string TituloForm => productoRequest.Id == 0 ? 
+    "Agregar producto" : "Modificar producto";
+    
+    public string Filtro { get; set; } = "";
+    public bool ShowForm { get; set; } = false;
+    public List<ProductoResponse> Productos { get; set; } = new();
+    public List<CategoriaResponse> Categorias { get; set; } = new();
+    public List<ProveedorResponse> Proveedores { get; set; } = new();
+    public ProductoRequest productoRequest { get; set; } = new();
+    public bool showCard { get; set; } = false;
+
+    void ShowCard()
+    {
+        showCard = true;
+    }
+
+    void CloseCard()
+    {
+        productoRequest  = new ProductoRequest();
+        showCard = false;
+    }
+
+    async Task CargarContactos()
+    {
+        var resultado =
+        await productoServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Productos = resultado.Data!;
+        }
+    }
+    async Task CargarProveedores()
+    {
+        var resultado =
+        await proveedorServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Proveedores = resultado.Data!;
+        }
+    }
+    async Task CargarCategorias()
+    {
+        var resultado =
+        await categoriaServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Categorias = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarContactos();
+        await CargarProveedores();
+        await CargarCategorias();
+    }
+
+    void Cancelar()
+    {
+        productoRequest  = new ProductoRequest();
+        showCard = false;
+    }
+    public async Task Send()
+    {
+        if(productoRequest.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await productoServices.Crear(productoRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await productoServices.Modificar(productoRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        showCard = true;
+        productoRequest = Productos
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new ProductoRequest();
+    }
+    public async Task Eliminar(ProductoResponse item)
+    {
+        var resultado = await productoServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+
+}
