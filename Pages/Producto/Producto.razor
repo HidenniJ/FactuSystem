@@ -34,7 +34,7 @@
                                         </option>
                                 }
                             </select>
-                            <button class="btn btn-outline-success" @onclick="GoCategoria"><span class="oi oi-plus"></span></button>
+                            <button class="btn btn-outline-Exitoso" @onclick="GoCategoria"><span class="oi oi-plus"></span></button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -72,7 +72,7 @@
     <div class="card col-10">
         <div class="card-body">
             <!-- Button trigger modal -->
-            <button class="btn btn-outline-success" @onclick="ShowCard">
+            <button class="btn btn-outline-Exitoso" @onclick="ShowCard">
                 <span class="oi oi-plus"></span>
                 Nuevo producto
             </button>
@@ -111,8 +111,8 @@
                                 <td>@productoRow.Nombre</td>
                                 <td>@productoRow.NombreCategoriatexto</td>
                                 <td>@productoRow.NombreProveedortexto</td>
-                                <td>@productoRow.PrecioCompra</td>
-                                <td>@productoRow.Precio</td>
+                                <td>@productoRow.PrecioCompra.ToString("N2")</td>
+                                <td>@productoRow.Precio.ToString("N2")</td>
                                 <td>
                                     <button @onclick="()=>Seleccionar(productoRow.Id)"
                                         class="btn btn-outline-warning">
@@ -164,27 +164,27 @@
     {
         var resultado =
         await productoServices.Consultar(Filtro);
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
-            Productos = resultado.Data!;
+            Productos = resultado.Datos!;
         }
     }
     async Task CargarProveedores()
     {
         var resultado =
         await proveedorServices.Consultar(Filtro);
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
-            Proveedores = resultado.Data!;
+            Proveedores = resultado.Datos!;
         }
     }
     async Task CargarCategorias()
     {
         var resultado =
         await categoriaServices.Consultar(Filtro);
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
-            Categorias = resultado.Data!;
+            Categorias = resultado.Datos!;
         }
     }
 
@@ -206,7 +206,7 @@
         {
             productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
             var r = await productoServices.Crear(productoRequest);
-            if (r.Success)
+            if (r.Exitoso)
             {
                 Cancelar();
                 await CargarContactos();
@@ -218,7 +218,7 @@
             productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
             // Debo solicitar modificar el producto.
             var r = await productoServices.Modificar(productoRequest);
-            if (r.Success)
+            if (r.Exitoso)
             {
                 Cancelar();
                 await CargarContactos();
@@ -239,7 +239,7 @@
     public async Task Eliminar(ProductoResponse item)
     {
         var resultado = await productoServices.Eliminar(item.ToRequest());
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
             await CargarContactos();
             StateHasChanged();

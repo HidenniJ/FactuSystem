@@ -20,8 +20,7 @@
     </div>
 </div>
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+
     @if (!string.IsNullOrWhiteSpace(Message))
     {
         <div class="alert alert-danger d-print-none" role="alert">@Message</div>
@@ -30,18 +29,20 @@
         <div class="col-md-6 mb-2">
             <div class="input-group">
                 <label for="FechaVenta" class="input-group-text"><b>Fecha:</b></label>
-                <InputDate @bind-Value="facturaRequest.Fecha" id="Fecha" class="form-control" />
+                <InputDate @bind-Value="facturaRequest.Fecha" id="FechaVenta" class="form-control" />
             </div>    
         </div>
         <div class="col-md-6">
             <div class="input-group">
+                <label for="ClienteInput" class="input-group-text">Cliente:</label>
                 <input 
-               class="form-control"
-               placeholder="Cliente"
-               aria-label="Cliente"
-               aria-describedby="button-addon2" list="contactos"
-               @bind="Nombre"
-               />
+                id="ClienteInput"
+                class="form-control"
+                placeholder="Cliente"
+                aria-label="Cliente"
+                aria-describedby="button-addon2" list="contactos"
+                @bind="Nombre"
+                />
                 <datalist id="contactos">
                 @foreach (var cliente in Clientes)
                     {
@@ -50,10 +51,11 @@
                 </datalist>
                 
                 <button 
-                    class="btn btn-outline-success d-print-none"
+                    class="btn btn-outline-Exitoso d-print-none"
                     type="button" id="button-addon2"
-                @onclick="async()=>{
-                await CargarContacto(); }">
+                    @onclick="async()=>{
+                    await CargarContacto(); }"
+                >
                     <span class="oi oi-reload"></span>
                 </button>
             </div>
@@ -63,8 +65,8 @@
     <div class="row mb-2">
         <div class="col-md-6">
             <div class="input-group d-print-none">
-                <label for="AnimalId" class="input-group-text">Producto:</label>
-                <select class="form-control" @bind="IdProducto">
+                <label for="ProductoId" class="input-group-text">Producto:</label>
+                <select class="form-control" id="ProductoId" @bind="IdProducto">
                     @if (Productos.Any())
                     {
                         <option value="" disabled selected>Selecciona un producto</option>
@@ -94,16 +96,14 @@
     <div class="row">
         <div class="col-md-6">
             <div class="input-group d-print-none">
-                <label for="AnimalId" class="input-group-text">Descuento:</label>
-                <InputNumber @bind-Value="detalleFacturaRequest.Descuento" id="Cantidad" class="form-control" />
+                <label for="Descuento" class="input-group-text">Descuento:</label>
+                <InputNumber @bind-Value="detalleFacturaRequest.Descuento" id="Descuento" class="form-control" />
             </div>
         </div>
         <div class="col-md-6">
             <div class="input-group d-print-none">
-                <label for="AnimalId" class="input-group-text">Monto Pagado:</label>
-                <InputNumber @bind-Value="facturaRequest.SaldoPagado" 
-                        id="montoPagado" class="form-control" 
-                        />
+                <label for="montoPagado" class="input-group-text">Monto Pagado:</label>
+                <InputNumber @bind-Value="facturaRequest.SaldoPagado" id="montoPagado" class="form-control" />
             </div>
         </div>          
 
@@ -121,17 +121,13 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>
-                    Cantidad
-                </th>
+                <th>Cantidad</th>
                 <th>Descripcion</th>
                 <th>Precio</th>
                 <th>Descuento</th>
                 <th>SubTotal</th>
                 <th>ITBIS</th>
-                <th>
-                    ...
-                </th>
+                <th>...</th>
             </tr>
         </thead>
         <tbody>
@@ -266,14 +262,14 @@
     public string Nombre { get; set; } = string.Empty;
     public List<ProductoResponse> Productos { get; set; } = new();
     public List<ClienteResponse> Clientes { get; set; } = new();
+    public List<FacturaResponse> Facturas { get; set; } = new();
     private FacturaRequest facturaRequest = new();
     private FacturaDetalleRequest detalleFacturaRequest = new();
     public ProductoResponse AnimalEnConfirmacion { get; set; } = new();
     public decimal Precio { get; set; } = 0;
     public int Cantidad { get; set; } = 1;
-    public int Descuento { get; set; } = 0;
     public int IdProducto { get; set; } = 0;
-
+    public string Filtro { get; set; } = "";
     void BuscarSeleccionarCliente(string Cliente)
     {
         var c = Clientes.FirstOrDefault(p => p.Nombre == Cliente)!;
@@ -285,9 +281,9 @@
         //Llenar la lista de contactos para mostrar al usuario...
 
         var r = await productoServices.Consultar("");
-        if (r.Success)
+        if (r.Exitoso)
         {
-            Productos = r.Data!;
+            Productos = r.Datos!;
         }
     }
     async Task CargarContacto()
@@ -295,15 +291,27 @@
         //Llenar la lista de contactos para mostrar al usuario...
         
         // var r = await clienteServices.Consultar("");
-        // if (r.Success)
+        // if (r.Exitoso)
         // {
         //     Clientes = r.Data!;
         // }
     }
 
+    async Task CargarFactura()
+    { 
+        //Llenar la lista de contactos para mostrar al usuario...
+        
+        var r = await facturaServices.Consultar();
+        if (r.Exitoso)
+        {
+            Facturas = r.Datos!;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await CargarProducto();
+        await CargarFactura();
         
     }
 
@@ -341,19 +349,31 @@
                 });
         }
     }
-    async Task Send()
+    
+async Task Send()
+{
+    try
     {
         BuscarSeleccionarCliente(Nombre);
-        var result = await
-        facturaServices.Crear(facturaRequest);
-        if (result.Success)
+        var result = await facturaServices.Crear(facturaRequest);
+        if (result.Exitoso)
         {
-            //navigator.NavigateTo("/facturacion");
-            Message = result.Message;
+            Message = "Exito";
         }
-        else Message = result.Message;
-
+        else
+        {
+            
+            Message = result.Mensaje;
+        }
     }
+    catch (Exception ex)
+    {
+        // Registra los detalles de la excepción interna para depuración
+        Console.WriteLine(ex.InnerException?.ToString());
+        Message = "Ocurrió un error al guardar los cambios en la entidad.";
+    }
+}
+
     
     void Cobrar()
     {
@@ -366,26 +386,29 @@
         Cobro = true;
         Total = 0;
         MontoPagado = 0;
+        Descuento = 0;
         Cambio = 0;
     }
 
     public decimal Cambio = 0;
     public decimal MontoPagado = 0;
     public decimal Total = 0;
+    public decimal Descuento = 0;
     void CalcularCambio()
     {
         Cobro = false;
         Chance = true;
         MontoPagado = facturaRequest.SaldoPagado;
+        Descuento = facturaRequest.TotalDesc;
         Total = facturaRequest.SubTotal;
-        if (MontoPagado >= Total - facturaRequest.TotalDesc)
+        if (MontoPagado >= Total - Descuento)
         {
-            Cambio = MontoPagado - Total - facturaRequest.TotalDesc;
+            Cambio = MontoPagado - Total - Descuento;
         }
-        else if(MontoPagado < Total - facturaRequest.TotalDesc)
+        else if(MontoPagado < Total - Descuento)
         {
-            Cambio = MontoPagado - Total - facturaRequest.TotalDesc;
-            facturaRequest.SaldoPendiente = Total - facturaRequest.TotalDesc;
+            Cambio = MontoPagado - Total - Descuento;
+            facturaRequest.SaldoPendiente = Total - Descuento;
         }
     }
     void Back()

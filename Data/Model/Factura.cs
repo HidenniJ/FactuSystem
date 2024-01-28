@@ -39,6 +39,8 @@ public class Factura
         => new()
         {
             ClienteId = request.ClienteId,
+            SaldoPagado = request.SaldoPagado,
+            SaldoPendiente = request.SaldoPendiente,
             Fecha = DateTime.Now,
             Detalles = request.Detalles
             .Select(detalle=>FacturaDetalle.Crear(detalle))
@@ -51,6 +53,8 @@ public class Factura
             ClienteId = ClienteId,
             Fecha = Fecha,
             Cliente = Cliente.ToResponse(),
-            Detalles = Detalles.Select(d => d.ToResponse()).ToList()
+            Detalles = Detalles.Select(d => d.ToResponse()).ToList(),
+            SaldoPagado = SaldoPagado,
+            SaldoPendiente = SaldoPendiente
         };
 }

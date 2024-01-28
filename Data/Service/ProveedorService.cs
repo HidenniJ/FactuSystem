@@ -30,17 +30,17 @@ public class ProveedorServices : IProveedorServices
                 .ToListAsync();
             return new Result<List<ProveedorResponse>>()
             {
-                Message = "Ok",
-                Success = true,
-                Data = contactos
+                Mensaje = "Ok",
+                Exitoso = true,
+                Datos = contactos
             };
         }
         catch (Exception E)
         {
             return new Result<List<ProveedorResponse>>
             {
-                Message = E.Message,
-                Success = false
+                Mensaje = E.Message,
+                Exitoso = false
             };
         }
     }
@@ -52,12 +52,12 @@ public class ProveedorServices : IProveedorServices
             var contacto = Proveedor.Crear(request);
             dbContext.Proveedores.Add(contacto);
             await dbContext.SaveChangesAsync();
-            return new Result() { Message = "Ok", Success = true };
+            return new Result() { Mensaje = "Ok", Exitoso = true };
         }
         catch (Exception E)
         {
 
-            return new Result() { Message = E.Message, Success = false };
+            return new Result() { Mensaje = E.Message, Exitoso = false };
         }
     }
     public async Task<Result> Modificar(ProveedorRequest request)
@@ -67,17 +67,17 @@ public class ProveedorServices : IProveedorServices
             var contacto = await dbContext.Proveedores
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
-                return new Result() { Message = "No se encontro el proveedor", Success = false };
+                return new Result() { Mensaje = "No se encontro el proveedor", Exitoso = false };
 
             if (contacto.Mofidicar(request))
                 await dbContext.SaveChangesAsync();
 
-            return new Result() { Message = "Ok", Success = true };
+            return new Result() { Mensaje = "Ok", Exitoso = true };
         }
         catch (Exception E)
         {
 
-            return new Result() { Message = E.Message, Success = false };
+            return new Result() { Mensaje = E.Message, Exitoso = false };
         }
     }
 
@@ -88,16 +88,16 @@ public class ProveedorServices : IProveedorServices
             var contacto = await dbContext.Proveedores
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
-                return new Result() { Message = "No se encontro el proveedor", Success = false };
+                return new Result() { Mensaje = "No se encontro el proveedor", Exitoso = false };
 
             dbContext.Proveedores.Remove(contacto);
             await dbContext.SaveChangesAsync();
-            return new Result() { Message = "Ok", Success = true };
+            return new Result() { Mensaje = "Ok", Exitoso = true };
         }
         catch (Exception E)
         {
 
-            return new Result() { Message = E.Message, Success = false };
+            return new Result() { Mensaje = E.Message, Exitoso = false };
         }
     }
 }

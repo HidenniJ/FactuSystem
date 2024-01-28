@@ -44,9 +44,9 @@
     <div class="card w-75">
         <div class="card-body">
             <!-- Button trigger modal -->
-            <button class="btn btn-outline-success" @onclick="ShowCard">
+            <button class="btn btn-outline-Exitoso" @onclick="ShowCard">
                 <span class="oi oi-plus"></span>
-                Nuevo proveedor
+                Nueva categoría
             </button>
             
             <div class="row">
@@ -99,7 +99,7 @@
 
 @code {
     public string TituloForm => categoriaRequest.Id == 0 ? 
-    "Agregar proveedor" : "Modificar proveedor";
+    "Agregar categoría" : "Modificar categoría";
     
     public string Filtro { get; set; } = "";
     public bool ShowForm { get; set; } = false;
@@ -126,9 +126,9 @@
     {
         var resultado =
         await categoriaServices.Consultar(Filtro);
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
-            Categorias = resultado.Data!;
+            Categorias = resultado.Datos!;
         }
     }
 
@@ -148,7 +148,7 @@
         {
             //Debo registrar el contacto..
             var r = await categoriaServices.Crear(categoriaRequest);
-            if (r.Success)
+            if (r.Exitoso)
             {
                 Cancelar();
                 await CargarContactos();
@@ -159,7 +159,7 @@
         {
             //Debo solicitar modificar el contacto...
             var r = await categoriaServices.Modificar(categoriaRequest);
-            if (r.Success)
+            if (r.Exitoso)
             {
                 Cancelar();
                 await CargarContactos();
@@ -179,7 +179,7 @@
     public async Task Eliminar(CategoriaResponse item)
     {
         var resultado = await categoriaServices.Eliminar(item.ToRequest());
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
             await CargarContactos();
             StateHasChanged();

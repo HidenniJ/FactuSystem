@@ -51,7 +51,7 @@
     <div class="card w-75">
         <div class="card-body">
             <!-- Button trigger modal -->
-            <button class="btn btn-outline-success" @onclick="ShowCard">
+            <button class="btn btn-outline-Exitoso" @onclick="ShowCard">
                 <span class="oi oi-plus"></span>
                 Nuevo proveedor
             </button>
@@ -135,9 +135,9 @@
     {
         var resultado =
         await proveedorServices.Consultar(Filtro);
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
-            Proveedores = resultado.Data!;
+            Proveedores = resultado.Datos!;
         }
     }
 
@@ -157,7 +157,7 @@
         {
             //Debo registrar el contacto..
             var r = await proveedorServices.Crear(proveedorRequest);
-            if (r.Success)
+            if (r.Exitoso)
             {
                 Cancelar();
                 await CargarContactos();
@@ -168,7 +168,7 @@
         {
             //Debo solicitar modificar el contacto...
             var r = await proveedorServices.Modificar(proveedorRequest);
-            if (r.Success)
+            if (r.Exitoso)
             {
                 Cancelar();
                 await CargarContactos();
@@ -188,7 +188,7 @@
     public async Task Eliminar(ProveedorResponse item)
     {
         var resultado = await proveedorServices.Eliminar(item.ToRequest());
-        if (resultado.Success)
+        if (resultado.Exitoso)
         {
             await CargarContactos();
             StateHasChanged();
