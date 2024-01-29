@@ -1,8 +1,11 @@
+
 using FactuSystem.Data;
 using FactuSystem.Data.Context;
 using FactuSystem.Data.Services;
+using FactuSystem.Data.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using static FactuSystem.Data.Services.CategoriaServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,7 @@ builder.Services.AddScoped<IFacturaServices,FacturaServices>();
 builder.Services.AddScoped<IProductoServices,ProductoServices>();
 builder.Services.AddScoped<IProveedorServices,ProveedorServices>();
 builder.Services.AddScoped<ICategoriaServices,CategoriaServices>();
+builder.Services.AddScoped<IClienteServices, ClienteServices>();
 
 var app = builder.Build();
 

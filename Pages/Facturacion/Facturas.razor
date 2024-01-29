@@ -1,0 +1,55 @@
+﻿@page "/facturas"
+@inject NavigationManager NavigationManager
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="col-xs-8">
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4 text-right" style="margin-top: 10px;">
+                <div class="dropdown" style="display: inline-block;">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-toggle="dropdown">
+                        Facturas
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+
+
+                        <li><a  >Facturas por pagar</a></li>
+                        <li><a >Facturas por cobrar</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+      
+
+</body>
+</html>
+
+@code {
+         
+    private bool facturapaga = true;
+
+    private void Facturaporpagar()
+    {
+
+     
+
+    }
+
+    private void Facturaporcobrar()
+    {
+
+        
+    }
+
+   
+}

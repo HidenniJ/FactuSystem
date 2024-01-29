@@ -1,0 +1,205 @@
+﻿@page "/clientes"
+@using FactuSystem.Data.Request;
+@using FactuSystem.Data.Response;
+@inject IJSRuntime JSRuntime
+
+<style>
+    .contenedor {
+        margin-left: 400px; /* Ajusta el valor según el ancho de tu menú lateral */
+        padding: 200px; /* Agrega un espacio interno para evitar superposiciones */
+    }
+</style>
+
+@if (!ShowForm)
+{
+    <h3>Clientes (@Cliente.Count)</h3>
+
+    <div class="contenedor">
+        <div class="mb-2">
+            <button class="btn btn-success" @onclick="MostrarFormulario">
+                <span class="oi oi-plus" aria-hidden="true"></span> Agregar
+            </button>
+        </div>
+    </div>
+}
+
+<div class="container">
+    @if (ShowForm)
+    {
+        <!-- ... (tu código existente para el formulario) -->
+    }
+    @if (!ShowForm)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Direccion</th>
+                    <th>Telefono</th>
+                    <th>Cedula</th>
+                    <th>Limite de credito</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cliente in Cliente)
+                {
+                    <tr>
+                        <td>@cliente.Nombre</td>
+                        <td>@cliente.Apellidos</td>
+                        <td>@cliente.Direccion</td>
+                        <td>@cliente.Telefono</td>
+                        <td>@cliente.Cedula</td>
+                        <td>@cliente.Limitecredito</td>
+                        <td>
+                            <button class="btn btn-warning" @onclick="() => Seleccionar(cliente.Id)">
+                                <span class="oi oi-pencil"></span> Editar
+                            </button>
+                            <button @onclick="()=>Eliminar(cliente)" class="btn btn-danger">
+                                <span class="oi oi-trash"></span> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+ 
+@code {
+    public bool ShowForm { get; set; } = false;
+    public string Filtro { get; set; } = " ";
+
+    public List<ClienteResponse> Cliente { get; set; } = new List<ClienteResponse>();
+
+    public ClienteRequest request { get; set; } = new ClienteRequest();
+
+    private string GetFormButtonLabel()
+    {
+        return request.Id == 0 ? "Agregar" : "Modificar";
+    }
+
+    // Función para limpiar el formulario
+    void Cancelar()
+    {
+        request = new ClienteRequest();
+        ShowForm = false;
+    }
+
+    async Task CargarClientes()
+    {
+        var resultado = await ClienteServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Cliente = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarClientes();
+    }
+
+    // Método para agregar o actualizar el cliente
+    public async Task EnviarCliente()
+    {
+        // Validar campos obligatorios
+        if (string.IsNullOrWhiteSpace(request.Nombre) ||
+            string.IsNullOrWhiteSpace(request.Apellidos) ||
+            string.IsNullOrWhiteSpace(request.Direccion) ||
+            string.IsNullOrWhiteSpace(request.Telefono) ||
+            string.IsNullOrWhiteSpace(request.Cedula))
+        {
+            // Mostrar mensaje de error si algún campo está vacío
+            await MostrarMensajeError("Por favor completa todos los campos.");
+            return;
+        }
+
+        // Mostrar mensaje de confirmación
+        var confirmResult = await JSRuntime.InvokeAsync<bool>("confirm", new object?[] { "¿Estás seguro de realizar esta acción?" });
+
+        if (confirmResult)
+        {
+            if (request.Id == 0)
+            {
+                // Registrar el cliente
+                var r = await ClienteServices.Crear(request);
+                if (r.Success)
+                {
+                    Cancelar();
+                    await CargarClientes();
+                    StateHasChanged();
+                    // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
+                    await MostrarMensajeExito("El cliente se ha agregado correctamente.");
+                }
+            }
+            else
+            {
+                // Actualizar el cliente
+                var r = await ClienteServices.Modificar(request);
+                if (r.Success)
+                {
+                    Cancelar();
+                    await CargarClientes();
+                    StateHasChanged();
+                    // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
+                    await MostrarMensajeExito("El cliente se ha actualizado correctamente.");
+                }
+                else if (request.Id < 0)
+                {
+                    // Eliminar el cliente
+                    var resultado = await ClienteServices.Eliminar(new ClienteRequest { Id = -request.Id });
+                    if (resultado.Success)
+                    {
+                        Cancelar();
+                        await CargarClientes();
+                        StateHasChanged();
+                        // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
+                        await MostrarMensajeExito("El cliente se ha eliminado correctamente.");
+                    }
+                }
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        ShowForm = true;
+        request = Cliente.FirstOrDefault(c => c.Id == Id)?.ToRequest() ?? new ClienteRequest();
+    }
+
+    private void MostrarFormulario()
+    {
+        ShowForm = true;
+    }
+
+    public async Task Eliminar(ClienteResponse cliente)
+    {
+        var confirmResult = await JSRuntime.InvokeAsync<bool>("confirm", new object?[] { "¿Estás seguro de eliminar este cliente?" });
+
+        if (confirmResult)
+        {
+            var resultado = await ClienteServices.Eliminar(cliente.ToRequest());
+            if (resultado.Success)
+            {
+                await CargarClientes();
+                StateHasChanged();
+                // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
+                await MostrarMensajeExito("El cliente se ha eliminado correctamente.");
+            }
+        }
+    }
+
+    private async Task MostrarMensajeExito(string mensaje)
+    {
+        await JSRuntime.InvokeVoidAsync("alert", mensaje);
+    }
+
+    private async Task MostrarMensajeError(string mensaje)
+    {
+        await JSRuntime.InvokeVoidAsync("alert", mensaje);
+    }
+}
+
+}

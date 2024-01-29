@@ -13,6 +13,7 @@ public class CategoriaResponse
         {
             Id = Id,
             Nombre = Nombre
+
         };
     }
 }

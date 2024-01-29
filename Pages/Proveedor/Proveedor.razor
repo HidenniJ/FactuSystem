@@ -1,7 +1,6 @@
 @page "/proveedor"
 
-<h1>Proveedores</h1>
-
+<div style="margin-left: 450px;">
 <div class="modal" style="display: @(showCard ? "block" : "none")" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -56,7 +55,7 @@
                 Nuevo proveedor
             </button>
             
-            <div class="row">
+            <div class="row" style="back">
                 <div class="col-7"></div>
                 <div class="col-5">
                     <div class="col input-group">
@@ -109,6 +108,7 @@
     </div>
     
 </div>
+    </div>
 
 @code {
     public string TituloForm => proveedorRequest.Id == 0 ? 
@@ -135,9 +135,9 @@
     {
         var resultado =
         await proveedorServices.Consultar(Filtro);
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
-            Proveedores = resultado.Datos!;
+            Proveedores = resultado.Data!;
         }
     }
 
@@ -157,7 +157,7 @@
         {
             //Debo registrar el contacto..
             var r = await proveedorServices.Crear(proveedorRequest);
-            if (r.Exitoso)
+            if (r.Success)
             {
                 Cancelar();
                 await CargarContactos();
@@ -168,7 +168,7 @@
         {
             //Debo solicitar modificar el contacto...
             var r = await proveedorServices.Modificar(proveedorRequest);
-            if (r.Exitoso)
+            if (r.Success)
             {
                 Cancelar();
                 await CargarContactos();
@@ -188,7 +188,7 @@
     public async Task Eliminar(ProveedorResponse item)
     {
         var resultado = await proveedorServices.Eliminar(item.ToRequest());
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
             await CargarContactos();
             StateHasChanged();

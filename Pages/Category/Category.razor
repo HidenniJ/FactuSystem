@@ -126,9 +126,9 @@
     {
         var resultado =
         await categoriaServices.Consultar(Filtro);
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
-            Categorias = resultado.Datos!;
+            Categorias = resultado.Data!;
         }
     }
 
@@ -148,7 +148,7 @@
         {
             //Debo registrar el contacto..
             var r = await categoriaServices.Crear(categoriaRequest);
-            if (r.Exitoso)
+            if (r.Success)
             {
                 Cancelar();
                 await CargarContactos();
@@ -159,7 +159,7 @@
         {
             //Debo solicitar modificar el contacto...
             var r = await categoriaServices.Modificar(categoriaRequest);
-            if (r.Exitoso)
+            if (r.Success)
             {
                 Cancelar();
                 await CargarContactos();
@@ -179,7 +179,7 @@
     public async Task Eliminar(CategoriaResponse item)
     {
         var resultado = await categoriaServices.Eliminar(item.ToRequest());
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
             await CargarContactos();
             StateHasChanged();

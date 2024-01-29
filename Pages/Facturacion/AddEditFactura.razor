@@ -281,9 +281,9 @@
         //Llenar la lista de contactos para mostrar al usuario...
 
         var r = await productoServices.Consultar("");
-        if (r.Exitoso)
+        if (r.Success)
         {
-            Productos = r.Datos!;
+            Productos = r.Data!;
         }
     }
     async Task CargarContacto()
@@ -302,9 +302,9 @@
         //Llenar la lista de contactos para mostrar al usuario...
         
         var r = await facturaServices.Consultar();
-        if (r.Exitoso)
+        if (r.Success)
         {
-            Facturas = r.Datos!;
+            Facturas = r.Data!;
         }
     }
 
@@ -356,14 +356,14 @@ async Task Send()
     {
         BuscarSeleccionarCliente(Nombre);
         var result = await facturaServices.Crear(facturaRequest);
-        if (result.Exitoso)
+        if (result.Success)
         {
             Message = "Exito";
         }
         else
         {
             
-            Message = result.Mensaje;
+            Message = result.Message;
         }
     }
     catch (Exception ex)

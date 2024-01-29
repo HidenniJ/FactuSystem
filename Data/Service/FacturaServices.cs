@@ -27,18 +27,18 @@ public class FacturaServices: IFacturaServices
                 .ToListAsync();
             return new Result<List<FacturaResponse>>()
             {
-                Datos = facturas,
-                Exitoso = true,
-                Mensaje = "Ok"
+                Data = facturas,
+                Success = true,
+                Message = "Ok"
             };
         }
         catch (Exception E)
         {
             return new Result<List<FacturaResponse>>()
             {
-                Datos = null,
-                Exitoso = false,
-                Mensaje = E.Message
+                Data = null,
+                Success = false,
+                Message = E.Message
             };
         }
     }
@@ -52,18 +52,18 @@ public class FacturaServices: IFacturaServices
             await dbContext.SaveChangesAsync();
             return new Result<FacturaResponse>()
             {
-                Datos = factura.ToResponse(),
-                Exitoso = true,
-                Mensaje = "Ok"
+                Data = factura.ToResponse(),
+                Success = true,
+                Message = "Ok"
             };
         }
         catch (Exception E)
         {
             return new Result<FacturaResponse>()
             {
-                Datos = null,
-                Exitoso = false,
-                Mensaje = E.Message
+                Data = null,
+                Success = false,
+                Message = E.Message
             };
         }
     }

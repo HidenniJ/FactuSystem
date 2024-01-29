@@ -1,5 +1,5 @@
 @page "/producto"
-
+<div style="margin-left: 450px;">
 <h1>Productos</h1>
 
 <div class="modal" style="display: @(showCard ? "block" : "none")" tabindex="-1" role="dialog">
@@ -132,7 +132,7 @@
     </div>
     
 </div>
-
+</div>
 @code {
     public string TituloForm => productoRequest.Id == 0 ? 
     "Agregar producto" : "Modificar producto";
@@ -164,27 +164,27 @@
     {
         var resultado =
         await productoServices.Consultar(Filtro);
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
-            Productos = resultado.Datos!;
+            Productos = resultado.Data!;
         }
     }
     async Task CargarProveedores()
     {
         var resultado =
         await proveedorServices.Consultar(Filtro);
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
-            Proveedores = resultado.Datos!;
+            Proveedores = resultado.Data!;
         }
     }
     async Task CargarCategorias()
     {
         var resultado =
         await categoriaServices.Consultar(Filtro);
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
-            Categorias = resultado.Datos!;
+            Categorias = resultado.Data!;
         }
     }
 
@@ -206,7 +206,7 @@
         {
             productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
             var r = await productoServices.Crear(productoRequest);
-            if (r.Exitoso)
+            if (r.Success)
             {
                 Cancelar();
                 await CargarContactos();
@@ -218,7 +218,7 @@
             productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
             // Debo solicitar modificar el producto.
             var r = await productoServices.Modificar(productoRequest);
-            if (r.Exitoso)
+            if (r.Success)
             {
                 Cancelar();
                 await CargarContactos();
@@ -239,7 +239,7 @@
     public async Task Eliminar(ProductoResponse item)
     {
         var resultado = await productoServices.Eliminar(item.ToRequest());
-        if (resultado.Exitoso)
+        if (resultado.Success)
         {
             await CargarContactos();
             StateHasChanged();
