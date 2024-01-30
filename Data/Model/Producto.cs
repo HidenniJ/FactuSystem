@@ -13,6 +13,7 @@ public class Producto
     public string? Codigo { get; set; }
     public int ProveedorID { get; set; }
     public string Nombre { get; set; } = null!;
+    public int Stock { get; set; } 
     public int CategoriaID { get; set; }
     [Column(TypeName = "decimal(18,2)")]
     public decimal PrecioCompra { get; set; }
@@ -30,6 +31,7 @@ public class Producto
             Codigo = item.Codigo,
             ProveedorID = item.ProveedorID,
             Nombre = item.Nombre,
+            Stock = item.Stock,
             CategoriaID = item.CategoriaID,
             PrecioCompra = item.PrecioCompra,
             Precio = item.Precio
@@ -46,6 +48,11 @@ public class Producto
         if (ProveedorID != item.ProveedorID)
         {
             ProveedorID = item.ProveedorID;
+            cambio = true;
+        }
+        if (Stock != item.Stock)
+        {
+            Stock = item.Stock;
             cambio = true;
         }
         if (Nombre != item.Nombre)

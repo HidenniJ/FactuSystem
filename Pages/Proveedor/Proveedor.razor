@@ -1,114 +1,177 @@
 @page "/proveedor"
 
 <div style="margin-left: 450px;">
-<div class="modal" style="display: @(showCard ? "block" : "none")" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><b>@TituloForm</b></h5>
-                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
-                    <span aria-hidden="true" class="oi oi-x"></span>
+    @* <h1>Proveedores</h1> *@
+    <h1 class="titulo-proveedores">Listado de Proveedores</h1>
+
+    <style>
+        /* Estilo para resaltar las filas al pasar el cursor */
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
+        }
+
+        /* Estilo para el contenedor de la tabla */
+        .table-container {
+            margin-top: 20px;
+        }
+
+        /* Estilo para el cuerpo de la tarjeta */
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Estilo para centrar el texto en las celdas de la tabla */
+        .table th, .table td {
+            text-align: center;
+        }
+
+        .titulo-proveedores {
+            background-color: #000000; /* Fondo oscuro */
+            color: #ffffff; /* Texto blanco */
+            text-align: center; /* Centrar texto */
+            padding: 10px; /* Añadir espacio alrededor del texto */
+        }
+    </style>
+
+    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);"
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><b>@TituloForm</b></h5>
+                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                        <span aria-hidden="true" class="oi oi-x"></span>
+                    </button>
+                </div>
+
+                <EditForm Model="proveedorRequest" OnValidSubmit="Send">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+                    
+                    @* Aqui modifique los Texbox *@
+
+                    <div class="modal-body">
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-person"></span>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Nombre" @bind-value="proveedorRequest.NombreEmp" required />
+                        </div>
+
+
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-envelope-closed"></span>
+                                </span>
+                            </div>
+                            <input id="emailInput" type="email" class="form-control" placeholder="Correo" @bind-value="proveedorRequest.Email" required />
+                        </div>
+
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-phone"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="Teléfono" @bind-value="proveedorRequest.Telefono" pattern="\d{3}-\d{3}-\d{4}" title="Ingrese un número de teléfono en formato 000-000-0000" required />
+                        </div>
+
+
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-map-marker"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="Dirección" @bind-value="proveedorRequest.Direccion" required />
+                        </div>
+                    </div>
+
+                
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <span class="oi oi-check"></span> Guardar
+                            </button>
+                        </div>
+                    </div>
+
+                </EditForm>
+
+                
+
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="card w-75">
+            <div class="card-body">
+                <!-- Button trigger modal -->
+                <button class="btn btn-outline-success" @onclick="ShowCard">
+                    <span class="oi oi-plus"></span>
+                    Nuevo proveedor
                 </button>
-            </div>
-
-            <EditForm Model="proveedorRequest" OnValidSubmit="Send">
-                <DataAnnotationsValidator/>
-                <ValidationSummary/>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="proveedorRequest.NombreEmp" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="correo">Correo</label>
-                        <input type="email" class="form-control" id="correo" @bind-value="proveedorRequest.Email" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="correo">Telefono</label>
-                        <input class="form-control" id="correo" @bind-value="proveedorRequest.Telefono" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="correo">Direccion</label>
-                        <input class="form-control" id="correo" @bind-value="proveedorRequest.Direccion" required />
+                
+                
+                <div class="row justify-content-end">
+                    <div class="col-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control border-0 border-bottom" placeholder="Buscar por nombre" @bind="Filtro">
+                            <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                                <span class="oi oi-magnifying-glass"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                    </div>
-                </div>
-            </EditForm>
 
             
 
-        </div>
-    </div>
-</div>
 
-<div class="table-container">
-    <div class="card w-75">
-        <div class="card-body">
-            <!-- Button trigger modal -->
-            <button class="btn btn-outline-Exitoso" @onclick="ShowCard">
-                <span class="oi oi-plus"></span>
-                Nuevo proveedor
-            </button>
-            
-            <div class="row" style="back">
-                <div class="col-7"></div>
-                <div class="col-5">
-                    <div class="col input-group">
-                        <input type="text" placeholder="Nombre del proveedor" @bind="Filtro">
-
-                        <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
-                            <span class="oi oi-magnifying-glass"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row-12 mt-2">
-                <table class="table">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre completo</th>
-                            <th>Correo</th>
-                            <th>Telefono</th>
-                            <th>Direccion</th>
-                            <th>...</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var proveedorRow in Proveedores)
-                        {
+                <div class="row-12 mt-2">
+                    <!-- Añadido 'table-hover' a la clase 'table' para resaltar filas al pasar el cursor -->
+                    <table class="table table-hover">
+                        <thead class="table-dark">
                             <tr>
-                                <td>@proveedorRow.Id</td>
-                                <td>@proveedorRow.NombreEmp</td>
-                                <td>@proveedorRow.Email</td>
-                                <td>@proveedorRow.Telefono</td>
-                                <td>@proveedorRow.Direccion</td>
-                                <td>
-                                    <button @onclick="()=>Seleccionar(proveedorRow.Id)"
-                                        class="btn btn-outline-warning">
-                                        <span class="oi oi-pencil"></span>
-                                    </button>
-                                    <button @onclick="()=>Eliminar(proveedorRow)"
-                                        class="btn btn-outline-danger">
-                                        <span class="oi oi-trash"></span>
-                                    </button>
-                                </td>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Acciones</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var Row in Proveedores)
+                            {
+                                <tr>
+                                    <td>@Row.Id</td>
+                                    <td>@Row.NombreEmp</td>
+                                    <td>@Row.Email</td>
+                                    <td>@Row.Telefono</td>
+                                    <td>@Row.Direccion</td>
+                                    <td>
+                                        <button @onclick="()=>Seleccionar(Row.Id)"
+                                                class="btn btn-outline-warning">
+                                            <span class="oi oi-pencil"></span>
+                                        </button>
+                                        <button @onclick="()=>Eliminar(Row)"
+                                                class="btn btn-outline-danger">
+                                            <span class="oi oi-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+        
     </div>
-    
 </div>
-    </div>
 
 @code {
     public string TituloForm => proveedorRequest.Id == 0 ? 
