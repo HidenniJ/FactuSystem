@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FactuSystem.Data.Request;
 
 namespace FactuSystem.Data.Response;
 
@@ -25,4 +26,24 @@ public class FacturaResponse
         0;//Falso
     public decimal SaldoPagado { get; set; }
     public decimal SaldoPendiente { get; set; }
+
+    public FacturaRequest ToRequest()
+    {
+        return new FacturaRequest
+        {
+            Id = Id,
+            ClienteId = ClienteId,
+            SaldoPagado = SaldoPagado,
+            SaldoPendiente = SaldoPendiente,
+            Fecha = Fecha,
+            Detalles = Detalles.Select(d => new FacturaDetalleRequest
+            {
+                Id = d.Id,
+                ProductoId = d.Producto.Id, // Asegúrate de que esto sea correcto
+                Descripcion = d.Producto.Nombre, // Asegúrate de que esto sea correcto
+                Cantidad = d.Cantidad,
+                Precio = d.Precio
+            }).ToList()
+        };
+    }
 }

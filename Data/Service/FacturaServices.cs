@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FactuSystem.Data.Services;
 
-public class FacturaServices: IFacturaServices
+public class FacturaServices : IFacturaServices
 {
     private readonly IMyDbContext dbContext;
 
@@ -14,7 +14,6 @@ public class FacturaServices: IFacturaServices
     {
         this.dbContext = dbContext;
     }
-
     public async Task<Result<List<FacturaResponse>>> Consultar()
     {
         try
@@ -67,10 +66,64 @@ public class FacturaServices: IFacturaServices
             };
         }
     }
+    public async Task<Result> Eliminar(FacturaRequest request)
+    {
+        try
+        {
+            var contacto = await dbContext.Facturas
+                .FirstOrDefaultAsync(c => c.Id == request.Id);
+            if (contacto == null)
+                return new Result() { Message = "No se encontro el usuario", Success = false };
+
+            dbContext.Facturas.Remove(contacto);
+            await dbContext.SaveChangesAsync();
+            return new Result() { Message = "Ok", Success = true };
+        }
+        catch (Exception E)
+        {
+
+            return new Result() { Message = E.Message, Success = false };
+        }
+    }
+    public async Task<Result<List<FacturaResponse>>> BuscarFacturas(DateTime? fecha)
+    {
+        try
+        {
+            var query = dbContext.Facturas
+                .Include(f => f.Detalles)
+                .ThenInclude(d => d.Producto)
+                .AsQueryable();
+
+            if (fecha.HasValue)
+            {
+                query = query.Where(f => EF.Functions.DateDiffDay(f.Fecha, fecha.Value) == 0);
+            }
+
+            var facturas = await query.Select(f => f.ToResponse()).ToListAsync();
+
+            return new Result<List<FacturaResponse>>()
+            {
+                Data = facturas,
+                Success = true,
+                Message = "Búsqueda exitosa"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<FacturaResponse>>()
+            {
+                Data = null,
+                Success = false,
+                Message = ex.Message
+            };
+        }
+    }
 }
 
 public interface IFacturaServices
-    {
-        Task<Result<List<FacturaResponse>>> Consultar();
-        Task<Result<FacturaResponse>> Crear(FacturaRequest request);
-    }
+{
+    Task<Result<List<FacturaResponse>>> Consultar();
+    Task<Result<FacturaResponse>> Crear(FacturaRequest request);
+         Task<Result> Eliminar(FacturaRequest request);
+        Task<Result<List<FacturaResponse>>> BuscarFacturas(DateTime? fecha);
+}
