@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FactuSystem.Data.Request;
 using FactuSystem.Data.Response;
+using Microsoft.Win32;
 
 namespace FactuSystem.Data.Model;
 
@@ -8,20 +9,20 @@ public class Cliente
 {
     [Key]
     public int Id { get; set; }
-    [Required]
+
     public string Cedula { get; set; } = null!;
-    [Required]
+
     public string Nombre { get; set; } = null!;
-    [Required]
+
     public string Apellidos { get; set; } = null!;
-    [Required]
+    
     public string? Direccion { get; set; }
-    [Required]
 
     public string? Telefono { get; set; }
-    [Required]
+
     public string? Limitecredito { get; set; }
     public static Cliente Crear(ClienteRequest cliente)
+   
     {
         return new Cliente()
         {
@@ -74,7 +75,7 @@ public class Cliente
 
 
 
-    public ClienteResponse ToResponse()
+    public ClienteResponse? ToResponse()
     {
         return new ClienteResponse()
         {

@@ -1,9 +1,7 @@
 using FactuSystem.Data.Request;
 
 
-namespace FactuSystem.Data.Response 
-{
-
+namespace FactuSystem.Data.Response;
 
     public class ClienteResponse
     {
@@ -32,7 +30,3 @@ namespace FactuSystem.Data.Response
 
     }
 
-
-
-   
-}

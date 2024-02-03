@@ -58,6 +58,9 @@ namespace FactuSystem.Migrations
                     b.Property<string>("Direccion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Limitecredito")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -179,6 +182,9 @@ namespace FactuSystem.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProveedorID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

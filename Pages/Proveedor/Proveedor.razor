@@ -1,10 +1,13 @@
 @page "/proveedor"
+@using FactuSystem.Data.Request;
+@inject IClienteServices ClienteServices;
 
 <div style="margin-left: 450px;">
-    @* <h1>Proveedores</h1> *@
-    <h1 class="titulo-proveedores">Listado de Proveedores</h1>
+
+    <h1 class="titulo-clientes">Listado de Proveedores</h1>
 
     <style>
+
         /* Estilo para resaltar las filas al pasar el cursor */
         .table-hover tbody tr:hover {
             background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
@@ -18,6 +21,7 @@
         /* Estilo para el cuerpo de la tarjeta */
         .card-body {
             padding: 20px;
+        
         }
 
         /* Estilo para centrar el texto en las celdas de la tabla */
@@ -25,15 +29,18 @@
             text-align: center;
         }
 
-        .titulo-proveedores {
-            background-color: #000000; /* Fondo oscuro */
+        .titulo-clientes {
+            background-color:  steelblue; /* Fondo oscuro */
             color: #ffffff; /* Texto blanco */
             text-align: center; /* Centrar texto */
-            padding: 10px; /* Añadir espacio alrededor del texto */
+            padding: 10px; /* A�adir espacio alrededor del texto */
+         
+
         }
+
     </style>
 
-    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);"
+    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -44,10 +51,8 @@
                 </div>
 
                 <EditForm Model="proveedorRequest" OnValidSubmit="Send">
-                    <DataAnnotationsValidator/>
-                    <ValidationSummary/>
-                    
-                    @* Aqui modifique los Texbox *@
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
                     <div class="modal-body">
                         <div class="form-group input-group mb-3">
@@ -58,26 +63,24 @@
                             </div>
                             <input type="text" class="form-control" placeholder="Nombre" @bind-value="proveedorRequest.NombreEmp" required />
                         </div>
-
-
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-white text-black border-0">
                                     <span class="oi oi-envelope-closed"></span>
                                 </span>
                             </div>
-                            <input id="emailInput" type="email" class="form-control" placeholder="Correo" @bind-value="proveedorRequest.Email" required />
+                            <input id="emailInput" class="form-control" placeholder="  Email" @bind-value="proveedorRequest.Email" required />
                         </div>
 
+                       
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-white text-black border-0">
                                     <span class="oi oi-phone"></span>
                                 </span>
                             </div>
-                            <input class="form-control" placeholder="Teléfono" @bind-value="proveedorRequest.Telefono" pattern="\d{3}-\d{3}-\d{4}" title="Ingrese un número de teléfono en formato 000-000-0000" required />
+                            <input class="form-control" placeholder="Teléfono" @bind-value="proveedorRequest.Telefono" pattern="\d{3}-\d{3}-\d{4}" title="Ingrese un n�mero de tel�fono en formato 000-000-0000" required />
                         </div>
-
 
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -88,8 +91,8 @@
                             <input class="form-control" placeholder="Dirección" @bind-value="proveedorRequest.Direccion" required />
                         </div>
                     </div>
+                    
 
-                
                     <div class="modal-footer">
                         <div class="btn-group">
                             <button type="submit" class="btn btn-outline-primary">
@@ -97,67 +100,66 @@
                             </button>
                         </div>
                     </div>
-
                 </EditForm>
-
-                
-
             </div>
         </div>
     </div>
 
     <div class="table-container">
-        <div class="card w-75">
+        <div class="card w-130">
+            <h1 class="titulo-clientes">Listado de Proveedores</h1>
             <div class="card-body">
                 <!-- Button trigger modal -->
-                <button class="btn btn-outline-success" @onclick="ShowCard">
+                <button class="btn btn-outline-primary" @onclick="ShowCard">
                     <span class="oi oi-plus"></span>
-                    Nuevo proveedor
+                    Nuevo Proveedor
                 </button>
-                
-                
+
                 <div class="row justify-content-end">
                     <div class="col-6">
                         <div class="input-group">
                             <input type="text" class="form-control border-0 border-bottom" placeholder="Buscar por nombre" @bind="Filtro">
-                            <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
-                                <span class="oi oi-magnifying-glass"></span>
+                            <button class="btn btn-outline input-group-text border-0 bg-white" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                                <span class="oi oi-magnifying-glass text-black"></span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-            
-
-
                 <div class="row-12 mt-2">
-                    <!-- Añadido 'table-hover' a la clase 'table' para resaltar filas al pasar el cursor -->
+                    <!-- A�adido 'table-hover' a la clase 'table' para resaltar filas al pasar el cursor -->
                     <table class="table table-hover">
-                        <thead class="table-dark">
+                        <thead class="table" style="background-color:steelblue;">
                             <tr>
                                 <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Correo</th>
+                                <th>Nombre/Empresa</th>
+                                <th>Email</th>
+                                
+
                                 <th>Teléfono</th>
                                 <th>Dirección</th>
+                                
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var Row in Proveedores)
+                            @foreach (var provedorrow in Proveedores)
                             {
                                 <tr>
-                                    <td>@Row.Id</td>
-                                    <td>@Row.NombreEmp</td>
-                                    <td>@Row.Email</td>
-                                    <td>@Row.Telefono</td>
-                                    <td>@Row.Direccion</td>
+                                    <td>@provedorrow.Id</td>
+                                    <td>@provedorrow.NombreEmp</td>
+                                    <td>@provedorrow.Email</td>
+
+                                    
+                                    <td>@provedorrow.Telefono</td>
+                                    <td>@provedorrow.Direccion</td>
+                                    
                                     <td>
-                                        <button @onclick="()=>Seleccionar(Row.Id)"
+                                        <button @onclick="()=>Seleccionar(provedorrow.Id)"
                                                 class="btn btn-outline-warning">
                                             <span class="oi oi-pencil"></span>
                                         </button>
-                                        <button @onclick="()=>Eliminar(Row)"
+                                        <button @onclick="()=>Eliminar(provedorrow)"
                                                 class="btn btn-outline-danger">
                                             <span class="oi oi-trash"></span>
                                         </button>
@@ -169,19 +171,22 @@
                 </div>
             </div>
         </div>
-        
     </div>
 </div>
 
+
+
 @code {
-    public string TituloForm => proveedorRequest.Id == 0 ? 
+    public string TituloForm => proveedorRequest.Id == 0 ?
     "Agregar proveedor" : "Modificar proveedor";
-    
+
     public string Filtro { get; set; } = "";
     public bool ShowForm { get; set; } = false;
     public List<ProveedorResponse> Proveedores { get; set; } = new();
     public ProveedorRequest proveedorRequest { get; set; } = new();
     public bool showCard { get; set; } = false;
+
+
 
     void ShowCard()
     {
@@ -190,7 +195,7 @@
 
     void CloseCard()
     {
-        proveedorRequest  = new ProveedorRequest();
+        proveedorRequest = new ProveedorRequest();
         showCard = false;
     }
 
@@ -211,12 +216,12 @@
 
     void Cancelar()
     {
-        proveedorRequest  = new ProveedorRequest();
+        proveedorRequest = new ProveedorRequest();
         showCard = false;
     }
     public async Task Send()
     {
-        if(proveedorRequest.Id == 0)
+        if (proveedorRequest.Id == 0)
         {
             //Debo registrar el contacto..
             var r = await proveedorServices.Crear(proveedorRequest);
@@ -257,5 +262,6 @@
             StateHasChanged();
         }
     }
+
 
 }

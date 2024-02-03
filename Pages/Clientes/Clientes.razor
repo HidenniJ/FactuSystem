@@ -1,95 +1,219 @@
 ﻿@page "/clientes"
 @using FactuSystem.Data.Request;
-@using FactuSystem.Data.Response;
-@inject IJSRuntime JSRuntime
+@inject IClienteServices ClienteServices;
 
-<style>
-    .contenedor {
-        margin-left: 400px; /* Ajusta el valor según el ancho de tu menú lateral */
-        padding: 200px; /* Agrega un espacio interno para evitar superposiciones */
-    }
-</style>
+<div style="margin-left: 450px;">
 
-@if (!ShowForm)
-{
-    <h3>Clientes (@Cliente.Count)</h3>
+    <h1 class="titulo-clientes">Listado de clientes</h1>
 
-    <div class="contenedor">
-        <div class="mb-2">
-            <button class="btn btn-success" @onclick="MostrarFormulario">
-                <span class="oi oi-plus" aria-hidden="true"></span> Agregar
-            </button>
+    <style>
+
+        /* Estilo para resaltar las filas al pasar el cursor */
+        .table-hover tbody tr:hover {
+            background-color: var(--blue); /* Cambia el color al pasar el cursor */
+        }
+
+        /* Estilo para el contenedor de la tabla */
+        .table-container {
+            var(--blue);
+            margin-top: 20px;
+        }
+
+        /* Estilo para el cuerpo de la tarjeta */
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Estilo para centrar el texto en las celdas de la tabla */
+        .table th, .table td {
+            text-align: center;
+        }
+
+        .titulo-clientes {
+            background-color: steelblue; /* Fondo oscuro */
+            color: #ffffff; /* Texto blanco */
+            text-align: center; /* Centrar texto */
+            padding: 10px; /* Añadir espacio alrededor del texto */
+        }
+
+    </style>
+
+    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><b>@TituloForm</b></h5>
+                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                        <span aria-hidden="true" class="oi oi-x"></span>
+                    </button>
+                </div>
+
+                <EditForm Model="clienterequest" OnValidSubmit="Send">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="modal-body">
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-person"></span>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Nombre" @bind-value="clienterequest.Nombre" required />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-envelope-closed"></span>
+                                </span>
+                            </div>
+                            <input id="emailInput"  class="form-control" placeholder="  Apellido" @bind-value="clienterequest.Apellidos" required />
+                        </div>
+
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-credit-card"></span>
+                                </span>
+                            </div>
+                            <input  class="form-control" placeholder="Cedula" @bind-value="clienterequest.Cedula" required />
+                        </div>
+
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-phone"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="Teléfono" @bind-value="clienterequest.Telefono" pattern="\d{3}-\d{3}-\d{4}" title="Ingrese un número de teléfono en formato 000-000-0000" required />
+                        </div>
+
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-map-marker"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="Dirección" @bind-value="clienterequest.Direccion" required />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-dollar"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="Limite de credito" @bind-value="clienterequest.Limitecredito" required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <span class="oi oi-check"></span> Guardar
+                            </button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
         </div>
     </div>
-}
 
-<div class="container">
-    @if (ShowForm)
-    {
-        <!-- ... (tu código existente para el formulario) -->
-    }
-    @if (!ShowForm)
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Direccion</th>
-                    <th>Telefono</th>
-                    <th>Cedula</th>
-                    <th>Limite de credito</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var cliente in Cliente)
-                {
-                    <tr>
-                        <td>@cliente.Nombre</td>
-                        <td>@cliente.Apellidos</td>
-                        <td>@cliente.Direccion</td>
-                        <td>@cliente.Telefono</td>
-                        <td>@cliente.Cedula</td>
-                        <td>@cliente.Limitecredito</td>
-                        <td>
-                            <button class="btn btn-warning" @onclick="() => Seleccionar(cliente.Id)">
-                                <span class="oi oi-pencil"></span> Editar
-                            </button>
-                            <button @onclick="()=>Eliminar(cliente)" class="btn btn-danger">
-                                <span class="oi oi-trash"></span> Eliminar
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+    <div class="table-container">
+        <div class="card w-130">
+            <h1 class="titulo-clientes">Listado de clientes</h1>
+            <div class="card-body">
+                <!-- Button trigger modal -->
+                <button class="btn btn-outline-primary" @onclick="ShowCard">
+                    <span class="oi oi-plus"></span>
+                    Nuevo cliente
+                </button>
+
+                <div class="row justify-content-end">
+                    <div class="col-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control border-0 border-bottom" placeholder="Buscar por nombre" @bind="Filtro">
+                            <span class="input-group-text border-0 bg-white">
+                                <span class="oi oi-magnifying-glass text-black"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-12 mt-2">
+                    <!-- Añadido 'table-hover' a la clase 'table' para resaltar filas al pasar el cursor -->
+                    <table class="table table-hover">
+                        <thead class="table" style="background-color : steelblue;">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Cedula</th>
+          
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Limite/Credito</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var clienterow in Cliente)
+                            {
+                                <tr>
+                                    <td>@clienterow.Id</td>
+                                    <td>@clienterow.Nombre</td>
+                                    <td>@clienterow.Apellidos</td>
+                                   
+                                    <td>@clienterow.Cedula</td>
+                                    <td>@clienterow.Telefono</td>
+                                    <td>@clienterow.Direccion</td>
+                                    <td>@clienterow.Limitecredito</td>
+                                    <td>
+                                        <button @onclick="()=>Seleccionar(clienterow.Id)"
+                                                class="btn btn-outline-warning">
+                                            <span class="oi oi-pencil"></span>
+                                        </button>
+                                        <button @onclick="()=>Eliminar(clienterow)"
+                                                class="btn btn-outline-danger">
+                                            <span class="oi oi-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
- 
+
 @code {
+    public string TituloForm => clienterequest.Id == 0 ?
+    "Agregar listado de clientes" : "Modificar clientes";
+
+    public string Filtro { get; set; } = "";
     public bool ShowForm { get; set; } = false;
-    public string Filtro { get; set; } = " ";
+    public List<ClienteResponse> Cliente { get; set; } = new();
+    public ClienteRequest clienterequest { get; set; } = new();
+    public bool showCard { get; set; } = false;
 
-    public List<ClienteResponse> Cliente { get; set; } = new List<ClienteResponse>();
 
-    public ClienteRequest request { get; set; } = new ClienteRequest();
 
-    private string GetFormButtonLabel()
+    void ShowCard()
     {
-        return request.Id == 0 ? "Agregar" : "Modificar";
+        showCard = true;
     }
 
-    // Función para limpiar el formulario
-    void Cancelar()
+    void CloseCard()
     {
-        request = new ClienteRequest();
-        ShowForm = false;
+        clienterequest = new ClienteRequest();
+        showCard = false;
     }
 
-    async Task CargarClientes()
+    async Task CargarContactos()
     {
-        var resultado = await ClienteServices.Consultar(Filtro);
+        var resultado =
+        await ClienteServices.Consultar(Filtro);
         if (resultado.Success)
         {
             Cliente = resultado.Data!;
@@ -98,108 +222,57 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await CargarClientes();
+        await CargarContactos();
     }
 
-    // Método para agregar o actualizar el cliente
-    public async Task EnviarCliente()
+    void Cancelar()
     {
-        // Validar campos obligatorios
-        if (string.IsNullOrWhiteSpace(request.Nombre) ||
-            string.IsNullOrWhiteSpace(request.Apellidos) ||
-            string.IsNullOrWhiteSpace(request.Direccion) ||
-            string.IsNullOrWhiteSpace(request.Telefono) ||
-            string.IsNullOrWhiteSpace(request.Cedula))
+        clienterequest = new ClienteRequest();
+        showCard = false;
+    }
+    public async Task Send()
+    {
+        if (clienterequest.Id == 0)
         {
-            // Mostrar mensaje de error si algún campo está vacío
-            await MostrarMensajeError("Por favor completa todos los campos.");
-            return;
-        }
-
-        // Mostrar mensaje de confirmación
-        var confirmResult = await JSRuntime.InvokeAsync<bool>("confirm", new object?[] { "¿Estás seguro de realizar esta acción?" });
-
-        if (confirmResult)
-        {
-            if (request.Id == 0)
+            //Debo registrar el contacto..
+            var r = await ClienteServices.Crear(clienterequest);
+            if (r.Success)
             {
-                // Registrar el cliente
-                var r = await ClienteServices.Crear(request);
-                if (r.Success)
-                {
-                    Cancelar();
-                    await CargarClientes();
-                    StateHasChanged();
-                    // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
-                    await MostrarMensajeExito("El cliente se ha agregado correctamente.");
-                }
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
             }
-            else
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await ClienteServices.Modificar(clienterequest);
+            if (r.Success)
             {
-                // Actualizar el cliente
-                var r = await ClienteServices.Modificar(request);
-                if (r.Success)
-                {
-                    Cancelar();
-                    await CargarClientes();
-                    StateHasChanged();
-                    // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
-                    await MostrarMensajeExito("El cliente se ha actualizado correctamente.");
-                }
-                else if (request.Id < 0)
-                {
-                    // Eliminar el cliente
-                    var resultado = await ClienteServices.Eliminar(new ClienteRequest { Id = -request.Id });
-                    if (resultado.Success)
-                    {
-                        Cancelar();
-                        await CargarClientes();
-                        StateHasChanged();
-                        // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
-                        await MostrarMensajeExito("El cliente se ha eliminado correctamente.");
-                    }
-                }
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
             }
         }
     }
 
     public void Seleccionar(int Id)
     {
-        ShowForm = true;
-        request = Cliente.FirstOrDefault(c => c.Id == Id)?.ToRequest() ?? new ClienteRequest();
+        showCard = true;
+        clienterequest = Cliente
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new ClienteRequest();
     }
-
-    private void MostrarFormulario()
+    public async Task Eliminar(ClienteResponse item)
     {
-        ShowForm = true;
-    }
-
-    public async Task Eliminar(ClienteResponse cliente)
-    {
-        var confirmResult = await JSRuntime.InvokeAsync<bool>("confirm", new object?[] { "¿Estás seguro de eliminar este cliente?" });
-
-        if (confirmResult)
+        var resultado = await ClienteServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
         {
-            var resultado = await ClienteServices.Eliminar(cliente.ToRequest());
-            if (resultado.Success)
-            {
-                await CargarClientes();
-                StateHasChanged();
-                // Mostrar mensaje de éxito utilizando una alerta de Bootstrap:
-                await MostrarMensajeExito("El cliente se ha eliminado correctamente.");
-            }
+            await CargarContactos();
+            StateHasChanged();
         }
     }
 
-    private async Task MostrarMensajeExito(string mensaje)
-    {
-        await JSRuntime.InvokeVoidAsync("alert", mensaje);
-    }
-
-    private async Task MostrarMensajeError(string mensaje)
-    {
-        await JSRuntime.InvokeVoidAsync("alert", mensaje);
-    }
-}
 
 }

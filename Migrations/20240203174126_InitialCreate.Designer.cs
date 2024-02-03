@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FactuSystem.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240127230942_InitialCreate")]
+    [Migration("20240203174126_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -59,6 +59,9 @@ namespace FactuSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Direccion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Limitecredito")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
@@ -182,6 +185,9 @@ namespace FactuSystem.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProveedorID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

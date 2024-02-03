@@ -1,5 +1,4 @@
-﻿namespace FactuSystem.Data.Request
-{
+﻿namespace FactuSystem.Data.Request;
 
     public class ClienteRequest
     {
@@ -11,4 +10,3 @@
         public string? Telefono { get; set; }
         public string? Limitecredito { get; set; }
     }
-}
