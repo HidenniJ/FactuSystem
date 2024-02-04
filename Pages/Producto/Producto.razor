@@ -49,6 +49,12 @@
                 </div>
 
                 <EditForm Model="productoRequest" OnValidSubmit="Send">
+                    @if (Message != null)
+                    {
+                        <div class="alert-danger">
+                            <span class="text-danger">@Message</span>
+                        </div>
+                    }
                     <div class="modal-body">
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -57,6 +63,14 @@
                                 </span>
                             </div>
                             <input type="text" class="form-control" placeholder="Codigo" id="nombreCompleto" @bind-value="productoRequest.Codigo" />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-infinity"></span>
+                                </span>
+                            </div>
+                            <input type="number" class="form-control" placeholder="Descripción" id="correo" @bind-value="productoRequest.Stock" />
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -73,16 +87,22 @@
                                         <span class="oi oi-spreadsheet"></span>
                                     </span>
                                 </div>
-                                <select class="form-control" placeholder="Categoria" @bind="productoRequest.CategoriaID">
-                                    <option disabled selected>Seleccione una categoria</option>
-                                    @foreach (var ciudad in Categorias)
+                                <input 
+                                    class="form-control"
+                                    placeholder="Categoria"
+                                    aria-label="Categoria"
+                                    aria-describedby="button-addon2" 
+                                    list="categorias"
+                                    @bind="Nombre"
+                                    @oninput="HandleCategorySelection"
+                                />
+                                <datalist id="categorias">
+                                    @foreach (var item in Categorias)
                                     {
-                                        <option value="@ciudad.Id">
-                                            @ciudad.Nombre
-                                            </option>
+                                        <option value="@item.Nombre" />
                                     }
-                                </select>
-                                <button class="btn btn-outline-success" @onclick="GoCategoria"><span class="oi oi-plus"></span></button>
+                                </datalist>
+                                <button class="btn btn-outline-success" @onclick="ShowCategory"><span class="oi oi-plus"></span></button>
                             </div>
                         </div>
                         <div class="form-group input-group mb-3">
@@ -91,15 +111,21 @@
                                     <span class="oi oi-person"></span>
                                 </span>
                             </div>
-                            <select class="form-control" @bind="productoRequest.ProveedorID">
-                                <option disabled selected="Seleccione un Proveedor">Seleccione un Proveedor</option>
-                                @foreach (var ciudad in Proveedores)
-                                {
-                                    <option value="@ciudad.Id">
-                                        @ciudad.NombreEmp
-                                        </option>
-                                }
-                            </select>
+                            <input 
+                                    class="form-control"
+                                    placeholder="Proveedor"
+                                    aria-label="Proveedor"
+                                    aria-describedby="button-addon2" 
+                                    list="productos"
+                                    @bind="NombreEmp"
+                                    @oninput="HandleProveedorSelection"
+                                />
+                                <datalist id="productos">
+                                    @foreach (var item in Proveedores)
+                                    {
+                                        <option value="@item.NombreEmp" />
+                                    }
+                                </datalist>
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -117,11 +143,84 @@
                         </div>
                     </div>
                 </EditForm>
-
-                
-
             </div>
         </div>
+    </div>
+
+    <div class="modal" style="display: @(showCategory ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><b>Listado de Categorías</b></h5>
+                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCardCategory">
+                        <span aria-hidden="true" class="oi oi-x"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
+                        <thead class="table" style="background-color:steelblue;">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>...</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Categorias)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.Nombre</td>
+                                    <td>
+                                        <button @onclick="()=>SeleccionarCategory(item.Id)"
+                                            class="btn btn-outline-warning">
+                                            <span class="oi oi-pencil"></span>
+                                        </button>
+                                        <button @onclick="()=>EliminarCategory(item)"
+                                            class="btn btn-outline-danger">
+                                            <span class="oi oi-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-primary" @onclick="FormCategory">Nueva Categoría</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" style="display: @(formCategory ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>@TituloFormCategory</b></h5>
+                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseFormCategory">
+                    <span aria-hidden="true" class="oi oi-x"></span>
+                </button>
+            </div>
+
+            <EditForm Model="categoriaRequest" OnValidSubmit="SendCategory">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nombreCompleto">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
     </div>
 
     <div class="table-container">
@@ -193,28 +292,68 @@
 @code {
     public string TituloForm => productoRequest.Id == 0 ? 
     "Agregar producto" : "Modificar producto";
-    
+    public string TituloFormCategory => categoriaRequest.Id == 0 ? 
+    "Agregar categoría" : "Modificar categoría";
     public string Filtro { get; set; } = "";
+    public string Message { get; set; } = "";
+    public string Nombre { get; set; } = string.Empty;
+    public string NombreEmp { get; set; } = string.Empty;
     public bool ShowForm { get; set; } = false;
     public List<ProductoResponse> Productos { get; set; } = new();
     public List<CategoriaResponse> Categorias { get; set; } = new();
     public List<ProveedorResponse> Proveedores { get; set; } = new();
     public ProductoRequest productoRequest { get; set; } = new();
+    public CategoriaRequest categoriaRequest { get; set; } = new();
     public bool showCard { get; set; } = false;
+    public bool showCategory { get; set; } = false;
+    public bool formCategory { get; set; } = false;
 
-    void GoCategoria()
+    void BuscarSeleccionarCategoria(string Categoria)
     {
-        urlHelper.NavigateTo("category",true);
+        var c = Categorias.FirstOrDefault(p => p.Nombre == Categoria)!;
+        if (c != null) productoRequest.CategoriaID = c.Id;
+    }
+    void HandleCategorySelection(ChangeEventArgs args)
+    {
+        var selectedCategory = args.Value.ToString();
+        BuscarSeleccionarCategoria(selectedCategory);
+    }
+    void BuscarSeleccionarProveedor(string Proveedor)
+    {
+        var c = Proveedores.FirstOrDefault(p => p.NombreEmp == Proveedor)!;
+        if (c != null) productoRequest.ProveedorID = c.Id;
+    }
+    void HandleProveedorSelection(ChangeEventArgs args)
+    {
+        var selectedCategory = args.Value.ToString();
+        BuscarSeleccionarProveedor(selectedCategory);
     }
     void ShowCard()
     {
         showCard = true;
     }
+    void ShowCategory()
+    {
+        showCategory = true;
+    }
 
+    void FormCategory()
+    {
+        formCategory = true;
+    }
     void CloseCard()
     {
         productoRequest  = new ProductoRequest();
         showCard = false;
+    }
+
+    void CloseCardCategory()
+    {
+        showCategory = false;
+    }
+    void CloseFormCategory()
+    {
+        formCategory = false;
     }
 
     async Task CargarContactos()
@@ -261,8 +400,45 @@
     {
         if (productoRequest.Id == 0)
         {
+            BuscarSeleccionarCategoria(Nombre);
+            BuscarSeleccionarProveedor(NombreEmp);
             productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
             var r = await productoServices.Crear(productoRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+            else{
+                Message = r.Message;
+            }
+        }
+        else
+        {
+            productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
+            BuscarSeleccionarCategoria(Nombre);
+            BuscarSeleccionarProveedor(NombreEmp);
+            // Debo solicitar modificar el producto.
+            var r = await productoServices.Modificar(productoRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+            else{
+                Message = r.Message;
+            }
+        }
+    }
+
+    public async Task SendCategory()
+    {
+        if(categoriaRequest.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await categoriaServices.Crear(categoriaRequest);
             if (r.Success)
             {
                 Cancelar();
@@ -272,9 +448,8 @@
         }
         else
         {
-            productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);
-            // Debo solicitar modificar el producto.
-            var r = await productoServices.Modificar(productoRequest);
+            //Debo solicitar modificar el contacto...
+            var r = await categoriaServices.Modificar(categoriaRequest);
             if (r.Success)
             {
                 Cancelar();
@@ -283,8 +458,6 @@
             }
         }
     }
-
-
     public void Seleccionar(int Id)
     {
         showCard = true;
@@ -296,6 +469,23 @@
     public async Task Eliminar(ProductoResponse item)
     {
         var resultado = await productoServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+    public void SeleccionarCategory(int Id)
+    {
+        formCategory = true;
+        categoriaRequest = Categorias
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new CategoriaRequest();
+    }
+    public async Task EliminarCategory(CategoriaResponse item)
+    {
+        var resultado = await categoriaServices.Eliminar(item.ToRequest());
         if (resultado.Success)
         {
             await CargarContactos();
