@@ -53,7 +53,7 @@ public class FacturaServices : IFacturaServices
             {
                 Data = factura.ToResponse(),
                 Success = true,
-                Message = "Ok"
+                Message = "Ok ✔"
             };
         }
         catch (Exception E)
@@ -118,12 +118,55 @@ public class FacturaServices : IFacturaServices
             };
         }
     }
+
+    public async Task<Result<FacturaResponse>> Modificar(FacturaRequest request)
+    {
+        try
+        {
+            var factura = await dbContext.Facturas
+                .Include(f => f.Detalles)
+                .ThenInclude(d => d.Producto)
+                .FirstOrDefaultAsync(c => c.Id == request.Id);
+
+            if (factura == null)
+                return new Result<FacturaResponse>() { Message = "No se encontró la factura", Success = false };
+
+            // Actualizar las propiedades de la factura según el request
+            factura.ClienteId = request.ClienteId;
+            factura.SaldoPagado = request.SaldoPagado;
+            factura.SaldoPendiente = request.SaldoPendiente;
+            factura.Detalles = request.Detalles
+                .Select(detalle => FacturaDetalle.Crear(detalle))
+                .ToList();
+
+            // Guardar los cambios en la base de datos
+            await dbContext.SaveChangesAsync();
+
+            return new Result<FacturaResponse>()
+            {
+                Data = factura.ToResponse(),
+                Success = true,
+                Message = "Factura modificada correctamente"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<FacturaResponse>()
+            {
+                Data = null,
+                Success = false,
+                Message = ex.Message
+            };
+        }
+    }
+
 }
 
 public interface IFacturaServices
 {
     Task<Result<List<FacturaResponse>>> Consultar();
     Task<Result<FacturaResponse>> Crear(FacturaRequest request);
-         Task<Result> Eliminar(FacturaRequest request);
-        Task<Result<List<FacturaResponse>>> BuscarFacturas(DateTime? fecha);
+    Task<Result> Eliminar(FacturaRequest request);
+    Task<Result<List<FacturaResponse>>> BuscarFacturas(DateTime? fecha);
+    Task<Result<FacturaResponse>> Modificar(FacturaRequest request);
 }

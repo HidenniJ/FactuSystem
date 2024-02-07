@@ -58,9 +58,9 @@
             </datalist>
             
             <button class="btn btn-outline-success d-print-none"
-                    type="button" id="button-addon2"
-            @onclick="async()=>{
-        await CargarProducto(); }">
+                type="button" id="button-addon2"
+                @onclick="async()=>{
+                await CargarProducto(); }">
                 <span class="oi oi-reload"></span>
             </button>
             
@@ -331,6 +331,14 @@
     async Task Send()
     {
         BuscarSeleccionarCliente(Nombre);
+        if(facturaRequest.SaldoPagado < facturaRequest.SubTotal - facturaRequest.TotalDesc)
+        {
+            facturaRequest.SaldoPendiente = facturaRequest.SubTotal - facturaRequest.TotalDesc - facturaRequest.SaldoPagado;
+        }
+        else
+        {
+            facturaRequest.SaldoPendiente = 0;
+        }
         var result = await
         facturaServices.Crear(facturaRequest);
         if (result.Success)
@@ -365,14 +373,8 @@
         Chance = true;
         MontoPagado = facturaRequest.SaldoPagado;
         Total = facturaRequest.SubTotal - facturaRequest.TotalDesc;
-        if (MontoPagado >= Total)
-        {
-            Cambio = MontoPagado - Total;
-        }
-        else if(MontoPagado < Total)
-        {
-            Cambio = MontoPagado - Total;
-            facturaRequest.SaldoPendiente = Total;
-        }
+
+        Cambio = MontoPagado - Total;
+        
     }
 }

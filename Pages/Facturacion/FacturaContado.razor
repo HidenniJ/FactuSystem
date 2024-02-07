@@ -1,12 +1,6 @@
-@page "/factura/cobrar"
+@page "/factura/paga"
 @using FactuSystem.Data.Response;
 @inject IJSRuntime JSRuntime;
-<style>
-    .table thead {
-        background-color: black;
-        color: rgb(223, 223, 223);
-    }
-</style>
 <script>
     function printPage() {
     window.print();
@@ -58,7 +52,9 @@ else
 <hr>
 @if(!ShowDetails)
 {
-    <h3 class="card-title"><b>@TituloForm</b></h3>
+    <div class="container">
+        <h3 class="card-title"><b>@TituloForm</b></h3>
+    </div>
 }
 <div class="container">
     @if(ShowDetails)
@@ -68,7 +64,7 @@ else
         <!-- Mostrar detalles de la factura seleccionada -->
         <div class="table-responsive">
             <table class="table table-bordered">
-                <thead style="background-color: rgb(0, 0, 53); color: #ffffff;">
+                <thead class="table" style="background-color:steelblue;">
                     <tr>
                         <th scope="col">Cantidad</th>
                         <th scope="col">Descripción</th>
@@ -86,37 +82,37 @@ else
                         <tr>
                             <td>@detalle.Cantidad</td>
                             <td>@detalle.Producto.Nombre</td>
-                            <td>@($"{(detalle.Precio - detalle.Precio * 0.18m):N2}")</td>
+                            <td>$ @($"{(detalle.Precio - detalle.Precio * 0.18m):N2}")</td>
                             <td>
                                 <span style="white-space: nowrap;">
-                                    @($"{(detalle.Precio * 0.18m):N2}")
+                                    $ @($"{(detalle.Precio * 0.18m):N2}")
                                 </span>
                             </td>
-                            <td>@detalle.Precio.ToString("N2")</td>
-                            <td>@detalle.SubTotal.ToString("N2")</td>
-                            <td>@detalle.TotalDesc.ToString("N2")</td>
-                            <td>@($"{(detalle.SubTotal - detalle.TotalDesc):N2}")</td>
+                            <td>$ @detalle.Precio.ToString("N2")</td>
+                            <td>$ @detalle.SubTotal.ToString("N2")</td>
+                            <td>$ @detalle.TotalDesc.ToString("N2")</td>
+                            <td>$ @($"{(detalle.SubTotal - detalle.TotalDesc):N2}")</td>
                         </tr>
                     }
                     <tr>
                         <td colspan="6"></td>
                         <td><b>ITBIS:</b></td>
-                        <td>@FacturaDetalles.Sum(c => c.Precio * 0.18m).ToString("N2")</td>
+                        <td>$ @FacturaDetalles.Sum(c => c.Precio * 0.18m).ToString("N2")</td>
                     </tr>
                     <tr>
                         <td colspan="6"></td>
                         <td><b>SubTotal:</b></td>
-                        <td>@FacturaDetalles.Sum(c => c.Precio).ToString("N2")</td>
+                        <td>$ @FacturaDetalles.Sum(c => c.Precio).ToString("N2")</td>
                     </tr>
                     <tr>
                         <td colspan="6"></td>
                         <td><b>Descuento:</b></td>
-                        <td>@FacturaDetalles.Sum(c => c.TotalDesc).ToString("N2")</td>
+                        <td>$ @FacturaDetalles.Sum(c => c.TotalDesc).ToString("N2")</td>
                     </tr>
                     <tr>
                         <td colspan="6"></td>
                         <td><b>Total:</b></td>
-                        <td>@FacturaDetalles.Sum(c => c.SubTotal - c.TotalDesc).ToString("N2")</td>
+                        <td>$ @FacturaDetalles.Sum(c => c.SubTotal - c.TotalDesc).ToString("N2")</td>
                     </tr>
                 </tbody>
             </table>
@@ -126,7 +122,7 @@ else
     {
         <!-- Mostrar la lista de facturas -->
         <table class="table table-striped">
-            <thead style="background-color: rgb(0, 0, 53); color: #ffffff;">
+            <thead class="table" style="background-color:steelblue;">
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Cliente</th>
@@ -142,7 +138,7 @@ else
                 @foreach (var f in Facturas)
             {
                 
-                @if(f.SaldoPendiente > 0)    
+                @if(f.SaldoPendiente == 0)    
                 {
                     <tr>
                         <th scope="row">@f.Id</th>
@@ -158,10 +154,6 @@ else
                         <td>@f.Fecha</td>
                         <td>
                             <div class="button d-print-none">
-                                <button
-                                    class="btn btn-outline-success">
-                                    <span class="oi oi-dollar"></span>
-                                </button>
                                 <button @onclick="() => MostrarDetalles(f)"
                                     class="btn btn-outline-info">
                                     <span class="oi oi-info"></span>
@@ -183,7 +175,7 @@ else
 {
     public DateTime? fechaFiltro { get; set; }
     public string TituloForm => ShowDetails == false ?
-    "Módulo de facturas a credito" : "Módulo de facturación";
+    "Módulo de facturas al contado" : "Módulo de facturación";
     public bool ShowDetails { get; set; } = false;
     public List<FacturaResponse> Facturas { get; set; } = new();
     public List<FacturaDetalleResponse> FacturaDetalles { get; set; } = new();

@@ -57,4 +57,6 @@ public class Factura
             SaldoPagado = SaldoPagado,
             SaldoPendiente = SaldoPendiente
         };
+
+    
 }

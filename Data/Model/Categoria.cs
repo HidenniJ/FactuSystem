@@ -17,18 +17,18 @@ public class Categoria
     };
 
     public static Categoria Crear(CategoriaRequest item)
-        => new()
+    => new()
+    {
+        Nombre = item.Nombre
+    };
+    public bool Mofidicar(CategoriaRequest item)
+    {
+        var cambio = false;
+        if(Nombre != item.Nombre)
         {
-            Nombre = item.Nombre
-        };
-        public bool Mofidicar(CategoriaRequest item)
-        {
-            var cambio = false;
-            if(Nombre != item.Nombre)
-            {
-                Nombre = item.Nombre;
-                cambio = true;
-            }
-            return cambio;
+            Nombre = item.Nombre;
+            cambio = true;
         }
+        return cambio;
+    }
 }

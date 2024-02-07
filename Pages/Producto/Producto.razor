@@ -196,31 +196,31 @@
     </div>
 
     <div class="modal" style="display: @(formCategory ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><b>@TituloFormCategory</b></h5>
-                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseFormCategory">
-                    <span aria-hidden="true" class="oi oi-x"></span>
-                </button>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><b>@TituloFormCategory</b></h5>
+                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseFormCategory">
+                        <span aria-hidden="true" class="oi oi-x"></span>
+                    </button>
+                </div>
+
+                <EditForm Model="categoriaRequest" OnValidSubmit="SendCategory">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nombreCompleto">Nombre completo</label>
+                            <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                        </div>
+                    </div>
+                </EditForm>
             </div>
-
-            <EditForm Model="categoriaRequest" OnValidSubmit="SendCategory">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                    </div>
-                </div>
-            </EditForm>
         </div>
-    </div>
     </div>
 
     <div class="table-container">
@@ -300,9 +300,9 @@
     public string NombreEmp { get; set; } = string.Empty;
     public bool ShowForm { get; set; } = false;
     public List<ProductoResponse> Productos { get; set; } = new();
-    public List<CategoriaResponse> Categorias { get; set; } = new();
     public List<ProveedorResponse> Proveedores { get; set; } = new();
     public ProductoRequest productoRequest { get; set; } = new();
+    public List<CategoriaResponse> Categorias { get; set; } = new();
     public CategoriaRequest categoriaRequest { get; set; } = new();
     public bool showCard { get; set; } = false;
     public bool showCategory { get; set; } = false;
@@ -433,6 +433,48 @@
         }
     }
 
+    public void Seleccionar(int Id)
+    {
+        showCard = true;
+        productoRequest = Productos
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new ProductoRequest();
+    }
+    public async Task Eliminar(ProductoResponse item)
+    {
+        var resultado = await productoServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+
+    public void PrecioAum()
+    {
+        productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * (30/100));
+    }
+
+    public void SeleccionarCategory(int Id)
+    {
+        formCategory = true;
+        categoriaRequest = Categorias
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new CategoriaRequest();
+    }
+    public async Task EliminarCategory(CategoriaResponse item)
+    {
+        var resultado = await categoriaServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+
+
     public async Task SendCategory()
     {
         if(categoriaRequest.Id == 0)
@@ -458,44 +500,4 @@
             }
         }
     }
-    public void Seleccionar(int Id)
-    {
-        showCard = true;
-        productoRequest = Productos
-        .Where(c => c.Id == Id)
-        .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new ProductoRequest();
-    }
-    public async Task Eliminar(ProductoResponse item)
-    {
-        var resultado = await productoServices.Eliminar(item.ToRequest());
-        if (resultado.Success)
-        {
-            await CargarContactos();
-            StateHasChanged();
-        }
-    }
-    public void SeleccionarCategory(int Id)
-    {
-        formCategory = true;
-        categoriaRequest = Categorias
-        .Where(c => c.Id == Id)
-        .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new CategoriaRequest();
-    }
-    public async Task EliminarCategory(CategoriaResponse item)
-    {
-        var resultado = await categoriaServices.Eliminar(item.ToRequest());
-        if (resultado.Success)
-        {
-            await CargarContactos();
-            StateHasChanged();
-        }
-    }
-
-    public void PrecioAum()
-    {
-        productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * (30/100));
-    }
-
 }

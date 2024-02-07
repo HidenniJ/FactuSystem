@@ -20,6 +20,7 @@ builder.Services.AddScoped<IProductoServices,ProductoServices>();
 builder.Services.AddScoped<IProveedorServices,ProveedorServices>();
 builder.Services.AddScoped<ICategoriaServices,CategoriaServices>();
 builder.Services.AddScoped<IClienteServices, ClienteServices>();
+builder.Services.AddScoped<IPagoServices, PagoServices>();
 
 var app = builder.Build();
 

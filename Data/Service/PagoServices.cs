@@ -3,32 +3,33 @@ using FactuSystem.Data.Model;
 using FactuSystem.Data.Response;
 using FactuSystem.Data.Request;
 using Microsoft.EntityFrameworkCore;
+using static FactuSystem.Data.Services.PagoServices;
 
 namespace FactuSystem.Data.Services;
 
-public class ProductoServices : IProductoServices
+public class PagoServices : IPagoServices
 {
     private readonly IMyDbContext dbContext;
 
-    public ProductoServices(IMyDbContext dbContext)
+    public PagoServices(IMyDbContext dbContext)
     {
         this.dbContext = dbContext;
     }
 
-    public async Task<Result<List<ProductoResponse>>> Consultar(string filtro)
+    public async Task<Result<List<PagoResponse>>> Consultar(string filtro)
     {
         try
         {
-            var contactos = await dbContext.Productos
+            var contactos = await dbContext.Pagos
                 .Where(c =>
-                    (c.Nombre)
+                    (c.Observacion)
                     .ToLower()
                     .Contains(filtro.ToLower()
                     )
                 )
                 .Select(c => c.ToResponse())
                 .ToListAsync();
-            return new Result<List<ProductoResponse>>()
+            return new Result<List<PagoResponse>>()
             {
                 Message = "Ok",
                 Success = true,
@@ -37,7 +38,7 @@ public class ProductoServices : IProductoServices
         }
         catch (Exception E)
         {
-            return new Result<List<ProductoResponse>>
+            return new Result<List<PagoResponse>>
             {
                 Message = E.Message,
                 Success = false
@@ -45,12 +46,12 @@ public class ProductoServices : IProductoServices
         }
     }
 
-    public async Task<Result> Crear(ProductoRequest request)
+    public async Task<Result> Crear(PagoRequest request)
     {
         try
         {
-            var contacto = Producto.Crear(request);
-            dbContext.Productos.Add(contacto);
+            var contacto = Pago.Crear(request);
+            dbContext.Pagos.Add(contacto);
             await dbContext.SaveChangesAsync();
             return new Result() { Message = "Ok", Success = true };
         }
@@ -60,14 +61,14 @@ public class ProductoServices : IProductoServices
             return new Result() { Message = E.Message, Success = false };
         }
     }
-    public async Task<Result> Modificar(ProductoRequest request)
+    public async Task<Result> Modificar(PagoRequest request)
     {
         try
         {
-            var contacto = await dbContext.Productos
+            var contacto = await dbContext.Pagos
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
-                return new Result() { Message = "No se encontro el producto", Success = false };
+                return new Result() { Message = "No se encontro el pago", Success = false };
 
             if (contacto.Mofidicar(request))
                 await dbContext.SaveChangesAsync();
@@ -81,16 +82,16 @@ public class ProductoServices : IProductoServices
         }
     }
 
-    public async Task<Result> Eliminar(ProductoRequest request)
+    public async Task<Result> Eliminar(PagoRequest request)
     {
         try
         {
-            var contacto = await dbContext.Productos
+            var contacto = await dbContext.Pagos
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
-                return new Result() { Message = "No se encontro el producto", Success = false };
+                return new Result() { Message = "No se encontro el pago", Success = false };
 
-            dbContext.Productos.Remove(contacto);
+            dbContext.Pagos.Remove(contacto);
             await dbContext.SaveChangesAsync();
             return new Result() { Message = "Ok", Success = true };
         }
@@ -98,14 +99,16 @@ public class ProductoServices : IProductoServices
         {
 
             return new Result() { Message = E.Message, Success = false };
+
         }
     }
+
 }
 
-public interface IProductoServices
+public interface IPagoServices
 {
-    Task<Result<List<ProductoResponse>>> Consultar(string filtro);
-    Task<Result> Crear(ProductoRequest request);
-    Task<Result> Modificar(ProductoRequest request);
-    Task<Result> Eliminar(ProductoRequest request);
+    Task<Result<List<PagoResponse>>> Consultar(string filtro);
+    Task<Result> Crear(PagoRequest request);
+    Task<Result> Modificar(PagoRequest request);
+    Task<Result> Eliminar(PagoRequest request);
 }

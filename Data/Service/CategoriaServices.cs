@@ -68,7 +68,7 @@ public class CategoriaServices : ICategoriaServices
             var contacto = await dbContext.Categorias
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
-                return new Result() { Message = "No se encontro el proveedor", Success = false };
+                return new Result() { Message = "No se encontro la categoría", Success = false };
 
             if (contacto.Mofidicar(request))
                 await dbContext.SaveChangesAsync();
@@ -89,7 +89,7 @@ public class CategoriaServices : ICategoriaServices
             var contacto = await dbContext.Categorias
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (contacto == null)
-                return new Result() { Message = "No se encontro el producto", Success = false };
+                return new Result() { Message = "No se encontro la categoría", Success = false };
 
             dbContext.Categorias.Remove(contacto);
             await dbContext.SaveChangesAsync();
