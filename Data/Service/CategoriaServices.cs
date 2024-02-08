@@ -103,11 +103,11 @@ public class CategoriaServices : ICategoriaServices
         }
     }
 
-    public interface ICategoriaServices
-    {
-        Task<Result<List<CategoriaResponse>>> Consultar(string filtro);
-        Task<Result> Crear(CategoriaRequest request);
-        Task<Result> Modificar(CategoriaRequest request);
-        Task<Result> Eliminar(CategoriaRequest request);
-    }
+}
+public interface ICategoriaServices
+{
+    Task<Result<List<CategoriaResponse>>> Consultar(string filtro);
+    Task<Result> Crear(CategoriaRequest request);
+    Task<Result> Modificar(CategoriaRequest request);
+    Task<Result> Eliminar(CategoriaRequest request);
 }

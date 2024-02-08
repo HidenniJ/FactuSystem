@@ -15,7 +15,6 @@ public class Categoria
         Id = Id,
         Nombre = Nombre
     };
-
     public static Categoria Crear(CategoriaRequest item)
     => new()
     {
