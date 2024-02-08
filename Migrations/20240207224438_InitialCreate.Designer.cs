@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FactuSystem.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240203174126_InitialCreate")]
+    [Migration("20240207224438_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -61,8 +61,8 @@ namespace FactuSystem.Migrations
                     b.Property<string>("Direccion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Limitecredito")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Limitecredito")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -156,6 +156,8 @@ namespace FactuSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FacturaID");
 
                     b.ToTable("Pagos");
                 });
@@ -286,6 +288,17 @@ namespace FactuSystem.Migrations
                     b.Navigation("Factura");
 
                     b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("FactuSystem.Data.Model.Pago", b =>
+                {
+                    b.HasOne("FactuSystem.Data.Model.Factura", "Factura")
+                        .WithMany()
+                        .HasForeignKey("FacturaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Factura");
                 });
 
             modelBuilder.Entity("FactuSystem.Data.Model.Producto", b =>

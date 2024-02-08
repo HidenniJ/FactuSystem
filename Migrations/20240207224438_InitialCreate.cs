@@ -35,27 +35,11 @@ namespace FactuSystem.Migrations
                     Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Direccion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Limitecredito = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Limitecredito = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clientes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Pagos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FacturaID = table.Column<int>(type: "int", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MontoPagado = table.Column<double>(type: "float", nullable: false),
-                    Observacion = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Pagos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -145,6 +129,28 @@ namespace FactuSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Pagos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FacturaID = table.Column<int>(type: "int", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MontoPagado = table.Column<double>(type: "float", nullable: false),
+                    Observacion = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pagos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Pagos_Facturas_FacturaID",
+                        column: x => x.FacturaID,
+                        principalTable: "Facturas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FacturaDetalles",
                 columns: table => new
                 {
@@ -189,6 +195,11 @@ namespace FactuSystem.Migrations
                 column: "ClienteId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Pagos_FacturaID",
+                table: "Pagos",
+                column: "FacturaID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Productos_CategoriaID",
                 table: "Productos",
                 column: "CategoriaID");
@@ -212,19 +223,19 @@ namespace FactuSystem.Migrations
                 name: "Usuarios");
 
             migrationBuilder.DropTable(
-                name: "Facturas");
-
-            migrationBuilder.DropTable(
                 name: "Productos");
 
             migrationBuilder.DropTable(
-                name: "Clientes");
+                name: "Facturas");
 
             migrationBuilder.DropTable(
                 name: "Categorias");
 
             migrationBuilder.DropTable(
                 name: "Proveedores");
+
+            migrationBuilder.DropTable(
+                name: "Clientes");
         }
     }
 }
