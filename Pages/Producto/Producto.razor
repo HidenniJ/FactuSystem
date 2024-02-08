@@ -1,4 +1,5 @@
 @page "/producto"
+@inject ICategoriaServices categoriaServices;
 
 <div style="margin-left: 450px;">
 
@@ -62,7 +63,8 @@
                                     <span class="oi oi-code"></span>
                                 </span>
                             </div>
-                            <input type="text" class="form-control" placeholder="Codigo" id="nombreCompleto" @bind-value="productoRequest.Codigo" />
+                            <input type="text" class="form-control" placeholder="Codigo" id="nombreCompleto" 
+                            @bind-value="productoRequest.Codigo" />
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -70,7 +72,8 @@
                                     <span class="oi oi-infinity"></span>
                                 </span>
                             </div>
-                            <input type="number" class="form-control" placeholder="Descripción" id="correo" @bind-value="productoRequest.Stock" />
+                            <input type="number" class="form-control" placeholder="Descripción" id="correo" 
+                                @bind-value="productoRequest.Stock" />
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -78,7 +81,8 @@
                                     <span class="oi oi-document"></span>
                                 </span>
                             </div>
-                            <input type="text" class="form-control" placeholder="Descripción" id="correo" @bind-value="productoRequest.Nombre" />
+                            <input type="text" class="form-control" placeholder="Descripción" id="correo" 
+                                @bind-value="productoRequest.Nombre" />
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group">
@@ -102,7 +106,9 @@
                                         <option value="@item.Nombre" />
                                     }
                                 </datalist>
-                                <button class="btn btn-outline-success" @onclick="ShowCategory"><span class="oi oi-plus"></span></button>
+                                <button class="btn btn-outline-success" @onclick="GoCategory">
+                                    <span class="oi oi-plus"></span>
+                                </button>
                             </div>
                         </div>
                         <div class="form-group input-group mb-3">
@@ -133,7 +139,8 @@
                                     <span class="oi oi-dollar"></span>
                                 </span>
                             </div>
-                            <input class="form-control" placeholder="Precio/Compra" id="correo" @bind-value="productoRequest.PrecioCompra" />
+                            <input class="form-control" placeholder="Precio/Compra" id="correo" 
+                            @bind-value="productoRequest.PrecioCompra" />
                         </div>
                     </div>
 
@@ -147,6 +154,7 @@
         </div>
     </div>
 
+    @* Este es el codigo de las categorias en el page Producto y no funciona en el mismo page
     <div class="modal" style="display: @(showCategory ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -209,22 +217,25 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="nombreCompleto">Nombre completo</label>
-                            <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
+                            <input type="text" class="form-control" id="nombreCompleto" 
+                            @bind-value="categoriaRequest.Nombre" required />
                         </div>
                     </div>
 
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                            <button type="submit" class="btn btn-outline-primary">
+                                <span class="oi oi-check"></span> Guardar
+                            </button>
                         </div>
                     </div>
                 </EditForm>
             </div>
         </div>
     </div>
-
+    *@
     <div class="table-container">
-        <div class="card">
+        <div class="card w-130">
             <h1 class="titulo-item">Listado de Productos</h1>
             <div class="card-body ">
                 <!-- Button trigger modal -->
@@ -251,6 +262,7 @@
                         <thead class="table" style="background-color:steelblue;">
                             <tr>
                                 <th>Codigo</th>
+                                <th>Stock</th>
                                 <th>Nombre</th>
                                 <th>Categoria</th>
                                 <th>Proveedor</th>
@@ -264,11 +276,12 @@
                             {
                                 <tr>
                                     <td>@productoRow.Codigo</td>
+                                    <td>@productoRow.Stock</td>
                                     <td>@productoRow.Nombre</td>
                                     <td>@productoRow.NombreCategoriatexto</td>
                                     <td>@productoRow.NombreProveedortexto</td>
-                                    <td>@productoRow.PrecioCompra.ToString("N2")</td>
-                                    <td>@productoRow.Precio.ToString("N2")</td>
+                                    <td>$ @productoRow.PrecioCompra.ToString("N2")</td>
+                                    <td>$ @productoRow.Precio.ToString("N2")</td>
                                     <td>
                                         <button @onclick="()=>Seleccionar(productoRow.Id)"
                                             class="btn btn-outline-warning">
@@ -302,11 +315,6 @@
     public List<ProductoResponse> Productos { get; set; } = new();
     public List<ProveedorResponse> Proveedores { get; set; } = new();
     public ProductoRequest productoRequest { get; set; } = new();
-    public List<CategoriaResponse> Categorias { get; set; } = new();
-    public CategoriaRequest categoriaRequest { get; set; } = new();
-    public bool showCard { get; set; } = false;
-    public bool showCategory { get; set; } = false;
-    public bool formCategory { get; set; } = false;
 
     void BuscarSeleccionarCategoria(string Categoria)
     {
@@ -327,33 +335,6 @@
     {
         var selectedCategory = args.Value.ToString();
         BuscarSeleccionarProveedor(selectedCategory);
-    }
-    void ShowCard()
-    {
-        showCard = true;
-    }
-    void ShowCategory()
-    {
-        showCategory = true;
-    }
-
-    void FormCategory()
-    {
-        formCategory = true;
-    }
-    void CloseCard()
-    {
-        productoRequest  = new ProductoRequest();
-        showCard = false;
-    }
-
-    void CloseCardCategory()
-    {
-        showCategory = false;
-    }
-    void CloseFormCategory()
-    {
-        formCategory = false;
     }
 
     async Task CargarContactos()
@@ -456,9 +437,52 @@
         productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * (30/100));
     }
 
+    //Todo esto es para las categorias y no funcionan en este page, no se el porque
+    public List<CategoriaResponse> Categorias { get; set; } = new();
+    public CategoriaRequest categoriaRequest { get; set; } = new();
+    public bool showCard { get; set; } = false;
+    public bool showCategory { get; set; } = false;
+    public bool formCategory { get; set; } = false;
+    void ShowCard()
+    {
+        showCard = true;
+    }
+    void ShowCategory()
+    {
+        showCard = false;
+        showCategory = true;
+    }
+    void GoCategory()
+    {
+        urlHelper.NavigateTo("category", true);
+    }
+
+    void FormCategory()
+    {
+        showCategory = false;
+        formCategory = true;
+    }
+    void CloseCard()
+    {
+        showCard = false;
+    }
+
+    void CloseCardCategory()
+    {
+        showCard = true;
+        showCategory = false;
+    }
+    void CloseFormCategory()
+    {
+        categoriaRequest  = new CategoriaRequest();
+        showCategory = true;
+        formCategory = false;
+    }
+
     public void SeleccionarCategory(int Id)
     {
         formCategory = true;
+        showCategory = false;
         categoriaRequest = Categorias
         .Where(c => c.Id == Id)
         .Select(c => c.ToRequest())
@@ -469,35 +493,46 @@
         var resultado = await categoriaServices.Eliminar(item.ToRequest());
         if (resultado.Success)
         {
-            await CargarContactos();
             StateHasChanged();
         }
     }
 
-
     public async Task SendCategory()
     {
-        if(categoriaRequest.Id == 0)
+        try
         {
-            //Debo registrar el contacto..
-            var r = await categoriaServices.Crear(categoriaRequest);
-            if (r.Success)
+            if (categoriaRequest.Id == 0)
             {
-                Cancelar();
-                await CargarContactos();
-                StateHasChanged();
+                // Create a new category
+                var result = await categoriaServices.Crear(categoriaRequest);
+                await HandleResult(result, "Categoría creada correctamente.");
             }
+            else
+            {
+                // Modify an existing category
+                var result = await categoriaServices.Modificar(categoriaRequest);
+                await HandleResult(result, "Categoría modificada correctamente.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task HandleResult(Result result, string successMessage)
+    {
+        if (result.Success)
+        {
+            CloseFormCategory();
+            await CargarCategorias();
+            StateHasChanged();
+            Message = successMessage;
         }
         else
         {
-            //Debo solicitar modificar el contacto...
-            var r = await categoriaServices.Modificar(categoriaRequest);
-            if (r.Success)
-            {
-                Cancelar();
-                await CargarContactos();
-                StateHasChanged();
-            }
+            Message = result.Message;
         }
     }
+
 }
