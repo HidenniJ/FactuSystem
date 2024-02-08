@@ -59,7 +59,8 @@
                                     <span class="oi oi-person"></span>
                                 </span>
                             </div>
-                            <input type="text" class="form-control" placeholder="Nombre" @bind-value="clienterequest.Nombre" required />
+                            <input type="text" class="form-control" placeholder="Nombre" 
+                            @bind-value="clienterequest.Nombre" required />
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -67,7 +68,8 @@
                                     <span class="oi oi-envelope-closed"></span>
                                 </span>
                             </div>
-                            <input id="emailInput"  class="form-control" placeholder="  Apellido" @bind-value="clienterequest.Apellidos" required />
+                            <input id="emailInput"  class="form-control" placeholder="  Apellido" 
+                            @bind-value="clienterequest.Apellidos" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
@@ -76,7 +78,8 @@
                                     <span class="oi oi-credit-card"></span>
                                 </span>
                             </div>
-                            <input  class="form-control" placeholder="Cedula" @bind-value="clienterequest.Cedula" required />
+                            <input  class="form-control" placeholder="Cedula" 
+                            @bind-value="clienterequest.Cedula" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
@@ -85,7 +88,8 @@
                                     <span class="oi oi-phone"></span>
                                 </span>
                             </div>
-                            <input class="form-control" placeholder="Teléfono" @bind-value="clienterequest.Telefono" pattern="\d{3}-\d{3}-\d{4}" title="Ingrese un número de teléfono en formato 000-000-0000" required />
+                            <input class="form-control" placeholder="Teléfono" 
+                            @bind-value="clienterequest.Telefono" pattern="\d{3}-\d{3}-\d{4}" title="Ingrese un número de teléfono en formato 000-000-0000" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
@@ -94,7 +98,8 @@
                                     <span class="oi oi-map-marker"></span>
                                 </span>
                             </div>
-                            <input class="form-control" placeholder="Dirección" @bind-value="clienterequest.Direccion" required />
+                            <input class="form-control" placeholder="Dirección" 
+                            @bind-value="clienterequest.Direccion" required />
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -102,7 +107,8 @@
                                     <span class="oi oi-dollar"></span>
                                 </span>
                             </div>
-                            <input class="form-control" placeholder="Limite de credito" @bind-value="clienterequest.Limitecredito" required />
+                            <input type="number" class="form-control" placeholder="Limite de credito" 
+                            @bind-value="clienterequest.Limitecredito" required />
                         </div>
                     </div>
 
@@ -121,7 +127,7 @@
     <div class="table-container">
         <div class="card w-130">
             <h1 class="titulo-clientes">Listado de clientes</h1>
-            <div class="card-body">
+            <div class="card-body" >
                 <!-- Button trigger modal -->
                 <button class="btn btn-outline-primary" @onclick="ShowCard">
                     <span class="oi oi-plus"></span>
@@ -139,7 +145,7 @@
                     </div>
                 </div>
 
-                <div class="row-12 mt-2">
+                <div class="row mt-2">
                     <!-- Añadido 'table-hover' a la clase 'table' para resaltar filas al pasar el cursor -->
                     <table class="table table-hover">
                         <thead class="table" style="background-color : steelblue;">
@@ -166,7 +172,7 @@
                                     <td>@clienterow.Cedula</td>
                                     <td>@clienterow.Telefono</td>
                                     <td>@clienterow.Direccion</td>
-                                    <td>@clienterow.Limitecredito</td>
+                                    <td>$ @clienterow.Limitecredito.ToString("N2")</td>
                                     <td>
                                         <button @onclick="()=>Seleccionar(clienterow.Id)"
                                                 class="btn btn-outline-warning">

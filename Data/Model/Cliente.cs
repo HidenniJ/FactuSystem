@@ -20,7 +20,7 @@ public class Cliente
 
     public string? Telefono { get; set; }
 
-    public string? Limitecredito { get; set; }
+    public decimal Limitecredito { get; set; }
     public static Cliente Crear(ClienteRequest cliente)
    
     {
