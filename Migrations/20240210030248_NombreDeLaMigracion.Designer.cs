@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FactuSystem.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240207224438_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240210030248_NombreDeLaMigracion")]
+    partial class NombreDeLaMigracion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -293,7 +293,7 @@ namespace FactuSystem.Migrations
             modelBuilder.Entity("FactuSystem.Data.Model.Pago", b =>
                 {
                     b.HasOne("FactuSystem.Data.Model.Factura", "Factura")
-                        .WithMany()
+                        .WithMany("Pagos")
                         .HasForeignKey("FacturaID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -323,6 +323,8 @@ namespace FactuSystem.Migrations
             modelBuilder.Entity("FactuSystem.Data.Model.Factura", b =>
                 {
                     b.Navigation("Detalles");
+
+                    b.Navigation("Pagos");
                 });
 #pragma warning restore 612, 618
         }

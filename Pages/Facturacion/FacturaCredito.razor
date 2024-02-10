@@ -220,7 +220,7 @@ else
                                     @foreach (var pago in PagosFacturaSeleccionada)
                                     {
                                         <tr>
-                                            <td>@pago.Factura.Id</td>
+                                            <td>@pago.FacturaID</td>
                                             <td>$ @pago.MontoPagado.ToString("N2")</td>
                                             <td>@pago.Observacion</td>
                                             <td>@pago.Fecha</td>
@@ -424,8 +424,8 @@ else
             if (r.Success)
             {
                 // Actualizar SaldoPendiente al realizar el pago
-                SelectedFactura.SaldoPendiente = SelectedFactura.SaldoPendiente -
-                    Convert.ToDecimal(pagoRequest.MontoPagado);
+                // SelectedFactura.SaldoPendiente = SelectedFactura.SaldoPendiente -
+                //     Convert.ToDecimal(pagoRequest.MontoPagado);
 
                 // Limpiar el formulario y cargar los pagos nuevamente
                 Cancelar();
@@ -440,8 +440,8 @@ else
             if (r.Success)
             {
                 // Actualizar SaldoPendiente al realizar el pago
-                SelectedFactura.SaldoPendiente = SelectedFactura.SaldoPendiente -
-                    Convert.ToDecimal(pagoRequest.MontoPagado);
+                // SelectedFactura.SaldoPendiente = SelectedFactura.SaldoPendiente -
+                //     Convert.ToDecimal(pagoRequest.MontoPagado);
 
                 // Limpiar el formulario y cargar los pagos nuevamente
                 Cancelar();

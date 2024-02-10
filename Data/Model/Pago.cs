@@ -20,7 +20,7 @@ public class Pago
     {
         Id = Id,
         FacturaID = FacturaID,
-        Factura = Factura.ToResponse(),
+        //Factura = Factura.ToResponse(),
         MontoPagado = MontoPagado,
         Observacion = Observacion,
         Fecha = Fecha

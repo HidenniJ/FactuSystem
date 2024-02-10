@@ -7,6 +7,24 @@
     --navbar-light-primary: #f5f6fa;
     --navbar-light-secondary: #8392a5;
 }*/
+@keyframes zoomIn {
+    from {
+        transform: scale(0.5);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.zoom-in-animation {
+    animation: zoomIn 0.5s ease-in-out;
+}
+.logosegundo {
+    width: 150px;
+    height: 35px;
+}
+
 .dropdown {
     position: absolute;
     top: 100%; /* Ajusta según sea necesario para la separación vertical */

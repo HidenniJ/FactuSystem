@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components.Web
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <html lang="pt-br">
 <head>
@@ -698,13 +699,16 @@
 
     <div class="get-started" id="login-screen">
        
-        <img class="rounded-image" src="https://mail.google.com/mail/u/0?ui=2&ik=b6dc0dc7fe&attid=0.1&permmsgid=msg-a:r2684051813154714265&th=18d4db09373eea8e&view=fimg&fur=ip&sz=s0-l75-ft&attbid=ANGjdJ_zTCwwph0a_4Qjx-EEZ7V_h-g8xmFAW1b6FFziL6Z8o9X0BWTJyeI2gHzYUyUJitENROFbQZZ216dDZ_QfIgpUo5JH3FX5c7F9pt0IfwdZ4RwISCHncpabfos&disp=emb&realattid=18d4db084ea30e0bcf21">
+        <img class="rounded-image" src="PHOTO-2024-01-19-19-59-28.jpg">
         <input type="text" name="email" id="email" placeholder="Correo" class="login-form">
         <input type="password" name="password" id="password" class="login-form" placeholder="Clave">
 
 
         <input type="button" value="Iniciar sesion" class="login-btn" @onclick="Paginaprincipal">
-
+        <div id="spinner" style="display: none;">
+            <!-- Aquí puedes agregar el código HTML de tu spinner -->
+            <i class="fa fa-spinner fa-spin"></i> Cargando...
+        </div>
      
 
     </div>
@@ -718,10 +722,24 @@
 </body>
 </html>
 @code{
-    private void Paginaprincipal()
+    private async Task Animacion()
     {
+        // Mostrar el spinner
+        await JSRuntime.InvokeVoidAsync("eval", @"document.getElementById('spinner').style.display = 'block';");
 
+        // Simular inicio de sesión (aquí debes realizar tu lógica de inicio de sesión)
+        await Task.Delay(2000); // Simulación de inicio de sesión (2 segundos en este ejemplo)
+
+        // Ocultar el spinner
+        await JSRuntime.InvokeVoidAsync("eval", @"document.getElementById('spinner').style.display = 'none';");
+
+        // Redirigir a la página principal
         NavigationManager.NavigateTo("/paginaprincipal", true);
+    }
+
+    private async Task Paginaprincipal()
+    {
+        await Animacion();
     }
 }
 

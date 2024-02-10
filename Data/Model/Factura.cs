@@ -13,6 +13,8 @@ public class Factura
     public int ClienteId { get; set; }
     public DateTime Fecha { get; set; }
     public virtual ICollection<FacturaDetalle> Detalles { get; set; }
+    public virtual ICollection<Pago> Pagos { get; set; }
+
     #region Relaciones
     [ForeignKey(nameof(ClienteId))]
     public virtual Cliente Cliente { get; set; }
@@ -54,8 +56,8 @@ public class Factura
             Fecha = Fecha,
             Cliente = Cliente.ToResponse(),
             Detalles = Detalles.Select(d => d.ToResponse()).ToList(),
-            SaldoPagado = SaldoPagado,
-            SaldoPendiente = SaldoPendiente
+            SaldoPagado = SaldoPagado
+            ,Pagos = Pagos!=null&&Pagos.Any()? Pagos.Select(p => p.ToResponse()).ToList():new List<PagoResponse?>()
         };
 
     

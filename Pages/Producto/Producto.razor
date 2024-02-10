@@ -154,86 +154,8 @@
         </div>
     </div>
 
-    @* Este es el codigo de las categorias en el page Producto y no funciona en el mismo page
-    <div class="modal" style="display: @(showCategory ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><b>Listado de Categorías</b></h5>
-                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCardCategory">
-                        <span aria-hidden="true" class="oi oi-x"></span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-hover">
-                        <thead class="table" style="background-color:steelblue;">
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>...</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Categorias)
-                            {
-                                <tr>
-                                    <td>@item.Id</td>
-                                    <td>@item.Nombre</td>
-                                    <td>
-                                        <button @onclick="()=>SeleccionarCategory(item.Id)"
-                                            class="btn btn-outline-warning">
-                                            <span class="oi oi-pencil"></span>
-                                        </button>
-                                        <button @onclick="()=>EliminarCategory(item)"
-                                            class="btn btn-outline-danger">
-                                            <span class="oi oi-trash"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-outline-primary" @onclick="FormCategory">Nueva Categoría</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" style="display: @(formCategory ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><b>@TituloFormCategory</b></h5>
-                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseFormCategory">
-                        <span aria-hidden="true" class="oi oi-x"></span>
-                    </button>
-                </div>
-
-                <EditForm Model="categoriaRequest" OnValidSubmit="SendCategory">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="nombreCompleto">Nombre completo</label>
-                            <input type="text" class="form-control" id="nombreCompleto" 
-                            @bind-value="categoriaRequest.Nombre" required />
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-outline-primary">
-                                <span class="oi oi-check"></span> Guardar
-                            </button>
-                        </div>
-                    </div>
-                </EditForm>
-            </div>
-        </div>
-    </div>
-    *@
+  
+    
     <div class="table-container">
         <div class="card w-130">
             <h1 class="titulo-item">Listado de Productos</h1>

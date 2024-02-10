@@ -10,6 +10,7 @@ public class FacturaResponse
     public DateTime Fecha { get; set; }
     public ClienteResponse Cliente { get; set; }
     public virtual ICollection<FacturaDetalleResponse> Detalles { get; set; }
+    public virtual ICollection<PagoResponse> Pagos { get; set; }
 
     [NotMapped]
     public decimal SubTotal =>
@@ -25,7 +26,7 @@ public class FacturaResponse
         :
         0;//Falso
     public decimal SaldoPagado { get; set; }
-    public decimal SaldoPendiente { get; set; }
+    public decimal SaldoPendiente => Pagos!=null&&Pagos.Any()? SubTotal - (decimal)Pagos.Sum(p => p.MontoPagado):SubTotal;
 
     public FacturaRequest ToRequest()
     {

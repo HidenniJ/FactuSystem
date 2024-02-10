@@ -290,7 +290,7 @@ namespace FactuSystem.Migrations
             modelBuilder.Entity("FactuSystem.Data.Model.Pago", b =>
                 {
                     b.HasOne("FactuSystem.Data.Model.Factura", "Factura")
-                        .WithMany()
+                        .WithMany("Pagos")
                         .HasForeignKey("FacturaID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -320,6 +320,8 @@ namespace FactuSystem.Migrations
             modelBuilder.Entity("FactuSystem.Data.Model.Factura", b =>
                 {
                     b.Navigation("Detalles");
+
+                    b.Navigation("Pagos");
                 });
 #pragma warning restore 612, 618
         }

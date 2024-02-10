@@ -19,7 +19,10 @@ public class FacturaServices : IFacturaServices
         try
         {
             var facturas = await dbContext.Facturas
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
                 .Include(f => f.Cliente)
+                .Include(f => f.Pagos)
                 .Include(f => f.Detalles)
                 .ThenInclude(d => d.Producto)
                 .Select(f => f.ToResponse())
