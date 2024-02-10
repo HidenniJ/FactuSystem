@@ -1,0 +1,408 @@
+﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@page "/paginaprincipal"
+<!DOCTYPE html>
+<html lang="en">
+@* @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
+*@
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Admin Dashboard | Korsat X Parmaga</title>
+    <!-- ======= Styles ====== -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="~/main.js">
+
+    <style>
+
+
+
+/* =============== Globals ============== */
+
+
+    </style>
+</head>
+<body>
+    <!-- =============== Navigation ================ -->
+    <div class="container" >
+        <div class="navigation" style="margin-top : -20px">
+            <ul>
+                <li>
+                    <a href="#">
+                        
+
+@*                        <img class="logo" src="https://mail.google.com/mail/u/0?ui=2&ik=b6dc0dc7fe&attid=0.1&permmsgid=msg-a:r-4587410595246527464&th=18d2a21f45f03e16&view=fimg&fur=ip&sz=s0-l75-ft&attbid=ANGjdJ-xbpEDG1Vjsfr3FijioJoVRhxc4iFDrCJDj40tH7EPSfVH7SG0YgqOR-eELCcxbMxG8rnPbWb8sbOs19zgv4Q8-B_AKPjEhvrLHjgn1x8O4dIJ2pFNqdpxkDs&disp=emb&realattid=18d2a21e5b34462df221">
+*@                    </a>
+                </li>
+
+                <li>
+                    <a >
+                        <span class="icon">
+                            <ion-icon name="home-outline"></ion-icon>
+                        </span>
+                        <span @onclick="Dashboard" class="title">Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a >
+                        <span class="icon">
+                            <ion-icon name="people-outline"></ion-icon>
+                        </span>
+                        <span class="title" @onclick="Clientes">Clientes</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a >
+                        <span class="icon">
+                            <ion-icon name="cube-outline"></ion-icon>
+
+                        </span>
+                        <span @onclick="Proveedores" class="title">Provedores</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a >
+                        <span class="icon">
+                            <ion-icon name="card-outline"></ion-icon>
+
+                        </span>
+                        <span @onclick="Productos" class="title">Productos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="settings-outline"></ion-icon>
+                        </span>
+                        <span class="title">Funciones admins</span>
+                    </a>
+                </li>
+                <li class="menu-item dropdown-container">
+                    <a @onclick="ToggleDropdown" class="menu-item">
+                        <span class="icon">
+                            <ion-icon name="lock-closed-outline"></ion-icon>
+                        </span>
+                        <span  class="title">Facturas</span>
+                    </a>
+                   
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-item">
+                        <span class="icon">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </span>
+                        <span class="title">Cerrar sesión</span>
+                    </a>
+                </li>
+          
+            </ul>
+        </div>
+
+        <!-- ========================= Main ==================== -->
+        <div class="main">
+            <div class="topbar">
+                <div class="toggle">
+                    <ion-icon @onclick="ApplyJavaScript" name="menu-outline"></ion-icon>
+                </div>
+
+                <div class="search">
+                    
+                </div>
+
+                <div class="user">
+
+                </div>
+            </div>
+            
+                <!-- ======================= Cards ================== -->
+            @if (clientes)
+            {
+            
+                @if (proveedores)
+            {
+                @if (productos)
+                {
+                   
+
+
+                        <div class="cardBox">
+
+
+                            <div class="card">
+                                <div>
+                                    <div class="numbers">80</div>
+                                    <div class="cardName">Ventas</div>
+                                </div>
+
+
+                                <div class="iconBx">
+                                    <ion-icon name="cart-outline"></ion-icon>
+                                </div>
+
+
+                            </div>
+                            <div class="card">
+                                <div>
+                                    <div class="numbers">80</div>
+                                    <div class="cardName">Beneficios</div>
+                                </div>
+
+
+                                <div class="iconBx">
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                </div>
+
+
+                            </div>
+
+                            <div class="card">
+                                <div>
+                                    <div class="numbers">284</div>
+                                    <div class="cardName">Deudas</div>
+                                </div>
+
+                                <div class="iconBx">
+                                    <ion-icon name="trending-down-outline"></ion-icon>
+
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div>
+                                    <div class="numbers">$7,842</div>
+                                    <div class="cardName">Ganancias</div>
+                                </div>
+
+                                <div class="iconBx">
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================ Order Details List ================= -->
+                        <div class="details">
+                            <div class="recentOrders">
+                        <div class="cardHeader">
+                            <h2>Compras recientes</h2>
+                            <a href="#" class="btn">View All</a>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Nombre</td>
+                                    <td>Precio</td>
+                                    <td>Pago</td>
+                                    <td>Estado</td>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Star Refrigerator</td>
+                                    <td>$1200</td>
+                                    <td>Paid</td>
+                                    <td><span class="status delivered">Pagado</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Dell Laptop</td>
+                                    <td>$110</td>
+                                    <td>Due</td>
+                                    <td><span class="status pending">Pendiente</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Apple Watch</td>
+                                    <td>$1200</td>
+                                    <td>Paid</td>
+                                    <td><span class="status return">Return</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Addidas Shoes</td>
+                                    <td>$620</td>
+                                    <td>Due</td>
+                                    <td><span class="status inProgress">In Progress</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Star Refrigerator</td>
+                                    <td>$1200</td>
+                                    <td>Paid</td>
+                                    <td><span class="status delivered">Delivered</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Dell Laptop</td>
+                                    <td>$110</td>
+                                    <td>Due</td>
+                                    <td><span class="status pending">Pending</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Apple Watch</td>
+                                    <td>$1200</td>
+                                    <td>Paid</td>
+                                    <td><span class="status return">Return</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Addidas Shoes</td>
+                                    <td>$620</td>
+                                    <td>Due</td>
+                                    <td><span class="status inProgress">In Progress</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ================= New Customers ================ -->
+                    <div class="recentCustomers">
+                        <div class="cardHeader">
+                            <h2>Clientes recientes</h2>
+                        </div>
+
+                        <table>
+
+
+                        </table>
+
+                    </div>
+
+                </div>
+                }
+                }
+            }
+        </div>
+       
+        @if (proveedores == false)
+        {
+
+            <FactuSystem.Pages.Proveedor.Proveedor></FactuSystem.Pages.Proveedor.Proveedor>
+        }
+
+            @if (productos == false)
+            {
+            
+            <FactuSystem.Pages.Producto.Producto></FactuSystem.Pages.Producto.Producto>
+            }
+        @if(clientes == false)
+        {
+            
+            <FactuSystem.Pages.Clientes.Clientes></FactuSystem.Pages.Clientes.Clientes>
+        }
+        
+            
+                </div>
+            
+    <!-- =========== Scripts =========  -->
+    
+</body>
+
+</html>
+@code{
+    private bool productos = true;
+    private bool clientes = true;
+
+    private bool mostrarContenido = true;
+    private bool proveedores = true;
+
+
+    private bool showDropdown = false;
+
+    private void ToggleDropdown()
+    {
+        showDropdown = !showDropdown;
+    }
+
+    void Vender()
+    {
+        urlHelper.NavigateTo("factura/vender");
+    }
+    void Provee()
+    {
+        urlHelper.NavigateTo("proveedor");
+    }
+    void Pagas()
+    {
+        urlHelper.NavigateTo("factura/paga");
+    }
+    void Cobrar()
+    {
+        urlHelper.NavigateTo("factura/cobrar");
+    }
+    private void Clientes()
+    {
+        proveedores = true;
+        productos = true;
+        clientes = false;
+    }
+    private void Dashboard()
+    {
+
+        NavigationManager.NavigateTo("/paginaprincipal", true);
+    }
+    private void Proveedores()
+    {
+        proveedores = false;
+        productos = true;
+        clientes = true;
+
+    }
+    private void Productos()
+    {
+        productos = false;
+        proveedores = true;
+        clientes = true;
+
+    }
+ 
+
+    private async Task ApplyJavaScript()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            let list = document.querySelectorAll("".navigation li"");
+
+            function activeLink() {
+                list.forEach((item) => {
+                    item.classList.remove(""hovered"");
+                });
+                this.classList.add(""hovered"");
+            }
+
+            list.forEach((item) => item.addEventListener(""mouseover"", activeLink));
+
+            // Menu Toggle
+            let toggle = document.querySelector("".toggle"");
+            let navigation = document.querySelector("".navigation"");
+            let main = document.querySelector("".main"");
+
+            toggle.onclick = function () {
+                navigation.classList.toggle(""active"");
+                main.classList.toggle(""active"");
+            
+            };
+        ");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Llama al método para aplicar el código JavaScript después de renderizar el componente
+            await ApplyJavaScript();
+        }
+    }
+
+
+}
+
+    }
