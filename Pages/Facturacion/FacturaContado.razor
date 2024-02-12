@@ -120,6 +120,56 @@ else
     }
     else if(Facturas != null)
     {
+        <div class="modal" style="display: @(detailsPago ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><b>Detalles de los Pagos</b></h5>
+                        <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseDetailsPago">
+                            <span aria-hidden="true" class="oi oi-x"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if(FacturaSinPagos)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                <h4 class="alert-heading">¡Aviso!</h4>
+                                <p>Este cliente pago al contado 😎.</p>
+                                <hr>
+                                <p class="mb-0">Por favor, asegúrese de conservar este cliente. ¡Gracias!
+                                </p>
+                            </div>
+                        }
+                        else{
+                            <table class="table table-hover">
+                                <thead class="table" style="background-color:steelblue;">
+                                    <tr>
+                                        <th>FacturaId</th>
+                                        <th>Monto/Pagado</th>
+                                        <th>Observación</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pago in PagosFacturaSeleccionada)
+                                    {
+                                        <tr>
+                                            <td>@pago.FacturaID</td>
+                                            <td>$ @pago.MontoPagado.ToString("N2")</td>
+                                            <td>@pago.Observacion</td>
+                                            <td>@pago.Fecha</td>
+                                        </tr>
+                                    } 
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Mostrar la lista de facturas -->
         <table class="table table-striped">
             <thead class="table" style="background-color:steelblue;">
@@ -136,36 +186,39 @@ else
             </thead>
             <tbody>
                 @foreach (var f in Facturas)
-            {
-                
-                @if(f.SaldoPendiente == 0)    
                 {
-                    <tr>
-                        <th scope="row">@f.Id</th>
-                        <td>@f.Cliente.Nombre @f.Cliente.Apellidos</td>
-                        <td>
-                            <span style="white-space: nowrap;">
-                                @($"{(f.SubTotal * 0.18m):N2}")
-                            </span>
-                        </td>
-                        <td>@f.SubTotal.ToString("N2")</td>
-                        <td>@f.TotalDesc.ToString("N2")</td>
-                        <td>@($"{(f.SubTotal - f.TotalDesc):N2}")</td>
-                        <td>@f.Fecha</td>
-                        <td>
-                            <div class="button d-print-none">
-                                <button @onclick="() => MostrarDetalles(f)"
-                                    class="btn btn-outline-info">
-                                    <span class="oi oi-info"></span>
-                                </button>
-                                <button @onclick="() => Eliminar(f)" class="btn btn-outline-danger d-print-none" >
-                                    <span class="oi oi-trash"></span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if(f.TypePayment == "1" || f.SaldoPendiente == 0)    
+                    {
+                        <tr>
+                            <th scope="row">@f.Id</th>
+                            <td>@f.Cliente.Nombre @f.Cliente.Apellidos</td>
+                            <td>
+                                <span style="white-space: nowrap;">
+                                    @($"{(f.SubTotal * 0.18m):N2}")
+                                </span>
+                            </td>
+                            <td>@f.SubTotal.ToString("N2")</td>
+                            <td>@f.TotalDesc.ToString("N2")</td>
+                            <td>@($"{(f.SubTotal - f.TotalDesc):N2}")</td>
+                            <td>@f.Fecha</td>
+                            <td>
+                                <div class="button d-print-none">
+                                    <button @onclick="() => MostrarPagos(f)"
+                                        class="btn btn-outline-success">
+                                        <span class="oi oi-dollar"></span>
+                                    </button>
+                                    <button @onclick="() => MostrarDetalles(f)"
+                                        class="btn btn-outline-info">
+                                        <span class="oi oi-info"></span>
+                                    </button>
+                                    <button @onclick="() => Eliminar(f)" class="btn btn-outline-danger d-print-none" >
+                                        <span class="oi oi-trash"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
-            }
             </tbody>
         </table>
     }
@@ -207,6 +260,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await Consultar();
+        await CargarPagos();
     }
 
     public async Task Eliminar(FacturaResponse user)
@@ -231,4 +285,38 @@ else
         await JSRuntime.InvokeVoidAsync("printPage");
     }
     
+    //Codigo Para mostrar todos los pagos realizados por factura
+    public List<PagoResponse> PagosFacturaSeleccionada { get; set; } = new List<PagoResponse>();
+    public bool FacturaSinPagos => PagosFacturaSeleccionada.Count == 0;
+    public bool MostrarMensajeSinPagos { get; set; } = false;
+    public bool detailsPago { get; set; } = false;
+    public List<PagoResponse> Pagos { get; set; } = new();
+    public FacturaResponse FacturaEnConfirmacion { get; set; } = new();
+    public string Filtro { get; set; } = "";
+    async Task CargarPagos()
+    {
+        var resultado =
+        await pagoServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Pagos = resultado.Data!;
+        }
+    }
+    void DetailsPago()
+    {
+        detailsPago = true;
+    }
+    void CloseDetailsPago()
+    {
+        detailsPago = false;
+    } 
+    void MostrarPagos(FacturaResponse factura)
+    {
+        SelectedFactura = factura;
+        FacturaDetalles = factura.Detalles.ToList();
+        PagosFacturaSeleccionada = Pagos.Where(p => p.FacturaID == factura.Id).ToList();
+        detailsPago = true;
+        StateHasChanged(); // Asegúrate de llamar a StateHasChanged para actualizar la interfaz de usuario.
+
+    }
 }

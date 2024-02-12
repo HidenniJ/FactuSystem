@@ -33,6 +33,9 @@
                 </div>
 
                 <EditForm Model="pagoRequest" OnValidSubmit="SendPago">
+                    <div class="alert alert-danger mt-3" role="alert" style="display: @(string.IsNullOrEmpty(ErrorMessage) ? "none" : "block")">
+                        @ErrorMessage 
+                    </div>
                     <div class="modal-body">
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -51,7 +54,7 @@
                                 </span>
                             </div>
                             <input type="number" class="form-control" placeholder="Monto a Pagar" 
-                            @bind-value="pagoRequest.MontoPagado" />
+                            @bind-value="pagoRequest.MontoPagado" required min="0.01" step="0.01"/>
                         </div>
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
@@ -59,11 +62,11 @@
                                     <span class="oi oi-align-left"></span>
                                 </span>
                             </div>
-                            <select class="form-control" @bind="@pagoRequest.Observacion">
-                                <option disabled selected>Observación</option>
-                                <option value="Con Tiempo">Con Tiempo</option>
-                                <option value="Atrazado">Atrazado</option>
-                                <option value="Temprano">Temprano</option>
+                            <select class="form-control" @bind="@pagoRequest.Observacion" required>
+                                <option disabled selected value="">Observación</option>
+                                <option value="Justo 😉">Justo 😉</option>
+                                <option value="Temprano 😎">Temprano 😎</option>
+                                <option value="Atrazado 😴">Atrazado 😴</option>
                             </select>
                         </div>
                         <div class="form-group input-group mb-3">
@@ -72,7 +75,8 @@
                                     <span class="oi oi-calendar"></span>
                                 </span>
                             </div>
-                            <input type="date" class="form-control" placeholder="Fecha" @bind-value="pagoRequest.Fecha" />
+                            <input type="date" class="form-control" placeholder="Fecha" 
+                            @bind-value="pagoRequest.Fecha" readonly/>
                         </div>
                     </div>
 
@@ -213,7 +217,6 @@ else
                                         <th>Monto/Pagado</th>
                                         <th>Observación</th>
                                         <th>Fecha</th>
-                                        <th>...</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -224,12 +227,6 @@ else
                                             <td>$ @pago.MontoPagado.ToString("N2")</td>
                                             <td>@pago.Observacion</td>
                                             <td>@pago.Fecha</td>
-                                            <td>
-                                                <button @onclick="()=>EliminarPago(pago)"
-                                                    class="btn btn-outline-danger">
-                                                    <span class="oi oi-trash"></span>
-                                                </button>
-                                            </td>
                                         </tr>
                                     } 
                                 </tbody>
@@ -263,7 +260,7 @@ else
                 @foreach (var f in Facturas)
                 {
                     
-                    @if(f.SaldoPendiente > 0)    
+                    @if(f.TypePayment == "2" && f.SaldoPendiente > 0)    
                     {
                         <tr>
                             <th scope="row">@f.Id</th>
@@ -370,6 +367,7 @@ else
     public bool formPago { get; set; } = false;
     public List<PagoResponse> Pagos { get; set; } = new();
     public PagoRequest pagoRequest { get; set; } = new();
+    public FacturaRequest facturaRequest { get; set; } = new();
     async Task CargarPagos()
     {
         var resultado =
@@ -380,6 +378,7 @@ else
         }
     }
     bool MostrarErrorSeleccion { get; set; } = false;
+    public string? ErrorMessage { get; set; } = null;
 
     void FormPago()
     {
@@ -417,35 +416,26 @@ else
     }
     public async Task SendPago()
     {
+        if (Convert.ToDecimal(pagoRequest.MontoPagado) > SelectedFactura.SaldoPendiente)
+        {
+            ErrorMessage = "El monto a pagar no puede ser mayor al saldo pendiente $" + SelectedFactura.SaldoPendiente.ToString("N2");
+            return;
+        }
         if (pagoRequest.Id == 0)
         {
             // Debo registrar el contacto..
             var r = await pagoServices.Crear(pagoRequest);
             if (r.Success)
             {
+                
+
                 // Actualizar SaldoPendiente al realizar el pago
                 // SelectedFactura.SaldoPendiente = SelectedFactura.SaldoPendiente -
                 //     Convert.ToDecimal(pagoRequest.MontoPagado);
-
                 // Limpiar el formulario y cargar los pagos nuevamente
                 Cancelar();
                 await CargarPagos();
-                StateHasChanged();
-            }
-        }
-        else
-        {
-            // Debo solicitar modificar el contacto...
-            var r = await pagoServices.Modificar(pagoRequest);
-            if (r.Success)
-            {
-                // Actualizar SaldoPendiente al realizar el pago
-                // SelectedFactura.SaldoPendiente = SelectedFactura.SaldoPendiente -
-                //     Convert.ToDecimal(pagoRequest.MontoPagado);
-
-                // Limpiar el formulario y cargar los pagos nuevamente
-                Cancelar();
-                await CargarPagos();
+                await Consultar();
                 StateHasChanged();
             }
         }
@@ -453,9 +443,6 @@ else
 
     //Codigo Para mostrar todos los pagos realizados por factura
     public bool detailsPago { get; set; } = false;
-    
-    public FacturaResponse FacturaEnConfirmacion { get; set; } = new();
-
     void DetailsPago()
     {
         detailsPago = true;

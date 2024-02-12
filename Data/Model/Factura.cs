@@ -34,6 +34,7 @@ public class Factura
         :
         0;//Falso
 
+    public string TypePayment  { get; set; } = null!;
     public decimal SaldoPagado { get; set; }
     public decimal SaldoPendiente { get; set; }
 
@@ -41,6 +42,7 @@ public class Factura
         => new()
         {
             ClienteId = request.ClienteId,
+            TypePayment = request.TypePayment,
             SaldoPagado = request.SaldoPagado,
             SaldoPendiente = request.SaldoPendiente,
             Fecha = DateTime.Now,
@@ -56,8 +58,9 @@ public class Factura
             Fecha = Fecha,
             Cliente = Cliente.ToResponse(),
             Detalles = Detalles.Select(d => d.ToResponse()).ToList(),
-            SaldoPagado = SaldoPagado
-            ,Pagos = Pagos!=null&&Pagos.Any()? Pagos.Select(p => p.ToResponse()).ToList():new List<PagoResponse?>()
+            TypePayment = TypePayment,
+            SaldoPagado = SaldoPagado,
+            Pagos = Pagos!=null&&Pagos.Any()? Pagos.Select(p => p.ToResponse()).ToList():new List<PagoResponse?>()
         };
 
     

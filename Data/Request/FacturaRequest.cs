@@ -19,6 +19,7 @@ public class FacturaRequest
         :
         0;//Falso
 
+    public string TypePayment  { get; set; } = null!;
     public decimal SaldoPagado { get; set; }
     public decimal SaldoPendiente { get; set; }
 }

@@ -25,15 +25,23 @@ public class FacturaResponse
         Detalles.Sum(d => d.TotalDesc) //Verdadero
         :
         0;//Falso
+    public string TypePayment  { get; set; } = null!;
     public decimal SaldoPagado { get; set; }
-    public decimal SaldoPendiente => Pagos!=null&&Pagos.Any()? SubTotal - (decimal)Pagos.Sum(p => p.MontoPagado):SubTotal;
+    public decimal SaldoPendiente => Pagos!=null&&Pagos.Any()? SubTotal - TotalDesc - (decimal)Pagos.Sum(p => p.MontoPagado):SubTotal;
 
     public FacturaRequest ToRequest()
     {
+        // Cambiar TypePayment a "1" si SaldoPendiente es igual a 0
+        if (SaldoPendiente == 0)
+        {
+            TypePayment = "1";
+        }
+        
         return new FacturaRequest
         {
             Id = Id,
             ClienteId = ClienteId,
+            TypePayment = TypePayment,
             SaldoPagado = SaldoPagado,
             SaldoPendiente = SaldoPendiente,
             Fecha = Fecha,

@@ -1,6 +1,7 @@
 @page "/factura/vender"
 @using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
+@inject IJSRuntime JSRuntime;
 
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
     @if (Message != null)
@@ -17,7 +18,7 @@
                aria-label="Cliente"
                aria-describedby="button-addon2" list="contactos"
                @bind="Nombre"
-               />
+               required title="Debes seleccionar un cliente"/>
         <datalist id="contactos">
           @foreach (var contacto in Contactos)
             {
@@ -28,8 +29,8 @@
         <button 
             class="btn btn-outline-success d-print-none"
             type="button" id="button-addon2"
-        @onclick="async()=>{
-        await CargarContacto(); }">
+            @onclick="async()=>{
+            await CargarContacto(); }">
             <span class="oi oi-reload"></span>
         </button>
     </div>
@@ -49,7 +50,7 @@
                     if(r!=null)
                     BuscarPercio(r.Id);
                     }"
-                   />
+                    />
             <datalist id="productos">
                 @foreach (var producto in Productos)
                 {
@@ -71,8 +72,8 @@
             </span>
             <input class="form-control w-25" type="number" @bind="@Cantidad" />
             <button class="btn btn-success d-print-none"
-                    type="button" id="button-addon2"
-            @onclick="AgregarAlDetalle">
+                type="button" id="button-addon2"
+                @onclick="AgregarAlDetalle">
                 <span class="oi oi-collapse-down"></span>
             </button>
         </div>
@@ -156,105 +157,88 @@
         </tbody>
     </table>
 
-    @if (Cobro)
-    {
-        <div class="card mb-3 p-3">
-            <div class="row card-header">
-                <div class="col">
-                    <h5><b>Resumen</b></h5>
-                </div>
-                <div class="col">
-                    <div class="input-group d-print-none">
-                        <label for="montoPagado" class="input-group-text">Monto Pagado:</label>
-                        <InputNumber @bind-Value="facturaRequest.SaldoPagado" id="montoPagado" class="form-control" />
-                        <button 
-                        class="btn btn-success d-print-none" 
-                        type="button"
-                        @onclick="CalcularCambio">
-                        Pagar
-                    </button>
+    <div class="row">
+        <div class="col">
+            <div class="card mb-3 p-3">
+                <div class="row card-header">
+                    <div class="col-2">
+                        <h5><b>Resumen</b></h5>
                     </div>
-                </div>
-            </div>
-            <div class="card-body">
-
-                <label><b>SubTotal: </b></label>
-                @facturaRequest.SubTotal.ToString("N2")
-                <br>
-
-                <label for=""><b>ITBIS: </b></label>
-                @($"{(facturaRequest.SubTotal * 0.18m):N2}")
-                <br>
-                <label for=""><b>Descuento: </b></label>
-                @facturaRequest.TotalDesc.ToString("N2")
-                <br>
-
-
-                <label for=""><b>Total: </b></label>
-                @($"{(facturaRequest.SubTotal - facturaRequest.TotalDesc):N2}")
-
-
-                <div class="mb-3">
-                    
-                </div>
-            </div>
-        </div>
-    }
-
-            
-
-    @if (Chance )
-    {
-        <div class="row">
-            <div class="col">
-                <div class="card mb-3 p-3">
-                    <h5 class="card-header"><b>Resumen</b></h5>
-                    <div class="card-body">
-                        <label for=""><b>ITBIS: </b></label>
-                        @($"{(facturaRequest.SubTotal * 0.18m):N2}")
-                        <br>
-
-                        <label><b>Total: </b></label>
-                        @facturaRequest.SubTotal.ToString("N2")
-                        <br>
-
-                        <label for=""><b>Descuento: </b></label>
-                        @facturaRequest.TotalDesc.ToString("N2")
-                        <br>
-
-                        <label for=""><b>SubTotal: </b></label>
-                        @($"{(facturaRequest.SubTotal - facturaRequest.TotalDesc):N2}")
+                    <div class="col">
+                        <div class="input-group d-print-none">
+                            <select class="form-control" required @bind="@facturaRequest.TypePayment">
+                                <option disabled selected value="">Tipo de Venta</option>
+                                <option value="1">Contado</option>
+                                <option value="2">Credito</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card mb-3 p-3">
-                    <h5 class="card-header"><b>Cambio:</b> @Cambio.ToString("N2")</h5>
-                    <div class="card-body"> 
-                        <div class="mb-3">
-                            <button 
-                                class="btn btn-danger d-print-none" 
-                                type="button"
-                                @onclick="CancelarPago">
-                                Cancelar
-                            </button>
+                    <div class="col">
+                        <div class="input-group d-print-none">
+                            <label for="montoPagado" class="input-group-text">Monto/Pagado:</label>
+                            <input type="number" @bind="@facturaRequest.SaldoPagado" id="montoPagado" 
+                            class="form-control"/>
                             <button 
                                 class="btn btn-success d-print-none" 
-                                type="submit">
-                                Guardar
+                                type="button"
+                                @onclick="CalcularCambio">
+                                Pagar
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="card-body">
 
+                    <label><b>SubTotal: </b></label>
+                    @facturaRequest.SubTotal.ToString("N2")
+                    <br>
+
+                    <label for=""><b>ITBIS: </b></label>
+                    @($"{(facturaRequest.SubTotal * 0.18m):N2}")
+                    <br>
+                    <label for=""><b>Descuento: </b></label>
+                    @facturaRequest.TotalDesc.ToString("N2")
+                    <br>
+
+
+                    <label for=""><b>Total: </b></label>
+                    @($"{(facturaRequest.SubTotal - facturaRequest.TotalDesc):N2}")
+
+
+                    <div class="mb-3">
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-    }
+
+        @if (Chance )
+        {
+                <div class="col-3">
+                    <div class="card mb-3 p-3">
+                        <h5 class="card-header"><b>Cambio:</b> @Cambio.ToString("N2")</h5>
+                        <div class="card-body"> 
+                            <div class="mb-3">
+                                <button 
+                                    class="btn btn-danger d-print-none" 
+                                    type="button"
+                                    @onclick="CancelarPago">
+                                    Cancelar
+                                </button>
+                                <button 
+                                    class="btn btn-success d-print-none" 
+                                    type="submit" >
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        }
+    </div>
 </EditForm>
 
 @code {
-    public bool Cobro { get; set; } = true;
     public bool Chance { get; set; } = false;
     public string? Message { get; set; } = null;
     public string Nombre { get; set; } = string.Empty;
@@ -328,17 +312,17 @@
         await CargarContacto();
         await CargarProducto();
     }
+    public string TypePayment {get; set;} = string.Empty;
     async Task Send()
     {
+        if(facturaRequest.SaldoPagado > facturaRequest.SaldoPagado - facturaRequest.TotalDesc 
+        && facturaRequest.TypePayment == "2")
+        {
+            Pendiente();
+
+            return;
+        }
         BuscarSeleccionarCliente(Nombre);
-        if(facturaRequest.SaldoPagado < facturaRequest.SubTotal - facturaRequest.TotalDesc)
-        {
-            facturaRequest.SaldoPendiente = facturaRequest.SubTotal - facturaRequest.TotalDesc - facturaRequest.SaldoPagado;
-        }
-        else
-        {
-            facturaRequest.SaldoPendiente = 0;
-        }
         var result = await
         facturaServices.Crear(facturaRequest);
         if (result.Success)
@@ -350,15 +334,9 @@
 
     }
 
-    void Cobrar()
-    {
-        Cobro = false;
-    }
-
     void CancelarPago()
     {
         Chance = false;
-        Cobro = true;
         Total = 0;
         MontoPagado = 0;
         Cambio = 0;
@@ -366,15 +344,33 @@
 
     public decimal Cambio = 0;
     public decimal MontoPagado = 0;
+    public decimal SaldoPendiente = 0;
     public decimal Total = 0;
     void CalcularCambio()
     {
-        Cobro = false;
         Chance = true;
         MontoPagado = facturaRequest.SaldoPagado;
         Total = facturaRequest.SubTotal - facturaRequest.TotalDesc;
-
         Cambio = MontoPagado - Total;
-        
     }
+    void Pendiente()
+    {
+        Chance = true;
+        MontoPagado = facturaRequest.SaldoPagado;
+        Total = facturaRequest.SubTotal - facturaRequest.TotalDesc;
+        Cambio = MontoPagado - Total;
+        SaldoPendiente = Total - MontoPagado;
+        if(facturaRequest.TypePayment=="2")
+        {
+            if(MontoPagado >= Total){
+                Message = "El monto pagado no puede ser mayor o igual al total 😢";
+            }
+        }
+    }
+    private async Task PrintPageAsync()
+    {
+        // Llama a la función JavaScript para imprimir la página
+        await JSRuntime.InvokeVoidAsync("printPage");
+    }
+
 }

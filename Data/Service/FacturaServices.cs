@@ -136,6 +136,7 @@ public class FacturaServices : IFacturaServices
 
             // Actualizar las propiedades de la factura según el request
             factura.ClienteId = request.ClienteId;
+            factura.TypePayment = request.TypePayment;
             factura.SaldoPagado = request.SaldoPagado;
             factura.SaldoPendiente = request.SaldoPendiente;
             factura.Detalles = request.Detalles
