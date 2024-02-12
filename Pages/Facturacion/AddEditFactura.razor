@@ -2,14 +2,13 @@
 @using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
 @inject IJSRuntime JSRuntime;
+@*<script>
+    function printPage() {
+    window.print();
+}
+</script>*@
 
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
-    @if (Message != null)
-    {
-        <div class="alert-danger">
-            <span class="text-danger">@Message</span>
-        </div>
-    }
     @*Disenar el espacio para el cliente o contacto a facturarle*@
     <div class="input-group mb-3">
         <input 
@@ -37,10 +36,9 @@
     @*Disenar el espacio para los productos a facturar*@
     <div class="card p-2">
         <div class="card-header card-title" style="background-color: rgb(0, 0, 53); color: #ffffff;">
-            <h4>¿Que desea el cliente?</h4>
+            <h5>¿Que desea el cliente?</h5>
         </div>
-        <small class="p-2">Aquí puedes detallar lo que le cargaras a la factura al cliente...</small>
-        <div class="input-group mb-3">
+        <div class="input-group mb-3 mt-2">
             <input class="form-control"
                    placeholder="Producto"
                    aria-label="Producto"
@@ -82,10 +80,15 @@
             <input @bind="detalleFacturaRequest.Descuento" type="number" 
             id="Descuento" placeholder="Descuento" class="form-control" />
         </div>
-
+        @if (Message != null)
+        {
+            <div class="alert-success">
+                <span class="text-success">@Message</span>
+            </div>
+        }
     </div>
     @*Disenar los elementos que se cargan a la factura*@
-    <h5>Detalle de la factura</h5>
+    <h5><b>Detalle de la factura</b></h5>
     <table class="table table-hover">
         <thead style="background-color: rgb(0, 0, 53); color: #ffffff;">
             <tr>
@@ -156,21 +159,24 @@
             }
         </tbody>
     </table>
-
     <div class="row">
         <div class="col">
             <div class="card mb-3 p-3">
                 <div class="row card-header">
-                    <div class="col-2">
-                        <h5><b>Resumen</b></h5>
+                    <div class="col-3">
+                        <h5><b>Resumen:</b></h5>
                     </div>
                     <div class="col">
-                        <div class="input-group d-print-none">
+                        <div class="input-group">
                             <select class="form-control" required @bind="@facturaRequest.TypePayment">
                                 <option disabled selected value="">Tipo de Venta</option>
                                 <option value="1">Contado</option>
                                 <option value="2">Credito</option>
                             </select>
+                            
+                            <button class="btn btn-warning d-print-none" @onclick="UpdatePage">
+                                <span class="oi oi-loop"></span>
+                            </button>
                         </div>
                     </div>
                     <div class="col">
@@ -227,7 +233,7 @@
                                 </button>
                                 <button 
                                     class="btn btn-success d-print-none" 
-                                    type="submit" >
+                                    type="submit" @onclick="PrintPageAsync">
                                     Guardar
                                 </button>
                             </div>
@@ -249,6 +255,10 @@
     public decimal Precio { get; set; } = 0;
     public int Cantidad { get; set; } = 1;
     public int IdProducto { get; set; } = 0;
+    void UpdatePage()
+    {
+        urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);
+    }
     void BuscarPercio(int idProducto)
     {
         Precio = Productos.FirstOrDefault(p => p.Id == idProducto)!.Precio;
@@ -327,8 +337,7 @@
         facturaServices.Crear(facturaRequest);
         if (result.Success)
         {
-            //navigator.NavigateTo("/facturacion");
-            Message = result.Message;
+            Message = "Good Job 👍";
         }
         else Message = result.Message;
 
