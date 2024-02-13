@@ -2,7 +2,9 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-
+@using FactuSystem.Authentication
+@using FactuSystem.Data.Model
+@inject AuthenticationStateProvider authStateProvider
 <html lang="pt-br">
 <head>
 
@@ -700,8 +702,8 @@
     <div class="get-started" id="login-screen">
        
         <img class="rounded-image" src="PHOTO-2024-01-19-19-59-28.jpg">
-        <input type="text" name="email" id="email" placeholder="Correo" class="login-form">
-        <input type="password" name="password" id="password" class="login-form" placeholder="Clave">
+        <input type="text" name="email" @bind="Email" placeholder="Correo" class="login-form">
+        <input type="password" name="password" @bind="Password" id="password" class="login-form" placeholder="Clave">
 
 
         <input type="button" value="Iniciar sesion" class="login-btn" @onclick="Paginaprincipal">
@@ -722,6 +724,31 @@
 </body>
 </html>
 @code{
+
+    private string Email { get; set; } = "";
+    private string Password { get; set; } = "";
+    async Task Logueo()
+    {
+        var r = await usuarioServices.Autenticar(Email, Password);
+        if (r != null)
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(r);
+
+            //await JavaScript.InvokeVoidAsync("alert", "Credenciales correctas!");
+            await Animacion();
+            NavigationManager.NavigateTo("paginaprincipal", true);
+
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Credenciales incorrectas!");
+        }
+
+    }
+
+
+
     private async Task Animacion()
     {
         // Mostrar el spinner
@@ -739,7 +766,7 @@
 
     private async Task Paginaprincipal()
     {
-        await Animacion();
+        await Logueo();
     }
 }
 

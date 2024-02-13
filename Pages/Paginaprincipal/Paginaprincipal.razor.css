@@ -7,6 +7,7 @@
     --navbar-light-primary: #f5f6fa;
     --navbar-light-secondary: #8392a5;
 }*/
+    
 @keyframes zoomIn {
     from {
         transform: scale(0.5);
