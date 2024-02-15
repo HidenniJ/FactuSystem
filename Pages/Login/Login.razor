@@ -5,6 +5,8 @@
 @using FactuSystem.Authentication
 @using FactuSystem.Data.Model
 @inject AuthenticationStateProvider authStateProvider
+@inject IUsuarioServices usuarioservices
+
 <html lang="pt-br">
 <head>
 
@@ -702,11 +704,11 @@
     <div class="get-started" id="login-screen">
        
         <img class="rounded-image" src="PHOTO-2024-01-19-19-59-28.jpg">
-        <input type="text" name="email" @bind="Email" placeholder="Correo" class="login-form">
-        <input type="password" name="password" @bind="Password" id="password" class="login-form" placeholder="Clave">
+        <input type="text" name="email" @bind="model.UserName" placeholder="Correo" class="login-form">
+        <input type="password" name="password" @bind="model.Password" id="password" class="login-form" placeholder="Clave">
 
 
-        <input type="button" value="Iniciar sesion" class="login-btn" @onclick="Paginaprincipal">
+        <input type="button" value="Iniciar sesion" class="login-btn" @onclick="Authenticate">
         <div id="spinner" style="display: none;">
             <!-- Aquí puedes agregar el código HTML de tu spinner -->
             <i class="fa fa-spinner fa-spin"></i> Cargando...
@@ -724,27 +726,47 @@
 </body>
 </html>
 @code{
-
-    private string Email { get; set; } = "";
-    private string Password { get; set; } = "";
-    async Task Logueo()
+    protected override async Task OnInitializedAsync()
     {
-        var r = await usuarioServices.Autenticar(Email, Password);
-        if (r != null)
+        // Llamada a CrearUsuarioAdmin antes de intentar autenticar
+        await usuarioServices.CrearUsuarioAdmin();
+
+        // Resto de tu código OnInitializedAsync
+    }
+    private string mensajeError = "";
+    private LoginModel model = new LoginModel();
+
+    private class LoginModel
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+    private async Task Authenticate()
+    {
+        if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
         {
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(r);
-
-            //await JavaScript.InvokeVoidAsync("alert", "Credenciales correctas!");
-            await Animacion();
-            NavigationManager.NavigateTo("paginaprincipal", true);
-
+            mensajeError = "Pero Papá, Complete Los Campos 😒❌";
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Credenciales incorrectas!");
-        }
+            var userAccount = usuarioservices.GetByUserName(model.UserName);
+            if (userAccount == null )
+            {
+                mensajeError = "Las Credenciales Son Incorrectas 😒❌";
+                return;
+            }
 
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    UserName = userAccount.Email,
+                    Name = userAccount.Nombre + " " + userAccount.Apellidos,
+                    Role = userAccount.Role
+                });
+                await Animacion();
+            urlHelper.NavigateTo("/paginaprincipal", true);
+        }
     }
 
 
@@ -764,10 +786,7 @@
         NavigationManager.NavigateTo("/paginaprincipal", true);
     }
 
-    private async Task Paginaprincipal()
-    {
-        await Logueo();
-    }
+   
 }
 
 

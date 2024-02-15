@@ -12,8 +12,9 @@ public class Usuario
     public string Apellidos { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
-    public string? Role { get; set; }
-public static Usuario Crear(UsuarioRequest usuario) =>
+    public string Role { get; set; } = null!;
+  
+    public static Usuario Crear(UsuarioRequest usuario) =>
           new Usuario
           {
               Id = usuario.Id,

@@ -8,7 +8,9 @@ namespace FactuSystem.Data.Services
 {
     public interface IUsuarioServices
     {
-        Task<Result> Crear(UsuarioRequest request);
+        Usuario? GetByUserName(string userName);
+        Task CrearUsuarioAdmin();
+        Task<Result> Crear(UsuarioRequest user);
         Task<Result> Modificar(UsuarioRequest request);
         Task<Result> Eliminar(UsuarioRequest request);
         Task<Result<List<UsuarioResponse>>> Consultar(string filtro);

@@ -1,11 +1,13 @@
 ﻿@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authStateProvider
+@attribute [Authorize(Roles = "Administrator,User")]
+
 @page "/paginaprincipal"
 @using FactuSystem.Authentication;
 <CascadingAuthenticationState>
-    <AuthorizeView>
-        <Authorized>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -672,7 +674,9 @@ body {
                         <span @onclick="Productos" class="title">Productos</span>
                     </a>
                 </li>
-
+                <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                    
                 <li>
                     <a href="#">
                         <span class="icon">
@@ -681,6 +685,14 @@ body {
                         <span class="title">Funciones admins</span>
                     </a>
                 </li>
+                        </Authorized>
+                        <NotAuthorized>
+                          
+                        </NotAuthorized>
+                    </AuthorizeView>
+                        
+                 
+
                             <li class="menu-item dropdown-container" style="margin-bottom: 12px;">
                     <a @onclick="ToggleDropdown" class="menu-item" >
                         <span class="icon">
@@ -690,7 +702,8 @@ body {
                     </a>
                    
                 </li>
-
+               <AuthorizeView>
+            <Authorized>
                             <div class="dropdown" >
                                 <!-- Utilizamos un botón como desencadenante -->
                                 <span class="dropbtn" style="font-size:30px;">
@@ -698,11 +711,13 @@ body {
                                     @context?.User?.Identity?.Name?.ToString()
                                 </span>
                                 <div class="dropdown-content">
-                                    <a href="#">Link 1</a>
-                                    <a href="#">Link 2</a>
-                                    <a href="#">Link 3</a>
+                                    <a >Link 1</a>
+                                    <a >Link 2</a>
+                                    <a @onclick="Logout">Cerrar sesion</a>
                                 </div>
                             </div>
+                    </Authorized>
+                </AuthorizeView>
           
             </ul>
         </div>
@@ -910,12 +925,8 @@ body {
 </body>
 
 </html>
-  </Authorized>
-                    <NotAuthorized>
-                        No estas autorizado payaso
-                    </NotAuthorized>
-                </AuthorizeView>
 </CascadingAuthenticationState>
+
 @code{
     private bool productos = true;
     private bool clientes = true;
@@ -972,6 +983,7 @@ body {
         clientes = true;
 
     }
+ 
     private async Task Logout()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;

@@ -15,29 +15,57 @@ namespace FactuSystem.Data.Services
 
     public class UsuarioServices : IUsuarioServices
     {
-        private readonly MyDbContext dBContext;
-        private readonly AuthenticationStateProvider _authStateProvider;
+        private MyDbContext dBContext;
 
-
-        public UsuarioServices(MyDbContext dBContext, AuthenticationStateProvider authStateProvider)
+        public UsuarioServices(MyDbContext dbContext)
         {
-            this.dBContext = dBContext;
-            _authStateProvider = authStateProvider;
+            dBContext = dbContext;
+        }
+        private readonly AuthenticationStateProvider _authStateProvider;
+        public Usuario? GetByUserName(string userName)
+        {
+            return dBContext.Usuarios.FirstOrDefault(x => x.Email == userName);
+        }
+        public async Task CrearUsuarioAdmin()
+        {
+            var adminUser = await dBContext.Usuarios.FirstOrDefaultAsync(u => u.Email == "admin");
+
+            if (adminUser == null)
+            {
+                adminUser = new Usuario
+                {
+                    Nombre = "ADMIN",
+                    Apellidos = "444",
+                    Email = "admin",
+                    Password = ("1234"), 
+                    Role = "Administrator"
+                };
+
+                dBContext.Usuarios.Add(adminUser);
+                await dBContext.SaveChangesAsync();
+            }
         }
 
+      
 
         public async Task<Result> Crear(UsuarioRequest request)
         {
             try
             {
-                var usuario = Usuario.Crear(request);
-                dBContext.Usuarios.Add(usuario);
+                var contacto = Usuario.Crear(request);
+
+                // Hash de la contraseña antes de almacenarla
+                contacto.Password = (request.Password);
+
+                dBContext.Usuarios.Add(contacto);
                 await dBContext.SaveChangesAsync();
                 return new Result { Success = true, Message = "OK" };
+
             }
             catch (Exception E)
             {
-                return new Result { Success = false, Message = E.Message };
+                return new Result() { Message = E.Message };
+
             }
         }
 
@@ -141,8 +169,7 @@ namespace FactuSystem.Data.Services
 
             return null; // No hay usuario autenticado o ID no válido.
         }
- 
 
-
+     
     }
 }
