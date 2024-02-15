@@ -2,11 +2,11 @@
 @using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
 @inject IJSRuntime JSRuntime;
-@*<script>
+<script>
     function printPage() {
     window.print();
 }
-</script>*@
+</script>
 
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
     @*Disenar el espacio para el cliente o contacto a facturarle*@
@@ -82,8 +82,8 @@
         </div>
         @if (Message != null)
         {
-            <div class="alert-success">
-                <span class="text-success">@Message</span>
+            <div class="alert-warning">
+                <span class="text-dark">@Message</span>
             </div>
         }
     </div>
@@ -163,10 +163,10 @@
         <div class="col">
             <div class="card mb-3 p-3">
                 <div class="row card-header">
-                    <div class="col-3">
+                    <div class="col-4">
                         <h5><b>Resumen:</b></h5>
                     </div>
-                    <div class="col">
+                    <div class="col-4">
                         <div class="input-group">
                             <select class="form-control" required @bind="@facturaRequest.TypePayment">
                                 <option disabled selected value="">Tipo de Venta</option>
@@ -179,9 +179,8 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-4">
                         <div class="input-group d-print-none">
-                            <label for="montoPagado" class="input-group-text">Monto/Pagado:</label>
                             <input type="number" @bind="@facturaRequest.SaldoPagado" id="montoPagado" 
                             class="form-control"/>
                             <button 
@@ -229,12 +228,12 @@
                                     class="btn btn-danger d-print-none" 
                                     type="button"
                                     @onclick="CancelarPago">
-                                    Cancelar
+                                    <span class="oi oi-x"></span>
                                 </button>
                                 <button 
                                     class="btn btn-success d-print-none" 
                                     type="submit" @onclick="PrintPageAsync">
-                                    Guardar
+                                    <span class="oi oi-check"></span>
                                 </button>
                             </div>
                         </div>
@@ -280,25 +279,50 @@
     }
     void AgregarAlDetalle()
     {
-        var r = Productos.FirstOrDefault(p => p.Id ==IdProducto);
-        var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.ProductoId == IdProducto);
-        if (detalle != null)
+        var producto = Productos.FirstOrDefault(p => p.Id == IdProducto);
+
+        if (producto != null)
         {
-            detalle.Cantidad += Cantidad;
-        }
-        else
-        {
-            facturaRequest.Detalles.Add(new()
+            var detalleExistente = facturaRequest.Detalles.FirstOrDefault(d => d.ProductoId == IdProducto);
+
+            if (detalleExistente != null)
+            {
+                int nuevaCantidad = detalleExistente.Cantidad + Cantidad;
+
+                if (nuevaCantidad <= producto.Stock)
                 {
-                    ProductoId = IdProducto,
-                    Descripcion = r!.Nombre,
-                    Precio = r.Precio,
-                    Cantidad = Cantidad,
-                    Descuento = detalleFacturaRequest.Descuento
-                });
+                    detalleExistente.Cantidad = nuevaCantidad;
+                }
+                else
+                {
+                    Message = "No hay suficientes artículos en el stock. 😥";
+                    return;
+                }
+            }
+            else
+            {
+                if (Cantidad <= producto.Stock)
+                {
+                    facturaRequest.Detalles.Add(new FacturaDetalleRequest
+                    {
+                        ProductoId = IdProducto,
+                        Descripcion = producto.Nombre,
+                        Precio = producto.Precio,
+                        Cantidad = Cantidad,
+                        Descuento = detalleFacturaRequest.Descuento
+                    });
+                }
+                else
+                {
+                    Message = "No hay suficientes artículos en el stock. 😥";
+                    return;
+                }
+            }
+
+            Message = null;
         }
     }
-    async Task CargarContacto()
+   async Task CargarContacto()
     { 
         //Llenar la lista de contactos para mostrar al usuario...
         var r = await clienteServices.Consultar("");
@@ -335,11 +359,12 @@
         BuscarSeleccionarCliente(Nombre);
         var result = await
         facturaServices.Crear(facturaRequest);
-        if (result.Success)
+        Message = null;
+        if (!result.Success)
         {
-            Message = "Good Job 👍";
+            Message = "Estoy cansado de trabajar 😥";
+            return;
         }
-        else Message = result.Message;
 
     }
 
@@ -357,24 +382,68 @@
     public decimal Total = 0;
     void CalcularCambio()
     {
+        if (facturaRequest.Detalles.Count == 0)
+        {
+            Message = "😒 Debes agregar al menos un producto al detalle. 🛒";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(Nombre))
+        {
+            Message = "😒 Debes seleccionar un cliente. 🙍‍♂️";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(facturaRequest.TypePayment))
+        {
+            Message = "😒 Debes seleccionar el tipo de venta. 💰";
+            return;
+        }
+
+        
+        var clienteSeleccionado = Contactos.FirstOrDefault(c => c.Nombre + " " + c.Apellidos == Nombre);
+        if (facturaRequest.TypePayment == "2" && LimiteCreditoExcedido())
+        {
+            Message = "😥 El límite de crédito del cliente ha sido excedido. $"
+            + clienteSeleccionado.Limitecredito.ToString("N2");
+            return;
+        }
+
         Chance = true;
         MontoPagado = facturaRequest.SaldoPagado;
         Total = facturaRequest.SubTotal - facturaRequest.TotalDesc;
         Cambio = MontoPagado - Total;
+        Message = null;
+    }
+    bool LimiteCreditoExcedido()
+    {
+        // Aquí deberías obtener el límite de crédito del cliente seleccionado
+        // Puedes acceder a la información del cliente desde la lista de contactos
+        var clienteSeleccionado = Contactos.FirstOrDefault(c => c.Nombre + " " + c.Apellidos == Nombre);
+        
+        if (clienteSeleccionado != null && clienteSeleccionado.Limitecredito < 
+            facturaRequest.SubTotal - facturaRequest.TotalDesc)
+        {
+            return true;
+        }
+
+        return false;
     }
     void Pendiente()
     {
+        if(facturaRequest.TypePayment=="2")
+        {
+            if(MontoPagado >= Total){
+                Message = "El monto pagado no puede ser mayor o igual al total 😢";
+                return;
+            }
+        }
         Chance = true;
         MontoPagado = facturaRequest.SaldoPagado;
         Total = facturaRequest.SubTotal - facturaRequest.TotalDesc;
         Cambio = MontoPagado - Total;
         SaldoPendiente = Total - MontoPagado;
-        if(facturaRequest.TypePayment=="2")
-        {
-            if(MontoPagado >= Total){
-                Message = "El monto pagado no puede ser mayor o igual al total 😢";
-            }
-        }
+        Message = null;
     }
     private async Task PrintPageAsync()
     {
