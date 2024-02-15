@@ -84,6 +84,7 @@ public class Producto
             Id = Id,
             Codigo = Codigo,
             Nombre = Nombre,
+            Stock = Stock,
             PrecioCompra = PrecioCompra,
             Precio = Precio,
             CategoriaID = CategoriaID,
