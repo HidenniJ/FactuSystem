@@ -100,6 +100,33 @@ public class ProductoServices : IProductoServices
             return new Result() { Message = E.Message, Success = false };
         }
     }
+
+    public async Task<bool> ActualizarStock(List<int> itemIds, List<FacturaDetalleRequest> detalles)
+    {
+        try
+        {
+            var productos = await dbContext.Productos
+                .Where(p => itemIds.Contains(p.Id))
+                .ToListAsync();
+
+            foreach (var producto in productos)
+            {
+                var detalle = detalles.FirstOrDefault(d => d.ProductoId == producto.Id);
+                if (detalle != null)
+                {
+                    // Resta la cantidad del detalle al stock del producto
+                    producto.Stock -= detalle.Cantidad;
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }
 
 public interface IProductoServices
@@ -108,4 +135,5 @@ public interface IProductoServices
     Task<Result> Crear(ProductoRequest request);
     Task<Result> Modificar(ProductoRequest request);
     Task<Result> Eliminar(ProductoRequest request);
+    Task<bool> ActualizarStock(List<int> itemIds, List<FacturaDetalleRequest> detalles);
 }
