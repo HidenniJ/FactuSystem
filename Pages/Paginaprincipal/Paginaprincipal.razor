@@ -1,6 +1,8 @@
-﻿@inject NavigationManager NavigationManager
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authStateProvider
+@using FactuSystem.Data.Response;
+@inject IFacturaServices facturaServices;
 @attribute [Authorize(Roles = "Administrator,User")]
 
 @page "/paginaprincipal"
@@ -808,7 +810,7 @@ body {
                             <div class="recentOrders">
                         <div class="cardHeader">
                             <h2>Compras recientes</h2>
-                            <a href="#" class="btn">View All</a>
+                            <a href="" class="btn">View All</a>
                         </div>
 
                         <table>
@@ -816,67 +818,27 @@ body {
                                 <tr>
                                     <td>Nombre</td>
                                     <td>Precio</td>
-                                    <td>Pago</td>
                                     <td>Estado</td>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr>
-                                    <td>Star Refrigerator</td>
-                                    <td>$1200</td>
-                                    <td>Paid</td>
-                                    <td><span class="status delivered">Pagado</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Dell Laptop</td>
-                                    <td>$110</td>
-                                    <td>Due</td>
-                                    <td><span class="status pending">Pendiente</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Apple Watch</td>
-                                    <td>$1200</td>
-                                    <td>Paid</td>
-                                    <td><span class="status return">Return</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Addidas Shoes</td>
-                                    <td>$620</td>
-                                    <td>Due</td>
-                                    <td><span class="status inProgress">In Progress</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Star Refrigerator</td>
-                                    <td>$1200</td>
-                                    <td>Paid</td>
-                                    <td><span class="status delivered">Delivered</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Dell Laptop</td>
-                                    <td>$110</td>
-                                    <td>Due</td>
-                                    <td><span class="status pending">Pending</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Apple Watch</td>
-                                    <td>$1200</td>
-                                    <td>Paid</td>
-                                    <td><span class="status return">Return</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Addidas Shoes</td>
-                                    <td>$620</td>
-                                    <td>Due</td>
-                                    <td><span class="status inProgress">In Progress</span></td>
-                                </tr>
+                                @foreach (var f in Facturas)
+                                {
+                                    <tr>
+                                        <td>@f.Cliente.Nombre @f.Cliente.Apellidos</td>
+                                        @if(f.TypePayment == "1" || f.SaldoPendiente == 0)    
+                                        {
+                                            <td>$@($"{(f.SubTotal - f.TotalDesc):N2}")</td>
+                                            <td><span class="status delivered">Pagado</span></td>
+                                        }
+                                        else
+                                        {
+                                            <td>$@f.SaldoPendiente.ToString("N2")</td>
+                                            <td><span class="status pending">Pendiente</span></td>
+                                        }
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -928,6 +890,7 @@ body {
 </CascadingAuthenticationState>
 
 @code{
+    public List<FacturaResponse> Facturas { get; set; } = new();
     private bool productos = true;
     private bool clientes = true;
 
@@ -1027,7 +990,23 @@ body {
         }
     }
 
+    async Task Consultar()
+    {
+        var resultado = await facturaServices.Consultar();
+        if (resultado.Success)
+        {
+            Facturas = resultado.Data?.OrderByDescending(f => f.Fecha).ToList() ?? new List<FacturaResponse>();
+        }
+        StateHasChanged();
+    }
+    //protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
+    {
+        await Consultar();
+        // Simulación de datos de ejemplo
+        //UltimasFacturas = ObtenerUltimasFacturas();
+    }
 
 }
 
-    }
+    
