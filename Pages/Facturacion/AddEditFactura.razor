@@ -88,7 +88,7 @@
         }
     </div>
     @*Disenar los elementos que se cargan a la factura*@
-    <h5><b>Detalle de la factura</b></h5>
+    <h5><b>Detalle de la factura N°:</b> @ultimoIdFactura</h5>
     <table class="table table-hover">
         <thead style="background-color: rgb(0, 0, 53); color: #ffffff;">
             <tr>
@@ -171,7 +171,7 @@
                             <select class="form-control" required @bind="@facturaRequest.TypePayment">
                                 <option disabled selected value="">Tipo de Venta</option>
                                 <option value="1">Contado</option>
-                                <option value="2">Credito</option>
+                                <option value="2">Crédito</option>
                             </select>
                             
                             <button class="btn btn-warning d-print-none" @onclick="UpdatePage">
@@ -248,6 +248,7 @@
     public string? Message { get; set; } = null;
     public string Nombre { get; set; } = string.Empty;
     public List<ClienteResponse> Contactos { get; set; } = new();
+    public List<FacturaResponse> Facturas { get; set; } = new();
     public List<ProductoResponse> Productos { get; set; } = new List<ProductoResponse>();
     public FacturaRequest facturaRequest { get; set; } = new();
     public FacturaDetalleRequest detalleFacturaRequest { get; set; } = new();
@@ -341,10 +342,27 @@
         }
     }
 
+    //Esto es para mostrar el Numero de la factura a registrar
+    int ultimoIdFactura = 0;
+    async Task Consultar()
+    {
+        var resultado = await facturaServices.Consultar();
+        if (resultado.Success)
+        {
+            Facturas = resultado.Data?.OrderByDescending(f => f.Fecha).ToList() ?? new List<FacturaResponse>();
+
+            // Obtener el Id de la última factura registrada + 1
+            ultimoIdFactura = Facturas.FirstOrDefault()?.Id + 1 ?? 1;
+        }
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await CargarContacto();
         await CargarProducto();
+        await Consultar();
+
     }
     public string TypePayment {get; set;} = string.Empty;
     async Task Send()
@@ -450,5 +468,4 @@
         // Llama a la función JavaScript para imprimir la página
         await JSRuntime.InvokeVoidAsync("printPage");
     }
-
 }
