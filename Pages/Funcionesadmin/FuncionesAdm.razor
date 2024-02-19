@@ -1,0 +1,172 @@
+﻿@inject IUsuarioServices usuarioservices
+@using FactuSystem.Data.Request;
+@using FactuSystem.Data.Response;
+@page "/funcionesadmin"
+
+<div style="margin-left: 450px;">
+
+<div class="table-container" >
+    <div class="card w-130">
+        <h1 class="titulo-item">Funciones de administrador</h1>
+        <div class="card-body ">
+<div class="container mt-3">
+    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" @onclick="ShowCard">Control y creacion de usuarios </button>
+        <button type="button" class="btn btn-primary">  Control de mercancias  </button>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Cuentas fiancieras</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Cuentas por pagar</a></li>
+                <li><a class="dropdown-item" href="#">Cuentas por cobrar</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+
+    </div>
+</div>
+</div>
+    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);">
+    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+        <span aria-hidden="true" class="oi oi-x"></span>
+    </button>
+    <div class="card-body">
+        <h3 class="card-title"><b>Agregar usuario</b></h3>
+        <hr>
+        <EditForm Model="request" OnValidSubmit="Send">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3 input-group">
+                <label for="Nombre" class="input-group-text">Nombre</label>
+                <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Apellido" class="input-group-text">Apellido</label>
+                <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellidos" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Usuario" class="input-group-text">Usuario</label>
+                <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Clave" class="input-group-text">Clave</label>
+                <InputText id="Clave" class="form-control" @bind-Value="@request.Password" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
+                <InputText id="ConfirmarClave" class="form-control" @bind-Value="@confirmarClave" />
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+            </div>
+        </EditForm>
+</div>
+</div>
+
+<style>
+
+    /* Estilo para resaltar las filas al pasar el cursor */
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
+    }
+
+    /* Estilo para el contenedor de la tabla */
+    .table-container {
+        position: center;
+
+    }
+
+    /* Estilo para el cuerpo de la tarjeta */
+   
+
+    /* Estilo para centrar el texto en las celdas de la tabla */
+    .table th, .table td {
+        text-align: center;
+    }
+
+    .titulo-item {
+        background-color: steelblue; /* Fondo oscuro */
+        color: #ffffff; /* Texto blanco */
+        text-align: center; /* Centrar texto */
+        padding: 10px; /* A�adir espacio alrededor del texto */
+    }
+
+</style>
+@code {
+
+        public bool showCard { get; set; } = false;
+
+        public string Filtro { get; set; } = "";
+        public List<UsuarioResponse> Users { get; set; }
+        = new List<UsuarioResponse>();
+        public UsuarioRequest request { get; set; } = new UsuarioRequest();
+        public string confirmarClave { get; set; } = "";
+
+        public string Message { get; set; } = "";
+        void ShowCard()
+        {
+            showCard = true;
+        }
+        protected override async Task OnInitializedAsync()
+        {
+            await CargarUsuarios();
+        }
+        async Task CargarUsuarios()
+        {
+            var resultado =
+            await usuarioServices.Consultar(Filtro);
+            if (resultado.Success)
+            {
+                Users = resultado.Data!;
+            }
+        }
+        public async Task Send()
+        {
+            if (request.Id == 0)
+            {
+                // Verificar si el correo electrónico ya existe en la base de datos
+                var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+                if (existingUser != null)
+                {
+                    // Mostrar mensaje de error porque el correo electrónico ya existe
+                    // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
+                    // Por ejemplo:
+                    Message = "Patron el correo electrónico ya existe 🤨";
+                }
+                else
+                {
+                    if (request.Password != confirmarClave)
+                    {
+                        // Mostrar mensaje de error porque las claves no coinciden
+                        Message = "Las claves no concuerdan";
+                        return;
+                    }
+
+                    request.Role = "User";
+
+                    // Debo registrar el contacto.
+                    var r = await usuarioServices.Crear(request);
+                    if (r.Success)
+                    {
+                        Cancelar();
+                        await CargarUsuarios();
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+
+       
+    void CloseCard()
+    {
+        showCard = false;
+    }
+    void Cancelar()
+    {
+        request = new UsuarioRequest();
+        urlHelper.NavigateTo("/paginaprincipal", forceLoad: true);
+    }
+}
