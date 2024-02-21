@@ -637,16 +637,16 @@ body {
                 </li>
 
                 <li>
-                    <a >
+                        <a class="menu-item">
                         <span class="icon">
                             <ion-icon name="home-outline"></ion-icon>
                         </span>
-                        <span @onclick="Dashboard" class="title">Dashboard</span>
+                        <span @onclick="Dashboard" class="title"> Dashboard</span>
                     </a>
                 </li>
 
                 <li>
-                    <a >
+                        <a class="menu-item">
                         <span class="icon">
                             <ion-icon name="people-outline"></ion-icon>
                         </span>
@@ -655,7 +655,7 @@ body {
                 </li>
 
                 <li>
-                    <a >
+                        <a class="menu-item">
                         <span class="icon">
                             <ion-icon name="cube-outline"></ion-icon>
 
@@ -665,7 +665,7 @@ body {
                 </li>
 
                 <li>
-                    <a >
+                        <a class="menu-item">
                         <span class="icon">
                             <ion-icon name="card-outline"></ion-icon>
 
@@ -677,13 +677,13 @@ body {
                                 <Authorized>
                     
                 <li >
-                    <a>
+                                <a class="menu-item">
                                     <span class="icon" @onclick="FuncionesAdm">
                                        
                             
                             <ion-icon name="settings-outline" ></ion-icon>
                         </span>
-                        <span class="title">Funciones admins</span>
+                        <span class="title" >Funciones admins</span>
                     </a>
                 </li>
                         </Authorized>
@@ -695,11 +695,11 @@ body {
                  
 
                             <li class="menu-item dropdown-container" style="margin-bottom: 12px;">
-                    <a @onclick="ToggleDropdown" class="menu-item" >
+                    <a  class="menu-item" >
                         <span class="icon">
                             <ion-icon name="lock-closed-outline"></ion-icon>
                         </span>
-                        <span  class="title">Facturas</span>
+                        <span @onclick="Facturacion" class="title">Facturacion</span>
                     </a>
                    
                 </li>
@@ -740,126 +740,131 @@ body {
             </div>
             
                 <!-- ======================= Cards ================== -->
-                @if (Funcionesadm)
+                @if (facturacion)
                 {
-                    @if (clientes)
+
+
+                    @if (Funcionesadm)
                     {
-
-                        @if (proveedores)
+                        @if (clientes)
                         {
-                            @if (productos)
+
+                            @if (proveedores)
                             {
+                                @if (productos)
+                                {
 
 
 
-                                <div class="cardBox">
+                                    <div class="cardBox">
 
 
-                                    <div class="card">
-                                        <div>
-                                            <div class="numbers">80</div>
-                                            <div class="cardName">Ventas</div>
+                                        <div class="card">
+                                            <div>
+                                                <div class="numbers">80</div>
+                                                <div class="cardName">Ventas</div>
+                                            </div>
+
+
+                                            <div class="iconBx">
+                                                <ion-icon name="cart-outline"></ion-icon>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="card">
+                                            <div>
+                                                <div class="numbers">80</div>
+                                                <div class="cardName">Beneficios</div>
+                                            </div>
+
+
+                                            <div class="iconBx">
+                                                <ion-icon name="cash-outline"></ion-icon>
+                                            </div>
+
+
                                         </div>
 
+                                        <div class="card">
+                                            <div>
+                                                <div class="numbers">284</div>
+                                                <div class="cardName">Deudas</div>
+                                            </div>
 
-                                        <div class="iconBx">
-                                            <ion-icon name="cart-outline"></ion-icon>
+                                            <div class="iconBx">
+                                                <ion-icon name="trending-down-outline"></ion-icon>
+
+                                            </div>
                                         </div>
 
+                                        <div class="card">
+                                            <div>
+                                                <div class="numbers">$7,842</div>
+                                                <div class="cardName">Ganancias</div>
+                                            </div>
 
+                                            <div class="iconBx">
+                                                <ion-icon name="cash-outline"></ion-icon>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="card">
-                                        <div>
-                                            <div class="numbers">80</div>
-                                            <div class="cardName">Beneficios</div>
-                                        </div>
 
+                                    <!-- ================ Order Details List ================= -->
+                                    <div class="details">
+                                        <div class="recentOrders">
+                                            <div class="cardHeader">
+                                                <h2>Compras recientes</h2>
+                                                <a href="" class="btn">View All</a>
+                                            </div>
 
-                                        <div class="iconBx">
-                                            <ion-icon name="cash-outline"></ion-icon>
-                                        </div>
-
-
-                                    </div>
-
-                                    <div class="card">
-                                        <div>
-                                            <div class="numbers">284</div>
-                                            <div class="cardName">Deudas</div>
-                                        </div>
-
-                                        <div class="iconBx">
-                                            <ion-icon name="trending-down-outline"></ion-icon>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="card">
-                                        <div>
-                                            <div class="numbers">$7,842</div>
-                                            <div class="cardName">Ganancias</div>
-                                        </div>
-
-                                        <div class="iconBx">
-                                            <ion-icon name="cash-outline"></ion-icon>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- ================ Order Details List ================= -->
-                                <div class="details">
-                                    <div class="recentOrders">
-                                        <div class="cardHeader">
-                                            <h2>Compras recientes</h2>
-                                            <a href="" class="btn">View All</a>
-                                        </div>
-
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <td>Nombre</td>
-                                                    <td>Precio</td>
-                                                    <td>Estado</td>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody>
-                                                @foreach (var f in Facturas)
-                                                {
+                                            <table>
+                                                <thead>
                                                     <tr>
-                                                        <td>@f.Cliente.Nombre @f.Cliente.Apellidos</td>
-                                                        @if (f.TypePayment == "1" || f.SaldoPendiente == 0)
-                                                        {
-                                                            <td>$@(
-                                                                                                       $"{(f.SubTotal - f.TotalDesc):N2}"
-                                                                                                                                                 )</td>
-                                                            <td><span class="status delivered">Pagado</span></td>
-                                                        }
-                                                        else
-                                                        {
-                                                            <td>$@f.SaldoPendiente.ToString("N2")</td>
-                                                            <td><span class="status pending">Pendiente</span></td>
-                                                        }
+                                                        <td>Nombre</td>
+                                                        <td>Precio</td>
+                                                        <td>Estado</td>
                                                     </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                </thead>
 
-                                    <!-- ================= New Customers ================ -->
-                                    <div class="recentCustomers">
-                                        <div class="cardHeader">
-                                            <h2>Clientes recientes</h2>
+                                                <tbody>
+                                                    @foreach (var f in Facturas)
+                                                    {
+                                                        <tr>
+                                                            <td>@f.Cliente.Nombre @f.Cliente.Apellidos</td>
+                                                            @if (f.TypePayment == "1" || f.SaldoPendiente == 0)
+                                                            {
+                                                                <td>$@(
+                                                                                                           $"{(f.SubTotal - f.TotalDesc):N2}"
+                                                                                                                                                                                                   )</td>
+                                                                <td><span class="status delivered">Pagado</span></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>$@f.SaldoPendiente.ToString("N2")</td>
+                                                                <td><span class="status pending">Pendiente</span></td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
                                         </div>
 
-                                        <table>
+                                        <!-- ================= New Customers ================ -->
+                                        <div class="recentCustomers">
+                                            <div class="cardHeader">
+                                                <h2>Clientes recientes</h2>
+                                            </div>
+
+                                            <table>
 
 
-                                        </table>
+                                            </table>
+
+                                        </div>
 
                                     </div>
-
-                                </div>
+                                }
                             }
                         }
                     }
@@ -885,6 +890,10 @@ body {
                     {
                         <FactuSystem.Pages.Funcionesadmin.FuncionesAdm></FactuSystem.Pages.Funcionesadmin.FuncionesAdm>
                     }
+            @if (facturacion == false)
+            {
+                <FactuSystem.Pages.Facturacion.Facturaciongeneral></FactuSystem.Pages.Facturacion.Facturaciongeneral>
+            }
                 
         </div>
             
@@ -903,7 +912,7 @@ body {
 
     private bool mostrarContenido = true;
     private bool proveedores = true;
-
+    private bool facturacion= true;
 
     private bool showDropdown = false;
 
@@ -928,6 +937,15 @@ body {
     {
         urlHelper.NavigateTo("factura/cobrar");
     }
+    private void Facturacion()
+    {
+        proveedores = true;
+        productos = true;
+        clientes = true;
+        facturacion = false;
+
+    }
+
 
     private void FuncionesAdm()
     {
@@ -935,6 +953,7 @@ body {
         productos = true;
         clientes = true;
         Funcionesadm = false;
+        facturacion = true;
     }
 
 
@@ -945,6 +964,7 @@ body {
         productos = true;
         clientes = false;
         Funcionesadm = true;
+        facturacion = true;
 
     }
     private void Dashboard()
@@ -958,6 +978,7 @@ body {
         productos = true;
         clientes = true;
         Funcionesadm = true;
+        facturacion = true;
 
     }
     private void Productos()
@@ -966,6 +987,7 @@ body {
         proveedores = true;
         clientes = true;
         Funcionesadm = true;
+        facturacion = true;
     }
    
     private async Task Logout()

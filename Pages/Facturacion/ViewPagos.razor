@@ -1,6 +1,6 @@
 @page "/pago"
 
-<style>
+@*<style>
     /* Estilo para resaltar las filas al pasar el cursor */
     .table-hover tbody tr:hover {
         background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
@@ -27,116 +27,137 @@
         text-align: center; /* Centrar texto */
         padding: 10px; /* Añadir espacio alrededor del texto */
     }
-</style>
+</style>*@
+ @if (opciones)
+{
+    <div style="margin-left: 450px;">
+        <div class="table-container">
+            <div class="card w-130">
+                <div class="card-body">
+                    <div class="table-container">
+                        <div class="card w-130">
+                            <div class="card-body">
+                                <button style="margin-top:50px; margin-left:650px;" class="btn btn-outline-danger" @onclick="Opciones">    Regresar</button>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h1 class="titulo-proveedores">Listado de Pagos</h1>
+                                    </div>
+
+                                </div>
+
+                                <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"><b>@TituloForm</b></h5>
+                                                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                                                    <span aria-hidden="true" class="oi oi-x"></span>
+                                                </button>
+                                            </div>
+
+                                            <EditForm Model="categoriaRequest" OnValidSubmit="Send">
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <label for="nombreCompleto">Nombre completo</label>
+                                                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <div class="btn-group">
+                                                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                                                    </div>
+                                                </div>
+                                            </EditForm>
 
 
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="titulo-proveedores">Listado de Pagos</h1>
-    </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-</div>
+                                <div class="table-container">
+                                    <div class="card w-130">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-10">
+                                                    <!-- Button trigger modal -->
+                                                    <button class="btn btn-outline-success" @onclick="ShowCard">
+                                                        <span class="oi oi-plus"></span>
+                                                        Nueva pago
+                                                    </button>
+                                                </div>
+                                               
+                                            </div>
 
-<div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><b>@TituloForm</b></h5>
-                <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
-                    <span aria-hidden="true" class="oi oi-x"></span>
-                </button>
+                                            <div class="row mt-2">
+                                                <div class="col-7"></div>
+                                                <div class="col-5">
+                                                    <div class="col input-group">
+                                                        <input type="text" placeholder="Nombre del proveedor" @bind="Filtro">
+
+                                                        <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                                                            <span class="oi oi-magnifying-glass"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row-12 mt-2">
+                                                <table class="table table-hover">
+                                                    <thead style="background-color:  steelblue; color: #ffffff;">
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>FacturaId</th>
+                                                            <th>MontoPagado</th>
+                                                            <th>Observación</th>
+                                                            <th>Fecha</th>
+                                                            <th>...</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in Categorias)
+                                                        {
+                                                            <tr>
+                                                                <td>@item.Id</td>
+                                                                <td>@item.Nombre</td>
+                                                                <td>
+                                                                    <button @onclick="()=>Seleccionar(item.Id)"
+                                                                    class="btn btn-outline-warning">
+                                                                        <span class="oi oi-pencil"></span>
+                                                                    </button>
+                                                                    <button @onclick="()=>Eliminar(item)"
+                                                                    class="btn btn-outline-danger">
+                                                                        <span class="oi oi-trash"></span>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-
-            <EditForm Model="categoriaRequest" OnValidSubmit="Send">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombreCompleto" @bind-value="categoriaRequest.Nombre" required />
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                    </div>
-                </div>
-            </EditForm>
-
-            
-
         </div>
+
     </div>
-</div>
-
-<div class="table-container">
-    <div class="card w-75">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-10">
-                    <!-- Button trigger modal -->
-                    <button class="btn btn-outline-success" @onclick="ShowCard">
-                        <span class="oi oi-plus"></span>
-                        Nueva pago
-                    </button>
-                </div>
-                <div class="col-1">
-                    <button class="btn btn-danger" @onclick="Producto">Back</button>
-                </div>
-            </div>
-            
-            <div class="row mt-2">
-                <div class="col-7"></div>
-                <div class="col-5">
-                    <div class="col input-group">
-                        <input type="text" placeholder="Nombre del proveedor" @bind="Filtro">
-
-                        <button class="btn btn-outline-primary" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
-                            <span class="oi oi-magnifying-glass"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row-12 mt-2">
-                <table class="table table-hover">
-                    <thead style="background-color: rgb(0, 0, 53); color: #ffffff;">
-                        <tr>
-                            <th>#</th>
-                            <th>FacturaId</th>
-                            <th>MontoPagado</th>
-                            <th>Observación</th>
-                            <th>Fecha</th>
-                            <th>...</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Categorias)
-                        {
-                            <tr>
-                                <td>@item.Id</td>
-                                <td>@item.Nombre</td>
-                                <td>
-                                    <button @onclick="()=>Seleccionar(item.Id)"
-                                        class="btn btn-outline-warning">
-                                        <span class="oi oi-pencil"></span>
-                                    </button>
-                                    <button @onclick="()=>Eliminar(item)"
-                                        class="btn btn-outline-danger">
-                                        <span class="oi oi-trash"></span>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    
-</div>
-
+}
+@if (opciones == false)
+{
+    <Facturaciongeneral></Facturaciongeneral>
+}
 @code {
+    private bool opciones = true;
+
     public string TituloForm => categoriaRequest.Id == 0 ? 
     "Agregar Pago" : "Modificar Pago";
     
@@ -145,7 +166,12 @@
     public List<CategoriaResponse> Categorias { get; set; } = new();
     public CategoriaRequest categoriaRequest { get; set; } = new();
     public bool showCard { get; set; } = false;
+    private void Opciones()
+    {
 
+        opciones = false;
+
+    }
     void Producto()
     {
         urlHelper.NavigateTo("producto", true);

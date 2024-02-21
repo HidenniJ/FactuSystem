@@ -8,7 +8,7 @@
     --navbar-light-secondary: #8392a5;
 }*/
     
-@keyframes zoomIn {
+/*@keyframes zoomIn {
     from {
         transform: scale(0.5);
     }
@@ -25,19 +25,19 @@
 
 .dropdown {
     position: absolute;
-    top: 100%; /* Ajusta según sea necesario para la separación vertical */
-    left: 0;
+    top: 100%;*/ /* Ajusta según sea necesario para la separación vertical */
+    /*left: 0;
     z-index: 1;
-    background-color: #fff; /* Fondo del menú desplegable */
-    border: 1px solid #ccc; /* Borde del menú desplegable */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
-    padding: 10px; /* Espaciado interno */
-    border-radius: 5px; /* Bordes redondeados */
-}
+    background-color: #fff;*/ /* Fondo del menú desplegable */
+    /*border: 1px solid #ccc;*/ /* Borde del menú desplegable */
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/ /* Sombra */
+    /*padding: 10px;*/ /* Espaciado interno */
+    /*border-radius: 5px;*/ /* Bordes redondeados */
+/*}*/
 
     /* Estilo para ocultar el menú desplegable cuando no está visible */
     
-* {
+/** {
     font-family: "Ubuntu", sans-serif;
     margin: 0;
     padding: 0;
@@ -61,12 +61,12 @@ body {
     position: relative;
     width: 100%;
     
-}
+}*/
 
 /* =============== Navigation ================ */
 
 
-    .navigation.active {
+    /*.navigation.active {
         width: 80px;
     }
 
@@ -130,10 +130,10 @@ body {
                 line-height: 60px;
                 text-align: start;
                 white-space: nowrap;
-            }
+            }*/
 
             /* --------- curve outside ---------- */
-            .navigation ul li:hover a::before,
+            /*.navigation ul li:hover a::before,
             .navigation ul li.hovered a::before {
                 content: "";
                 position: absolute;
@@ -159,10 +159,10 @@ body {
                 border-radius: 50%;
                 box-shadow: 35px -35px 0 10px var(--white);
                 pointer-events: none;
-            }
+            }*/
 
 /* ===================== Main ===================== */
-.main {
+/*.main {
     position: absolute;
     width: calc(100% - 300px);
     left: 300px;
@@ -241,10 +241,10 @@ body {
         width: 100%;
         height: 100%;
         object-fit: cover;
-    }
+    }*/
 
 /* ======================= Cards ====================== */
-.cardBox {
+/*.cardBox {
     position: relative;
     width: 100%;
     padding: 20px;
@@ -282,9 +282,9 @@ body {
             font-size: 3.5rem;
             color: var(--black2);
             margin-top : 10px;
-            margin-left: 40px; /* Agregado margen entre números e icono */
+            margin-left: 40px;*/ /* Agregado margen entre números e icono */
 
-        }
+        /*}
 
         .cardBox .card:hover {
             background: var(--blue);
@@ -294,18 +294,18 @@ body {
             .cardBox .card:hover .cardName,
             .cardBox .card:hover .iconBx {
                 color: var(--white);
-            }
+            }*/
 
 /* ================== Order Details List ============== */
-.details {
+/*.details {
     position: relative;
     width: 100%;
     padding: 20px;
     display: grid;
     grid-template-columns: 2fr 1fr;
-    grid-gap: 30px;
+    grid-gap: 30px;*/
     /* margin-top: 10px; */
-}
+/*}
 
     .details .recentOrders {
         position: relative;
@@ -462,10 +462,10 @@ body {
 
         .recentCustomers table tr:hover td h4 span {
             color: var(--white);
-        }
+        }*/
 
 /* ====================== Responsive Design ========================== */
-.media (max-width: 991px) {
+/*.media (max-width: 991px) {
     .navigation
 
 {
@@ -545,5 +545,5 @@ body {
     right: 0;
     left: initial;
 }
-}
+}*/
 

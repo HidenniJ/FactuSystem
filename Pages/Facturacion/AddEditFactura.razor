@@ -2,15 +2,31 @@
 @using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
 @inject IJSRuntime JSRuntime;
+
+
+<div style="margin-left: 450px;">
 @*<script>
     function printPage() {
     window.print();
 }
 </script>*@
+    @if (opciones)
+    {
+        
+    
+    <EditForm Model="facturaRequest" OnValidSubmit="Send">
+  <div class="table-container">
+        <div class="card w-130">
+            <div class="card-body">
 
-<EditForm Model="facturaRequest" OnValidSubmit="Send">
+                    <button style="margin-top:50px; margin-left:700px;" class="btn btn-outline-danger"@onclick="Opciones">    Regresar</button>
+
+
     @*Disenar el espacio para el cliente o contacto a facturarle*@
-    <div class="input-group mb-3">
+
+
+                    <div class="input-group mb-3" style="margin-top:20px;">
+     
         <input 
                class="form-control"
                placeholder="Cliente"
@@ -19,6 +35,8 @@
                @bind="Nombre"
                required title="Debes seleccionar un cliente"/>
         <datalist id="contactos">
+
+
           @foreach (var contacto in Contactos)
             {
                 <option value="@contacto.Nombre @contacto.Apellidos" @onclick="()=>BuscarSeleccionarCliente(contacto.Nombre + contacto.Apellidos)" />
@@ -35,7 +53,7 @@
     </div>
     @*Disenar el espacio para los productos a facturar*@
     <div class="card p-2">
-        <div class="card-header card-title" style="background-color: rgb(0, 0, 53); color: #ffffff;">
+            <div class="card-header card-title" style="background-color: steelblue; color: #ffffff;">
             <h5>¿Que desea el cliente?</h5>
         </div>
         <div class="input-group mb-3 mt-2">
@@ -90,7 +108,7 @@
     @*Disenar los elementos que se cargan a la factura*@
     <h5><b>Detalle de la factura N°:</b> @ultimoIdFactura</h5>
     <table class="table table-hover">
-        <thead style="background-color: rgb(0, 0, 53); color: #ffffff;">
+            <thead style="background-color:#1c4775;  color: #ffffff;">
             <tr>
                 <th class="col w-25">
                     Cantidad
@@ -241,9 +259,26 @@
                 </div>
         }
     </div>
+                </div>
+            </div>
+        </div>
 </EditForm>
-
+}
+    </div>
+    
+@if(opciones== false)
+{
+    <Facturaciongeneral></Facturaciongeneral>
+}
 @code {
+    private bool opciones  = true;
+    private void Opciones()
+    {
+
+        opciones = false;
+
+    }
+
     public bool Chance { get; set; } = false;
     public string? Message { get; set; } = null;
     public string Nombre { get; set; } = string.Empty;

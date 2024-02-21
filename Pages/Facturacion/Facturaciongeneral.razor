@@ -1,0 +1,133 @@
+﻿@page "/facturaciongeneral"
+
+
+@if (pagos)
+{
+@if (credito)
+{
+@if (contado)
+{
+
+    @if (facturar)
+    {
+        <div style="margin-left: 450px; margin-bottom: 39px;">
+            <div class="table-container">
+                <div class="card w-130">
+                    <h1 class="titulo-clientes">Facturacion</h1>
+                    <div class="card-body">
+                        <div class="cardBox">
+
+
+                            <div class="card" @onclick="Facturar">
+                                <div>
+                                    <div class="numbers"></div>
+                                    <div class="cardName"></div>
+                                    <strong>Facturar</strong>
+                                </div>
+
+
+                                <div class="iconBx">
+                                    <ion-icon name="cart-outline"></ion-icon>
+                                </div>
+
+
+                            </div>
+                            <div class="card" @onclick="Contado">
+                                <div>
+                                    <div class="numbers"></div>
+                                    <div class="cardName"></div>
+                                    <strong >Contado</strong>
+
+                                </div>
+
+
+                                <div class="iconBx">
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                </div>
+
+
+                            </div>
+
+                            <div class="card" @onclick="Credito">
+                                <div>
+                                    <div class="numbers"></div>
+                                    <div class="cardName"> </div>
+
+                                    <strong>Credito</strong>
+                                </div>
+
+                                <div class="iconBx">
+                                    <ion-icon name="trending-down-outline"></ion-icon>
+
+                                </div>
+                            </div>
+
+                            <div class="card"@onclick="Pagos">
+                                <div>
+                                    <div class="numbers"></div>
+                                    <div class="cardName"></div>
+                                    <strong>Listado de pagos</strong>
+                                </div>
+
+                                <div class="iconBx">
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+}
+}
+@if (facturar == false)
+    {
+        <AddEditFactura></AddEditFactura>
+    }
+@if (contado == false)
+{
+    <FacturaContado></FacturaContado>
+}
+@if (credito == false)
+{
+    <FacturaCredito></FacturaCredito>
+}
+@if (pagos == false)
+{
+    <ViewPagos></ViewPagos>
+}
+
+
+@code {
+    private bool contado = true;
+    private bool credito = true;
+    private bool pagos = true;
+
+    private bool facturar = true;
+    private void Facturar()
+    {
+
+        facturar = false;
+
+    }
+    private void Contado()
+    {
+        contado = false;
+
+    }
+    private void Credito()
+    {
+        credito = false;
+
+    }
+    private void Pagos()
+    {
+        pagos = false;
+
+    }
+
+
+}

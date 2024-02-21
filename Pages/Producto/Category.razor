@@ -1,157 +1,165 @@
 @page "/category"
 
-<style>
+    <style>
 
-    /* Estilo para resaltar las filas al pasar el cursor */
-    .table-hover tbody tr:hover {
+        /* Estilo para resaltar las filas al pasar el cursor */
+        .table-hover tbody tr:hover {
         background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
-    }
+        }
 
-    /* Estilo para el contenedor de la tabla */
-    .table-container {
+        /* Estilo para el contenedor de la tabla */
+        .table-container {
         margin-top: 20px;
-    }
+        }
 
-    /* Estilo para el cuerpo de la tarjeta */
-    .card-body {
+        /* Estilo para el cuerpo de la tarjeta */
+        .card-body {
         padding: 20px;
-    
-    }
 
-    /* Estilo para centrar el texto en las celdas de la tabla */
-    .table th, .table td {
+        }
+
+        /* Estilo para centrar el texto en las celdas de la tabla */
+        .table th, .table td {
         text-align: center;
-    }
+        }
 
-    .titulo-item {
+        .titulo-item {
         background-color:  steelblue; /* Fondo oscuro */
         color: #ffffff; /* Texto blanco */
         text-align: center; /* Centrar texto */
         padding: 10px; /* A�adir espacio alrededor del texto */
-        
 
-    }
 
-</style>
+        }
 
-<div style="margin-left: 450px;">
-    
-    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><b>@TituloForm</b></h5>
-                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
-                        <span aria-hidden="true" class="oi oi-x"></span>
-                    </button>
-                </div>
+    </style>
+ @if (producto)
+{
+    <div style="margin-left: 450px;">
 
-                <EditForm Model="categoriaRequest" OnValidSubmit="Send">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="nombreCompleto">Nombre completo</label>
-                            <input type="text" class="form-control" id="nombreCompleto" 
-                            @bind-value="categoriaRequest.Nombre" required />
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                        </div>
-                    </div>
-                </EditForm>
-
-                
-
-            </div>
-        </div>
-    </div>
-
-    <div class="table-container">
-        <div class="card w-75">
-            <div class="row">
-                <div class="col-12">
-                    <h1 class="titulo-item">Listado de Categorías</h1>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <!-- Button trigger modal -->
-                        <button class="btn btn-outline-primary" @onclick="ShowCard">
-                            <span class="oi oi-plus"></span>
-                            Nueva categoría
+        <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><b>@TituloForm</b></h5>
+                        <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                            <span aria-hidden="true" class="oi oi-x"></span>
                         </button>
                     </div>
 
-                    <div class="col-1">
-                        <button class="btn btn-danger" @onclick="Producto">Back</button>
-                    </div>
-                </div>
-                
-                
-                <div class="row mt-2">
-                    <div class="col-7"></div>
-                    <div class="col-5">
-                        <div class="input-group">
-                            <input type="text" class="form-control border-0 border-bottom" placeholder="Buscar por nombre" @bind="Filtro">
-                            <button class="btn btn-outline input-group-text border-0 bg-white" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
-                                <span class="oi oi-magnifying-glass text-black"></span>
-                            </button>
+                    <EditForm Model="categoriaRequest" OnValidSubmit="Send">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="nombreCompleto">Nombre completo</label>
+                                <input type="text" class="form-control" id="nombreCompleto" 
+                                @bind-value="categoriaRequest.Nombre" required />
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="row-12 mt-2">
-                    <table class="table table-hover">
-                        <thead class="table" style="background-color:steelblue;">
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre/Categoría</th>
-                                <th>...</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Categorias)
-                            {
-                                <tr>
-                                    <td>@item.Id</td>
-                                    <td>@item.Nombre</td>
-                                    <td>
-                                        <button @onclick="()=>Seleccionar(item.Id)"
-                                            class="btn btn-outline-warning">
-                                            <span class="oi oi-pencil"></span>
-                                        </button>
-                                        <button @onclick="()=>Eliminar(item)"
-                                            class="btn btn-outline-danger">
-                                            <span class="oi oi-trash"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                        <div class="modal-footer">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </EditForm>
+
+
+
                 </div>
             </div>
         </div>
-        
-    </div>
-</div>
 
+        <div class="table-container">
+            <div class="card w-75">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="titulo-item">Listado de Categorías</h1>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-10">
+                            <!-- Button trigger modal -->
+                            <button class="btn btn-outline-primary" @onclick="ShowCard">
+                                <span class="oi oi-plus"></span>
+                                Nueva categoría
+                            </button>
+                        </div>
+
+                        <div class="col-1">
+                            <button class="btn btn-danger" @onclick="Producto">Back</button>
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-2">
+                        <div class="col-7"></div>
+                        <div class="col-5">
+                            <div class="input-group">
+                                <input type="text" class="form-control border-0 border-bottom" placeholder="Buscar por nombre" @bind="Filtro">
+                                <button class="btn btn-outline input-group-text border-0 bg-white" type="button" id="button-addon2" @onclick="()=>CargarContactos()">
+                                    <span class="oi oi-magnifying-glass text-black"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-12 mt-2">
+                        <table class="table table-hover">
+                            <thead class="table" style="background-color:steelblue;">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre/Categoría</th>
+                                    <th>...</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Categorias)
+                                {
+                                    <tr>
+                                        <td>@item.Id</td>
+                                        <td>@item.Nombre</td>
+                                        <td>
+                                            <button @onclick="()=>Seleccionar(item.Id)"
+                                            class="btn btn-outline-warning">
+                                                <span class="oi oi-pencil"></span>
+                                            </button>
+                                            <button @onclick="()=>Eliminar(item)"
+                                            class="btn btn-outline-danger">
+                                                <span class="oi oi-trash"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+@if (producto == false)
+{
+
+    <Producto></Producto>
+}
 @code {
     public string TituloForm => categoriaRequest.Id == 0 ? 
     "Agregar categoría" : "Modificar categoría";
-    
+
     public string Filtro { get; set; } = "";
     public bool ShowForm { get; set; } = false;
     public List<CategoriaResponse> Categorias { get; set; } = new();
     public CategoriaRequest categoriaRequest { get; set; } = new();
     public bool showCard { get; set; } = false;
+    private bool producto = true;
 
     void Producto()
     {
-        urlHelper.NavigateTo("paginaprincipal", true);
+        producto = false;
+
     }
     void ShowCard()
     {
