@@ -31,7 +31,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <button class="btn btn-outline-primary d-print-none" @onclick="PrintPageAsync">
+                                                <button class="btn btn-outline-primary d-print-none" @onclick="async ()=>{await PrintPageAsync();}">
                                                     <span class="oi oi-print"></span>
                                                 </button>
                                             </div>
@@ -52,7 +52,7 @@
                                             @onclick="Back">
                                                 <span class="oi oi-arrow-left"></span>
                                             </button>
-                                            <button class="btn btn-outline-primary d-print-none" @onclick="PrintPageAsync">
+                                            <button class="btn btn-outline-primary d-print-none" @onclick="async ()=>{await PrintPageAsync();}">
                                                 <span class="oi oi-print"></span>
                                             </button>
                                         </div>
@@ -319,7 +319,6 @@
     }
     private async Task PrintPageAsync()
     {
-        // Llama a la función JavaScript para imprimir la página
         await JSRuntime.InvokeVoidAsync("printPage");
     }
     
