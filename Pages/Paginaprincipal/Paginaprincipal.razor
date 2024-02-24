@@ -4,6 +4,7 @@
 @using FactuSystem.Data.Response;
 @inject IFacturaServices facturaServices;
 @attribute [Authorize(Roles = "Administrator,User")]
+@inject IContadorServices contadorservices;
 
 @page "/paginaprincipal"
 @using FactuSystem.Authentication;
@@ -624,6 +625,7 @@ body {
 
 <body class="contenido-principal zoom-in-animation">
     <!-- =============== Navigation ================ -->
+
     <div class="container"  >
         <div class="navigation" style="margin-top : -20px; margin-left:-30px;"  >
             <ul>
@@ -761,7 +763,7 @@ body {
 
                                         <div class="card">
                                             <div>
-                                                <div class="numbers">80</div>
+                                                <div class="numbers"> @contadorservices.ContadorVentas</div>
                                                 <div class="cardName">Ventas</div>
                                             </div>
 
@@ -896,8 +898,7 @@ body {
             }
                 
         </div>
-            
-    <!-- =========== Scripts =========  -->
+        <!-- =========== Scripts =========  -->
     
 </body>
 
@@ -1039,6 +1040,10 @@ body {
         if (resultado.Success)
         {
             Facturas = resultado.Data?.OrderByDescending(f => f.Fecha).ToList() ?? new List<FacturaResponse>();
+            int numeroVentas = Facturas.Count;
+
+            // Luego puedes asignar este valor a una propiedad para mostrarlo en tu interfaz
+            contadorservices.ContadorVentas = numeroVentas;
         }
         StateHasChanged();
     }

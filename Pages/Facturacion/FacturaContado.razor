@@ -1,11 +1,10 @@
 @page "/factura/paga"
 @using FactuSystem.Data.Response;
+@using FactuSystem.Data.Service;
 @inject IJSRuntime JSRuntime;
-@*<script>
-    function printPage() {
-    window.print();
-}
-</script>*@
+@inject IContadorServices contadorservices;
+
+
  @if (opciones)
 {
     <div style="margin-left: 450px;">
@@ -286,7 +285,7 @@
     {
         ShowDetails = false;
     }
-     async Task Consultar()
+    async Task Consultar()
     {
         var resultado = await facturaServices.Consultar();
         if (resultado.Success)
@@ -316,9 +315,11 @@
         SelectedFactura = factura;
         FacturaDetalles = factura.Detalles.ToList();
         ShowDetails = true;
+
     }
     private async Task PrintPageAsync()
     {
+
         await JSRuntime.InvokeVoidAsync("printPage");
     }
     
@@ -337,6 +338,7 @@
         if (resultado.Success)
         {
             Pagos = resultado.Data!;
+
         }
     }
     void DetailsPago()

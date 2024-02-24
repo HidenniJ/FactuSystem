@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 
+@using FactuSystem.Data.Interfaces;
 @using FactuSystem.Data.Services.Interfaces;
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -21,3 +22,4 @@
 @inject IPagoServices pagoServices;
 @inject ICategoriaServices categoriaServices;
 @inject IUsuarioServices usuarioServices
+@inject IContadorServices contadorservices;

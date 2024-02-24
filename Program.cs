@@ -2,6 +2,8 @@
 using FactuSystem.Authentication;
 using FactuSystem.Data;
 using FactuSystem.Data.Context;
+using FactuSystem.Data.Interfaces;
+using FactuSystem.Data.Service;
 using FactuSystem.Data.Services;
 using FactuSystem.Data.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -26,6 +28,7 @@ builder.Services.AddScoped<IClienteServices, ClienteServices>();
 builder.Services.AddScoped<IPagoServices, PagoServices>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
+builder.Services.AddScoped<IContadorServices, ContadorServices>();
 
 var app = builder.Build();
 
