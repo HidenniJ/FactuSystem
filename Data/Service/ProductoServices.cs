@@ -15,6 +15,7 @@ public class ProductoServices : IProductoServices
         this.dbContext = dbContext;
     }
 
+    
     public async Task<Result<List<ProductoResponse>>> Consultar(string filtro)
     {
         try

@@ -14,6 +14,50 @@ public class FacturaServices : IFacturaServices
     {
         this.dbContext = dbContext;
     }
+    public async Task<decimal> CalcularTotalDineroEnCaja()
+    {
+        var resultado = await Consultar();
+        var result = await PaymentQuery();
+        if (resultado.Success && result.Success)
+        {
+            var totalFacturas = resultado.Data.Sum(factura => factura.SaldoPagado);
+
+            var totalPagos = result.Data.Sum(pago => (decimal)pago.MontoPagado);
+
+            // Retorna la suma total de dinero en caja (suma de facturas y pagos)
+            return totalFacturas + totalPagos;
+
+        }
+
+
+        return 0; // O cualquier valor predeterminado en caso de error
+    }
+
+    public async Task<Result<List<PagoResponse>>> PaymentQuery()
+    {
+        try
+        {
+            var pagos = await dbContext.Pagos
+                .Select(p => p.ToResponse())
+                .ToListAsync();
+
+            return new Result<List<PagoResponse>>()
+            {
+                Message = "Ok",
+                Success = true,
+                Data = pagos
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<PagoResponse>>()
+            {
+                Message = ex.Message,
+                Success = false
+            };
+        }
+    }
+
     public async Task<Result<List<FacturaResponse>>> Consultar()
     {
         try
@@ -168,6 +212,8 @@ public class FacturaServices : IFacturaServices
 
 public interface IFacturaServices
 {
+    Task<decimal> CalcularTotalDineroEnCaja();
+
     Task<Result<List<FacturaResponse>>> Consultar();
     Task<Result<FacturaResponse>> Crear(FacturaRequest request);
     Task<Result> Eliminar(FacturaRequest request);

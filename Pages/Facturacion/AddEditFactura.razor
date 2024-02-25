@@ -199,8 +199,12 @@
                     </div>
                     <div class="col-4">
                         <div class="input-group d-print-none">
-                            <input type="number" @bind="@facturaRequest.SaldoPagado" id="montoPagado" 
-                            class="form-control"/>
+                                                @if (facturaRequest.TypePayment != "2")
+                                                {
+                                                    <input type="number" @bind="@facturaRequest.SaldoPagado" id="montoPagado" class="form-control" />
+
+                                                }          
+
                             <button 
                                 class="btn btn-success d-print-none" 
                                 type="button"
@@ -291,6 +295,10 @@
     public decimal Precio { get; set; } = 0;
     public int Cantidad { get; set; } = 1;
     public int IdProducto { get; set; } = 0;
+    void UpdatePaymentType(ChangeEventArgs e)
+    {
+        facturaRequest.TypePayment = e.Value.ToString();
+    }
     void UpdatePage()
     {
         urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);

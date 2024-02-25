@@ -233,6 +233,8 @@
     <Category></Category>
 }
 @code {
+    public List<ProductoRequest> ProductosNecesitados { get; set; } = new List<ProductoRequest>();
+
     private bool categoria = true;
 
     public string TituloForm => productoRequest.Id == 0 ? 
@@ -307,6 +309,7 @@
         await CargarContactos();
         await CargarProveedores();
         await CargarCategorias();
+        
     }
 
     void Cancelar()
@@ -316,8 +319,15 @@
     }
     public async Task Send()
     {
+       
+
         if (productoRequest.Id == 0)
         {
+            if (productoRequest.Stock == 0)
+            {
+                ProductosNecesitados.Add(productoRequest);
+            }
+
             BuscarSeleccionarCategoria(Nombre);
             BuscarSeleccionarProveedor(NombreEmp);
             productoRequest.Precio = productoRequest.PrecioCompra + (productoRequest.PrecioCompra * 0.3m);

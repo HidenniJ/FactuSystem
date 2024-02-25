@@ -1,6 +1,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authStateProvider
+@using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
 @inject IFacturaServices facturaServices;
 @attribute [Authorize(Roles = "Administrator,User")]
@@ -790,8 +791,10 @@ body {
 
                                         <div class="card">
                                             <div>
-                                                <div class="numbers">284</div>
-                                                <div class="cardName">Deudas</div>
+                                                <div class="numbers">
+                                                    @Facturas.Where(c => c.TypePayment=="2" && c.SaldoPendiente > 0).Sum(c => c.SaldoPendiente).ToString("N2") 
+</div>
+                                                <div class="cardName">Cuentas por cobrar</div>
                                             </div>
 
                                             <div class="iconBx">
@@ -802,8 +805,8 @@ body {
 
                                         <div class="card">
                                             <div>
-                                                <div class="numbers">$7,842</div>
-                                                <div class="cardName">Ganancias</div>
+                                                <div class="numbers">$@totalDineroEnCaja</div>
+                                                <div class="cardName">Dinero en caja</div>
                                             </div>
 
                                             <div class="iconBx">
@@ -855,7 +858,20 @@ body {
                                         <!-- ================= New Customers ================ -->
                                         <div class="recentCustomers">
                                             <div class="cardHeader">
-                                                <h2>Clientes recientes</h2>
+                                                <h2>Productos Necesitados</h2>
+                                                @if (ProductosNecesitados.Any())
+                                                {
+                                                    <ul>
+                                                        @foreach (var producto in ProductosNecesitados)
+                                                        {
+                                                            <li>@producto.Nombre - Stock: @producto.Stock</li>
+                                                        }
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <p>No hay productos necesitados en este momento.</p>
+                                                }
                                             </div>
 
                                             <table>
@@ -906,6 +922,28 @@ body {
 </CascadingAuthenticationState>
 
 @code{
+    public List<ProductoRequest> ProductosNecesitados { get; set; } = new List<ProductoRequest>();
+
+
+    // Variable para almacenar el total de cuentas por cobrar
+    private decimal TotalCuentasPorCobrar = 0;
+
+    // Método para calcular el total de cuentas por cobrar
+    private void CalcularTotalCuentasPorCobrar()
+    {
+        // Obtener la lista de facturas pendientes de pago
+
+    }
+
+    // Método para actualizar el total de cuentas por cobrar
+    private async Task ActualizarTotalCuentasPorCobrar()
+    {
+        // Recalcular el total de cuentas por cobrar
+        CalcularTotalCuentasPorCobrar();
+    }
+
+    private decimal totalDineroEnCaja;
+
     public List<FacturaResponse> Facturas { get; set; } = new();
     private bool productos = true;
     private bool clientes = true;
@@ -916,7 +954,10 @@ body {
     private bool facturacion= true;
 
     private bool showDropdown = false;
-
+    private async Task CalcularTotalDineroEnCaja()
+    {
+        totalDineroEnCaja = await facturaServices.CalcularTotalDineroEnCaja();
+    }
     private void ToggleDropdown()
     {
         showDropdown = !showDropdown;
@@ -1051,10 +1092,14 @@ body {
     protected override async Task OnInitializedAsync()
     {
         await Consultar();
+        await CalcularTotalDineroEnCaja();
+        await ActualizarTotalCuentasPorCobrar();
+
+
         // Simulación de datos de ejemplo
         //UltimasFacturas = ObtenerUltimasFacturas();
     }
-
+ 
 }
 
     

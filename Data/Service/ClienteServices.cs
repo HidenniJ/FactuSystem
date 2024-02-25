@@ -19,9 +19,15 @@ namespace FactuSystem.Data.Services
 
     public class Result<T>
     {
+        private List<Producto> productosNecesitados;
+
+      
+
         public bool Success { get; set; }
         public string? Message { get; set; }
         public T? Data { get; set; }
+
+    
     }
 
     public class ClienteServices : IClienteServices
