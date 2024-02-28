@@ -105,6 +105,7 @@ body {
             list-style: none;
             border-top-left-radius: 30px;
             border-bottom-left-radius: 30px;
+
         }
 
             .navigation ul li:hover,
@@ -612,6 +613,11 @@ body {
                         display: block;
                     }
 
+            .hide-on-print {
+                display: none !important; /* Oculta el menú al imprimir */
+            }
+            
+  
     </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -624,15 +630,15 @@ body {
 </head>
 
 
-<body class="contenido-principal zoom-in-animation">
+    <body class="contenido-principal zoom-in-animation">
     <!-- =============== Navigation ================ -->
 
-    <div class="container"  >
-        <div class="navigation" style="margin-top : -20px; margin-left:-30px;"  >
+        <div class="container  " id="menuContainer">
+            <div class="navigation " style="margin-top : -40px; margin-left:-30px; ">
             <ul>
                 <li>
                     <a>
-                        <img src="unnamed.png" alt="" class="logosegundo" >
+                        <img src="unnamed.png" alt="" class="logosegundo" style="margin-top:30px;">
 
 
 
@@ -777,7 +783,7 @@ body {
                                         </div>
                                         <div class="card">
                                             <div>
-                                                <div class="numbers">80</div>
+                                                <div class="numbers">6,500</div>
                                                 <div class="cardName">Beneficios</div>
                                             </div>
 
@@ -856,30 +862,7 @@ body {
                                         </div>
 
                                         <!-- ================= New Customers ================ -->
-                                        <div class="recentCustomers">
-                                            <div class="cardHeader">
-                                                <h2>Productos Necesitados</h2>
-                                                @if (ProductosNecesitados.Any())
-                                                {
-                                                    <ul>
-                                                        @foreach (var producto in ProductosNecesitados)
-                                                        {
-                                                            <li>@producto.Nombre - Stock: @producto.Stock</li>
-                                                        }
-                                                    </ul>
-                                                }
-                                                else
-                                                {
-                                                    <p>No hay productos necesitados en este momento.</p>
-                                                }
-                                            </div>
-
-                                            <table>
-
-
-                                            </table>
-
-                                        </div>
+                                        
 
                                     </div>
                                 }
@@ -984,6 +967,7 @@ body {
         proveedores = true;
         productos = true;
         clientes = true;
+        Funcionesadm = true;
         facturacion = false;
 
     }

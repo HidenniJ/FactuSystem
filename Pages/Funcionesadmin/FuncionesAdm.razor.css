@@ -1,0 +1,25 @@
+﻿/* Estilo para resaltar las filas al pasar el cursor */
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
+}
+
+/* Estilo para el contenedor de la tabla */
+.table-container {
+    margin-top: 17px;
+}
+
+/* Estilo para el cuerpo de la tarjeta */
+.card-body {
+    padding: 20px;
+}
+
+/* Estilo para centrar el texto en las celdas de la tabla */
+.table th, .table td {
+    text-align: center;
+}
+
+.titulo-item {
+    background-color: steelblue; /* Fondo oscuro */
+    color: #ffffff; /* Texto blanco */
+    text-align: center; /* Centrar texto */
+    padding: 10px; /* A�adir espacio alrededor del texto */

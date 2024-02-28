@@ -10,20 +10,35 @@
     window.print();
 }
 </script>*@
+<style>
+        .titulo-clientes {
+            background-color: steelblue; /* Fondo oscuro */
+            color: #ffffff; /* Texto blanco */
+            text-align: center; /* Centrar texto */
+            padding: 10px; /* A�adir espacio alrededor del texto */
+        }
+    </style>
     @if (opciones)
     {
         
     
-    <EditForm Model="facturaRequest" OnValidSubmit="Send">
+        <EditForm Model="facturaRequest" OnValidSubmit="Send">
+
+            
   <div class="table-container">
         <div class="card w-130">
             <div class="card-body">
 
-                    <button style="margin-top:50px; margin-left:700px;" class="btn btn-outline-danger"@onclick="Opciones">    Regresar</button>
+                        <h1 class="titulo-clientes">Facturacion
+                            <button style="margin-top:50px; margin-left:700px;" class="btn btn-outline-danger text-end " @onclick="Opciones"> Regresar 
+                                </button>
+
+                        
+                        </h1>
 
 
     @*Disenar el espacio para el cliente o contacto a facturarle*@
-
+     
 
                     <div class="input-group mb-3" style="margin-top:20px;">
      
@@ -54,7 +69,7 @@
     @*Disenar el espacio para los productos a facturar*@
     <div class="card p-2">
             <div class="card-header card-title" style="background-color: steelblue; color: #ffffff;">
-            <h5>¿Que desea el cliente?</h5>
+            <h5>¿Que desea facturar ?</h5>
         </div>
         <div class="input-group mb-3 mt-2">
             <input class="form-control"

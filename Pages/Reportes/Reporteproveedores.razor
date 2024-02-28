@@ -1,0 +1,213 @@
+﻿@page "/reporteproveedor"
+@using FactuSystem.Data.Request;
+@using FactuSystem.Data.Response;
+@inject IClienteServices ClienteServices;
+@inject IJSRuntime JSRuntime;
+    <div >
+        <img src="/logoempresa.jpg" class=" estilo-imagen">
+        <p> <strong> Hola es una prueba </strong> </p>
+        <style>
+
+
+            /* Estilo para resaltar las filas al pasar el cursor */
+            .table-hover tbody tr:hover {
+            background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
+            }
+
+            /* Estilo para el contenedor de la tabla */
+            .table-container {
+            margin-top: -5px;
+            }
+
+            /* Estilo para el cuerpo de la tarjeta */
+            .card-body {
+            padding: 19px;
+
+            }
+
+            /* Estilo para centrar el texto en las celdas de la tabla */
+            .table th, .table td {
+            text-align: center;
+            }
+
+            .estilo-imagen {
+            color: #ffffff; /* Texto blanco */
+            text-align: center; /* Centrar texto */
+            padding: 10px; /* A�adir espacio alrededor del texto */
+            width: 250px;
+            margin-left: 270px;
+       
+
+            }
+     .titulo-clientes{
+                     margin-left: 270px;
+
+     }
+        </style>
+
+        
+
+                   
+                </div>
+      
+
+        <div class="table-container ">
+            <div class="card w-130">
+
+                <h1 class="titulo-clientes">Listado de Proveedores</h1>
+                <div class="card-body">
+                    <!-- Button trigger modal -->
+
+                    <div class="col-md-3" style="margin-top: 20px; margin-left: 20px;">
+                     
+
+                        <button class="btn btn-outline-primary d-print-none" @onclick="async ()=>{await PrintPageAsync();}">
+                            <span class="oi oi-print"></span>
+                        </button>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <div class="col-6">
+                            <div class="input-group">
+                           
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-12 mt-2">
+                        <!-- A�adido 'table-hover' a la clase 'table' para resaltar filas al pasar el cursor -->
+                        <table class="table table-hover">
+                            <thead class="table" style="background-color:steelblue;">
+                                <tr>
+                                    <th>Nombre/Empresa</th>
+                                    <th>Email</th>
+
+
+                                    <th>Teléfono</th>
+                                    <th>Dirección</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var provedorrow in Proveedores)
+                                {
+                                    <tr>
+                                        <td>@provedorrow.NombreEmp</td>
+                                        <td>@provedorrow.Email</td>
+
+
+                                        <td>@provedorrow.Telefono</td>
+                                        <td>@provedorrow.Direccion</td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    
+    @code {
+
+    private async Task PrintPageAsync()
+    {
+
+        await JSRuntime.InvokeVoidAsync("printPage");
+
+
+    }
+    private bool imprimiendo = false;
+        private bool isPrinting = false;
+
+    public string TituloForm => proveedorRequest.Id == 0 ?
+    "Agregar proveedor" : "Modificar proveedor";
+
+    public string Filtro { get; set; } = "";
+    public bool ShowForm { get; set; } = false;
+    public List<ProveedorResponse> Proveedores { get; set; } = new();
+    public ProveedorRequest proveedorRequest { get; set; } = new();
+    public bool showCard { get; set; } = false;
+
+
+
+    void ShowCard()
+    {
+        showCard = true;
+    }
+
+    void CloseCard()
+    {
+        proveedorRequest = new ProveedorRequest();
+        showCard = false;
+    }
+
+    async Task CargarContactos()
+    {
+        var resultado =
+        await proveedorServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Proveedores = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarContactos();
+    }
+
+    void Cancelar()
+    {
+        proveedorRequest = new ProveedorRequest();
+        showCard = false;
+    }
+    public async Task Send()
+    {
+        if (proveedorRequest.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await proveedorServices.Crear(proveedorRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await proveedorServices.Modificar(proveedorRequest);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        showCard = true;
+        proveedorRequest = Proveedores
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new ProveedorRequest();
+    }
+    public async Task Eliminar(ProveedorResponse item)
+    {
+        var resultado = await proveedorServices.Eliminar(item.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+
+
+}
