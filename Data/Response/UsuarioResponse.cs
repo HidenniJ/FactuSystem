@@ -1,3 +1,5 @@
+using FactuSystem.Data.Request;
+
 namespace FactuSystem.Data.Response;
 
 public class UsuarioResponse
@@ -8,4 +10,18 @@ public class UsuarioResponse
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
     public string? Role { get; set; }
+
+
+    public UsuarioRequest ToRequest()
+    {
+        return new UsuarioRequest
+        {
+            Id = Id,
+            Nombre = Nombre,
+            Apellidos= Apellidos,
+            Email = Email,
+            Password = Password,
+            Role = Role,
+        };
+    }
 }

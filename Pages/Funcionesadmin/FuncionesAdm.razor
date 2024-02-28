@@ -2,72 +2,7 @@
 @using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
 @page "/funcionesadmin"
-
-<div style="margin-left: 450px;">
-
-    <div class="table-container" style="margin-top: 17px;">
-    <div class="card w-130">
-        <h1 class="titulo-item">Funciones de administrador</h1>
-        <div class="card-body ">
-<div class="container mt-3">
-    <div class="btn-group">
-                        <button type="button" class="btn btn-primary" @onclick="ShowCard">Control y creacion de usuarios </button>
-        <button type="button" class="btn btn-primary">  Control de mercancias  </button>
-        <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Cuentas fiancieras</button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Cuentas por pagar</a></li>
-                <li><a class="dropdown-item" href="#">Cuentas por cobrar</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-</div>
-
-    </div>
-</div>
-</div>
-    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);">
-    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
-        <span aria-hidden="true" class="oi oi-x"></span>
-    </button>
-    <div class="card-body">
-        <h3 class="card-title"><b>Agregar usuario</b></h3>
-        <hr>
-        <EditForm Model="request" OnValidSubmit="Send">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div class="mb-3 input-group">
-                <label for="Nombre" class="input-group-text">Nombre</label>
-                <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
-            </div>
-            <div class="mb-3 input-group">
-                <label for="Apellido" class="input-group-text">Apellido</label>
-                <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellidos" />
-            </div>
-            <div class="mb-3 input-group">
-                <label for="Usuario" class="input-group-text">Usuario</label>
-                <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
-            </div>
-            <div class="mb-3 input-group">
-                <label for="Clave" class="input-group-text">Clave</label>
-                <InputText id="Clave" class="form-control" @bind-Value="@request.Password" />
-            </div>
-            <div class="mb-3 input-group">
-                <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
-                <InputText id="ConfirmarClave" class="form-control" @bind-Value="@confirmarClave" />
-            </div>
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
-            </div>
-        </EditForm>
-</div>
-</div>
-
 <style>
-
     /* Estilo para resaltar las filas al pasar el cursor */
     .table-hover tbody tr:hover {
         background-color: #f5f5f5; /* Cambia el color al pasar el cursor */
@@ -75,12 +10,14 @@
 
     /* Estilo para el contenedor de la tabla */
     .table-container {
-        position: center;
-
+        margin-top: -5px;
+        margin-top: 20px; /* Agrega un margen superior para separar los contenedores */
     }
 
     /* Estilo para el cuerpo de la tarjeta */
-   
+    .card-body {
+        padding: 19px;
+    }
 
     /* Estilo para centrar el texto en las celdas de la tabla */
     .table th, .table td {
@@ -93,77 +30,172 @@
         text-align: center; /* Centrar texto */
         padding: 10px; /* A�adir espacio alrededor del texto */
     }
+   
 
 </style>
+
+<div style="margin-left: 450px;">
+    <div class="table-container" style="margin-top: 17px;">
+        <div class="card w-130">
+            <h1 class="titulo-item">Funciones de administrador</h1>
+            <div class="card-body ">
+                <div class="container mt-3">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" @onclick="ShowCard">Control y creacion de usuarios </button>
+                        <button type="button" class="btn btn-primary">   </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"></a></li>
+                                <li><a class="dropdown-item" href="#"></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (showCard)
+    {
+        <div class="table-container">
+            <div class="card w-130">
+                <h1 class="titulo-item">Listado de Usuarios</h1>
+                <div class="card-body ">
+                    <!-- Button trigger modal -->
+                    <button class="btn btn-outline-primary" @onclick="ShowCard">
+                        <span class="oi oi-plus"></span>
+                    </button>
+
+                    <div class="row">
+                        <div class="col-7"></div>
+                        <div class="col-5">
+                            <div class="col input-group">
+                                <input type="text" class="form-control border-0 border-bottom" placeholder="Buscar por nombre" @bind="Filtro">
+                                <button class="btn btn-outline input-group-text border-0 bg-white" type="button" id="button-addon2" @onclick="()=>CargarUsuarios()">
+                                    <span class="oi oi-magnifying-glass text-black"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 px-9">
+                        <table class="table table-hover">
+                            <thead class="table" style="background-color:steelblue;">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Correo</th>
+                                    <th>Clave</th>
+                                    <th>Rol</th>
+                                    <th>...</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var productoRow in Users)
+                                {
+                                    <tr>
+                                        <td>@productoRow.Nombre</td>
+                                        <td>@productoRow.Apellidos</td>
+                                        <td>@productoRow.Email</td>
+                                        <td>@productoRow.Password</td>
+                                        <td>@productoRow.Role</td>
+                                        <td>
+                                            <button @onclick="()=>Seleccionar(productoRow.Id)" class="btn btn-outline-warning">
+                                                <span class="oi oi-pencil"></span>
+                                            </button>
+                                            <button @onclick="()=>Eliminar(productoRow)" class="btn btn-outline-danger">
+                                                <span class="oi oi-trash"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
 @code {
-
-        public bool showCard { get; set; } = false;
-
-        public string Filtro { get; set; } = "";
-        public List<UsuarioResponse> Users { get; set; }
-        = new List<UsuarioResponse>();
-        public UsuarioRequest request { get; set; } = new UsuarioRequest();
-        public string confirmarClave { get; set; } = "";
-
-        public string Message { get; set; } = "";
-        void ShowCard()
-        {
-            showCard = true;
-        }
-        protected override async Task OnInitializedAsync()
+    public bool showCard { get; set; } = false;
+    public string TituloForm => request.Id == 0 ? "Agregar usuario" : "Modificar Usuario";
+    public string Filtro { get; set; } = "";
+    public List<UsuarioResponse> Users { get; set; } = new();
+    public UsuarioRequest request { get; set; } = new UsuarioRequest();
+    public string confirmarClave { get; set; } = "";
+    public async Task Eliminar(UsuarioResponse item)
+    {
+        var resultado = await usuarioservices.Eliminar(item.ToRequest());
+        if (resultado.Success)
         {
             await CargarUsuarios();
+            StateHasChanged();
         }
-        async Task CargarUsuarios()
+    }
+    public void Seleccionar(int Id)
+    {
+        showCard = true;
+        request = Users.Where(c => c.Id == Id).Select(c => c.ToRequest()).FirstOrDefault() ?? new UsuarioRequest();
+    }
+    public string Message { get; set; } = "";
+
+    void ShowCard()
+    {
+        showCard = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarUsuarios();
+    }
+
+    async Task CargarUsuarios()
+    {
+        var resultado = await usuarioServices.Consultar(Filtro);
+        if (resultado.Success)
         {
-            var resultado =
-            await usuarioServices.Consultar(Filtro);
-            if (resultado.Success)
+            Users = resultado.Data!;
+        }
+    }
+
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
             {
-                Users = resultado.Data!;
+                Message = "El correo electrónico ya existe";
+            }
+            else
+            {
+                if (request.Password != confirmarClave)
+                {
+                    Message = "Las claves no coinciden";
+                    return;
+                }
+
+                request.Role = "User";
+
+                var r = await usuarioServices.Crear(request);
+                if (r.Success)
+                {
+                    Cancelar();
+                    await CargarUsuarios();
+                    StateHasChanged();
+                }
             }
         }
-        public async Task Send()
-        {
-            if (request.Id == 0)
-            {
-                // Verificar si el correo electrónico ya existe en la base de datos
-                var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
-                if (existingUser != null)
-                {
-                    // Mostrar mensaje de error porque el correo electrónico ya existe
-                    // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
-                    // Por ejemplo:
-                    Message = "Patron el correo electrónico ya existe 🤨";
-                }
-                else
-                {
-                    if (request.Password != confirmarClave)
-                    {
-                        // Mostrar mensaje de error porque las claves no coinciden
-                        Message = "Las claves no concuerdan";
-                        return;
-                    }
+    }
 
-                    request.Role = "User";
-
-                    // Debo registrar el contacto.
-                    var r = await usuarioServices.Crear(request);
-                    if (r.Success)
-                    {
-                        Cancelar();
-                        await CargarUsuarios();
-                        StateHasChanged();
-                    }
-                }
-            }
-        }
-
-       
     void CloseCard()
     {
         showCard = false;
     }
+
     void Cancelar()
     {
         request = new UsuarioRequest();

@@ -5,7 +5,12 @@
 @inject IJSRuntime JSRuntime;
     <div >
         <img src="/logoempresa.jpg" class=" estilo-imagen">
-        <p> <strong> Hola es una prueba </strong> </p>
+        <div style="margin-left: 300px;">
+
+     @*   <p > <strong  > Hola es una prueba </strong> </p>*@
+
+
+        </div>
         <style>
 
 
@@ -111,12 +116,13 @@
 
 
     
-    @code {
+@code {
 
     private async Task PrintPageAsync()
     {
 
         await JSRuntime.InvokeVoidAsync("printPage");
+        urlHelper.NavigateTo("/paginaprincipal");
 
 
     }
