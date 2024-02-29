@@ -11,11 +11,18 @@
 }
 </script>*@
 <style>
+     
         .titulo-clientes {
-            background-color: steelblue; /* Fondo oscuro */
-            color: #ffffff; /* Texto blanco */
+            color: white; /* Texto blanco */
             text-align: center; /* Centrar texto */
-            padding: 10px; /* A�adir espacio alrededor del texto */
+            padding: 10px; 
+            /* A�adir espacio alrededor del texto */
+            border: 1px solid black; /* Agregar borde para visualización */
+            background-color: steelblue;
+        }
+
+        .card-body {
+            padding: 40px;
         }
     </style>
     @if (opciones)
@@ -25,12 +32,12 @@
         <EditForm Model="facturaRequest" OnValidSubmit="Send">
 
             
-  <div class="table-container">
+  <div class="table-container" >
         <div class="card w-130">
             <div class="card-body">
 
                         <h1 class="titulo-clientes">Facturacion
-                            <button style="margin-top:50px; margin-left:700px;" class="btn btn-outline-danger text-end " @onclick="Opciones"> Regresar 
+                            <button style=" margin-left:650px;" class="btn btn-danger text-end " @onclick="Opciones"> Regresar 
                                 </button>
 
                         

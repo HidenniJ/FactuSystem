@@ -55,9 +55,95 @@
             </div>
         </div>
     </div>
+    <div class="modal" style="display: @(showCard ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><b>@TituloForm</b></h5>
+                    <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseCard">
+                        <span aria-hidden="true" class="oi oi-x"></span>
+                    </button>
+                </div>
 
-    @if (showCard)
-    {
+                <EditForm Model="request" OnValidSubmit="Send">
+                    @if (Message != null)
+                    {
+                        <div class="alert-danger">
+                            <span class="text-danger">@Message</span>
+                        </div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class=" oi oi-person"></span>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Nombre" id="nombreCompleto"
+                            @bind-value="request.Nombre" required />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class=" oi oi-person"></span>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Apellido" id="correo"
+                            @bind-value="request.Apellidos" required min="0.01" step="0.01" />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-envelope-closed"></span>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Email" id="correo"
+                            @bind-value="request.Email" required />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                           
+                        </div>
+                        
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-lock-locked"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="Clave" id="correo"
+                            @bind-value="request.Password" required min="0.01" step="0.01" />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-lock-locked"></span>
+                                </span>
+                            </div>
+                            <input class="form-control" placeholder="confirmar clave" id="correo"
+                            @bind-value="@confirmarClave" required min="0.01" step="0.01" />
+                        </div>
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-person"></span>
+                                </span>
+                            </div>
+                            <select class="form-control" id="rol" @bind="request.Role">
+                                <option value="Administrator">Administrator</option>
+                                <option value="User">User</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
         <div class="table-container">
             <div class="card w-130">
                 <h1 class="titulo-item">Listado de Usuarios</h1>
