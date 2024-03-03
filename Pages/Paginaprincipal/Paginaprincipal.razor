@@ -618,112 +618,7 @@ body {
                 display: none !important; /* Oculta el menú al imprimir */
             }
 
-            * {
-                box-sizing: border-box;
-            }
-
-            .grafico {
-                height: 200px;
-                margin: 1rem auto;
-                position: relative;
-                width: 200px;
-            }
-
-            .recorte {
-                border-radius: 50%;
-                clip: rect(0px, 200px, 200px, 100px);
-                height: 100%;
-                position: absolute;
-                width: 100%;
-            }
-
-            .quesito {
-                border-radius: 50%;
-                clip: rect(0px, 100px, 200px, 0px);
-                height: 100%;
-                position: absolute;
-                width: 100%;
-                font-family: monospace;
-                font-size: 1.5rem;
-            }
-
-            .sombra {
-                background-color: #fff;
-                border-radius: 50%;
-                box-shadow: 0 4px 7px rgba(0, 0, 0, 0.3);
-                border: 5px solid #000;
-                height: 100%;
-                position: absolute;
-                width: 100%;
-            }
-
-            #porcion1 {
-                transform: rotate(0deg);
-            }
-
-                #porcion1 .quesito {
-                    background-color: rgba(0,0,255,.7);
-                    transform: rotate(70deg);
-                }
-
-            #porcion2 {
-                transform: rotate(70deg);
-            }
-
-                #porcion2 .quesito {
-                    background-color: rgba(255,255,0,.7);
-                    transform: rotate(120deg);
-                }
-
-            #porcion3 {
-                transform: rotate(-170deg);
-            }
-
-                #porcion3 .quesito {
-                    background-color: rgba(0,128,0,.7);
-                    transform: rotate(25deg);
-                }
-
-            #porcionFin {
-                transform: rotate(-145deg);
-            }
-
-                #porcionFin .quesito {
-                    background-color: rgba(255,0,0,.7);
-                    transform: rotate(145deg);
-                }
-
-            #porcion1 .quesito:after {
-                content: attr(data-rel);
-                left: 25%;
-                line-height: 5;
-                position: absolute;
-                top: 0;
-                transform: rotate(-70deg);
-            }
-
-            #porcion2 .quesito:after {
-                content: attr(data-rel);
-                left: 15%;
-                position: absolute;
-                top: 30%;
-                transform: rotate(-190deg);
-            }
-
-            #porcion3 .quesito:after {
-                content: attr(data-rel);
-                left: 35%;
-                position: absolute;
-                top: 4%;
-                transform: rotate(70deg);
-            }
-
-            #porcionFin .quesito:after {
-                content: attr(data-rel);
-                left: 10%;
-                position: absolute;
-                top: 30%;
-            }
+         
             
   
     </style>
@@ -966,21 +861,12 @@ body {
                                                         </tr>
                                                     }
                                                 </tbody>
-                                                
+                                                <div id="myPlot" style="width:100%;max-width:700px"></div>
+
 
                                             </table>
 
-                                            <div class="grafico">
-                                                <div class="cardHeader">
-                                                    <h2>Grafico de compras</h2>
-                                                </div>
-                                                <div class="sombra"></div>
-                                                <!-- Aquí ajustamos los valores data-rel con los porcentajes calculados -->
-                                                <div id="porcion1" class="recorte"><div class="quesito" data-rel="@PorcentajeAlContado"></div></div>
-                                                <div id="porcion2" class="recorte"><div class="quesito" data-rel="@PorcentajeACredito"></div></div>
-                                                <!-- Si tienes más porciones en el gráfico, añádelas de manera similar -->
-                                            </div>
-
+                                          
                                         </div>
 
                                         </div>
@@ -1030,23 +916,7 @@ body {
     private decimal PorcentajeACredito { get; set; }
 
     // Método para consultar las facturas y calcular los porcentajes
-    private async Task ConsultarFacturasYCalcularPorcentajes()
-    {
-        var resultado = await facturaServices.Consultar();
-        if (resultado.Success)
-        {
-            Facturas = resultado.Data ?? new List<FacturaResponse>();
-
-            // Calcular el total de ventas al contado y a crédito
-            decimal totalAlContado = Facturas.Count(f => f.TypePayment == "1");
-            decimal totalACredito = Facturas.Count(f => f.TypePayment == "2");
-
-            // Calcular los porcentajes
-            decimal totalVentas = Facturas.Count;
-            PorcentajeAlContado = totalAlContado / totalVentas * 100;
-            PorcentajeACredito = totalACredito / totalVentas * 100;
-        }
-    }
+  
 
     public List<ProductoRequest> ProductosNecesitados { get; set; } = new List<ProductoRequest>();
 
@@ -1221,8 +1091,37 @@ body {
         await Consultar();
         await CalcularTotalDineroEnCaja();
         await ActualizarTotalCuentasPorCobrar();
-        await ConsultarFacturasYCalcularPorcentajes();
+        // Aquí puedes realizar la carga de tus facturas desde el servicio, por ejemplo
+        // Facturas = await ObtenerFacturas();
 
+        // Calcula el porcentaje de facturas a crédito y al contado
+        double porcentajeCredito = (Facturas.Count(f => f.TypePayment == "1") / (double)Facturas.Count) * 100;
+        double porcentajeContado = 100 - porcentajeCredito;
+
+        // Define los datos para el gráfico de pastel
+        var xArray = new[] { "Crédito", "Contado" };
+        var yArray = new[] { porcentajeCredito, porcentajeContado };
+
+        // Define el layout del gráfico
+        var layout = new
+        {
+            title = "Reportes de factura a credito y contado "
+        };
+
+        // Define los datos para el gráfico
+        var data = new[]
+        {
+            new
+            {
+                labels = xArray,
+                values = yArray,
+                type = "pie"
+            }
+    };
+
+        // Crea el gráfico de pastel
+        await JSRuntime.InvokeVoidAsync("createPieChart", "myPlot", data, layout);
+    }
 
         // Simulación de datos de ejemplo
         //UltimasFacturas = ObtenerUltimasFacturas();
