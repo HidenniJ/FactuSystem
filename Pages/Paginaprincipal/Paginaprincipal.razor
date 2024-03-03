@@ -276,38 +276,39 @@ body {
     grid-gap: 30px;
 }
 
-    .cardBox .card {
-        position: relative;
-        background: var(--white);
-        padding: 30px;
-        border-radius: 20px;
-        display: flex;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
-        flex-direction: row;
-    }
+                .cardBox .card {
+                    position: relative;
+                    background: var(--white);
+                    padding: 30px;
+                    border-radius: 20px;
+                    display: flex;
+                    justify-content: center; /* Centrar horizontalmente */
+                    align-items: center; /* Centrar verticalmente */
+                    cursor: pointer;
+                    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+                    flex-direction: column; /* Apilar el contenido verticalmente */
+                }
 
-        .cardBox .card .numbers {
-            position: relative;
-            font-weight: 500;
-            font-size: 2.5rem;
-            color: var(--blue);
-        }
+                    .cardBox .card .cardName {
+                        color: var(--black2);
+                        font-size: 1.5rem; /* Tamaño de fuente fijo */
+                        margin-top: 10px; /* Ajusta según sea necesario */
+                        text-align: center; /* Centrar el texto */
+                    }
 
-        .cardBox .card .cardName {
-            color: var(--black2);
-            font-size: 1.1rem;
-            margin-top: 5px;
-        }
+                    .cardBox .card .numbers {
+                        font-weight: 500;
+                        font-size: 1.5rem; /* Tamaño de fuente fijo */
+                        color: var(--blue);
+                        overflow: hidden; /* Evita que el contenido se desborde */
+                        text-align: center; /* Centrar el texto */
+                    }
 
-        .cardBox .card .iconBx {
-            font-size: 3.5rem;
-            color: var(--black2);
-            margin-top : 10px;
-            margin-left: 40px; /* Agregado margen entre números e icono */
-
-        }
+                    .cardBox .card .iconBx {
+                        font-size: 3.5rem; /* Tamaño de icono fijo */
+                        color: var(--black2);
+                        margin-top: 10px; /* Espacio entre el nombre y el icono */
+                    }
 
         .cardBox .card:hover {
             background: var(--blue);

@@ -40,9 +40,7 @@
         <button class="login" @onclick="Authenticate">Login </button>
         @if (!string.IsNullOrEmpty(mensajeError))
         {
-            <div class="alert alert-danger" role="alert">
-                <strong>Error:</strong> @mensajeError
-            </div>
+            <div class="text-danger mb-3">@mensajeError</div>
         }
         <div id="spinner" style="display: none;">
             <!-- Aquí puedes agregar el código HTML de tu spinner -->
@@ -264,7 +262,7 @@
             // Verificar si el usuario es nulo
             if (user == null)
             {
-                mensajeError = "Credenciales incorrectas. Por favor, inténtelo de nuevo.";
+                mensajeError = "Credenciales incorrectas.";
             }
             else
             {

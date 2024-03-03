@@ -16,7 +16,10 @@
                         <div class="card w-130">
                             <div class="card-body">
 
-                                <button style="margin-top:50px; margin-left:700px;" class="btn btn-outline-danger" @onclick="Opciones">    Regresar</button>
+                                <button style="margin-top:50px; margin-left:600px;" class="btn btn-outline-danger" @onclick="Opciones">
+                                    <span aria-hidden="true" class="oi oi-arrow-left"></span>
+
+                                </button>
                                 @if (!ShowDetails)
                                 {
                                     <form @onsubmit="BuscarFacturas">
