@@ -27,9 +27,14 @@ public class FacturaResponse
         0;//Falso
     public string TypePayment  { get; set; } = null!;
     public decimal SaldoPagado { get; set; }
+    
     public decimal SaldoPendiente => Pagos != null && Pagos.Any()
     ? SubTotal - (decimal)Pagos.Sum(p => p.MontoPagado) - SaldoPagado - TotalDesc
     : SubTotal - TotalDesc - SaldoPagado;
+
+    public decimal DineroPagado => Pagos != null && Pagos.Any()
+    ? SaldoPagado + (decimal)Pagos.Sum(p => p.MontoPagado)
+    : SaldoPagado;
     
     public FacturaRequest ToRequest()
     {
