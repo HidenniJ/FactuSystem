@@ -57,7 +57,7 @@ public class FacturaServices : IFacturaServices
             };
         }
     }
-
+   
     public async Task<Result<List<FacturaResponse>>> Consultar()
     {
         try
@@ -207,8 +207,48 @@ public class FacturaServices : IFacturaServices
             };
         }
     }
+    public async Task<Result<List<FacturaDetalleResponse>>> ObtenerDetallesUltimaFactura()
+    {
+        try
+        {
+            // Obtener la última factura facturada
+            var ultimaFactura = await dbContext.Facturas
+                .Include(f => f.Detalles)
+                .OrderByDescending(f => f.Fecha)
+                .FirstOrDefaultAsync();
 
+            if (ultimaFactura == null)
+            {
+                return new Result<List<FacturaDetalleResponse>>()
+                {
+                    Success = false,
+                    Message = "No se encontró ninguna factura facturada"
+                };
+            }
+
+            // Obtener los detalles de la última factura
+            var detalles = ultimaFactura.Detalles
+                .Select(d => d.ToResponse())
+                .ToList();
+
+            return new Result<List<FacturaDetalleResponse>>()
+            {
+                Success = true,
+                Message = "Detalles de la última factura obtenidos correctamente",
+                Data = detalles
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<FacturaDetalleResponse>>()
+            {
+                Success = false,
+                Message = ex.Message
+            };
+        }
+    }
 }
+
 
 public interface IFacturaServices
 {
@@ -219,4 +259,5 @@ public interface IFacturaServices
     Task<Result> Eliminar(FacturaRequest request);
     Task<Result<List<FacturaResponse>>> BuscarFacturas(DateTime? fecha);
     Task<Result<FacturaResponse>> Modificar(FacturaRequest request);
+    Task<Result<List<FacturaDetalleResponse>>> ObtenerDetallesUltimaFactura();
 }

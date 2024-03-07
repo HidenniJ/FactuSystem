@@ -1,0 +1,259 @@
+﻿@inject IFacturaServices facturaServices;
+
+
+@page "/reportefactura"
+ <div class="col-md-3" style="margin-top: 20px; margin-left: 20px;">
+                      
+
+                        <button class="btn btn-outline-primary d-print-none" @onclick="async ()=>{await PrintPageAsync();}">
+                            <span class="oi oi-print"></span>
+                        </button>
+                    </div
+<div class="col-md-12">
+    <div class="row">
+        <div class="receipt-main col-xs-10 col-sm-10 col-md-8 col-xs-offset-1 col-sm-offset-1 col-md-offset-2">
+
+            <div class="row">
+                <div class="receipt-header">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="receipt-left">
+                            <img class="img-responsive" alt="iamgurdeeposahan" src="logoempresa.jpg" style="width: 150px; border-radius: 43px;">
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                        <div class="receipt-right">
+                            <h5>Rnc: 3732199193-19</h5>
+                            <p>Direccion :Calle 16 Agosto #105 Fte Cementerio Cotui, RD.</p>
+                            <p>Telefono : 8092670797 <i class="fa fa-phone"></i></p>
+                            <p>Email : company@gmail.com <i class="fa fa-envelope-o"></i></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="receipt-header receipt-header-mid">
+                    <div class="col-xs-8 col-sm-8 col-md-8 text-left">
+                        <div class="receipt-right">
+                            <h5>Pedro Martinez</h5>
+                            <p><b>telefono :</b> 8092678938</p>
+                            <p><b>Direccion :</b> La mata</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <div class="receipt-left">
+                            <h3>Detalle de la factura # 102</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 50px;">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Descuento</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var detalle in detallesUltimaFactura)
+                        {
+                            <tr>
+                                <td>@detalle.Producto.Nombre</td>
+                                <td>@detalle.Cantidad</td>
+                                <td>@detalle.Precio</td>
+                                <td>@detalle.Descuento</td>
+                                <td>@(detalle.Cantidad * detalle.Precio - detalle.TotalDesc)</td>
+                                <!-- Calcula el subtotal restando el descuento del total -->
+                                <!-- Agrega más celdas si es necesario -->
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sección de Resumen -->
+            <div class="row">
+                <div class="col-md-12" >
+                    <h2 style="font-size: 20px;">RESUMEN:</h2>
+                    <!-- Aquí puedes agregar cualquier contenido relacionado con el resumen -->
+                </div>
+            </div>
+
+            <!-- Sección de Tipo de Venta -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 style="font-size: 20px;">Tipo de Venta:</h2>
+                    <!-- Aquí puedes agregar cualquier contenido relacionado con el tipo de venta -->
+                </div>
+            </div>
+
+            <!-- Sección de Impuestos -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 style="font-size: 20px;">Impuestos:</h2>
+                    <!-- Aquí puedes agregar cualquier contenido relacionado con los impuestos -->
+                </div>
+            </div>
+
+            <!-- Sección de Descuento -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 style="font-size: 20px;">Descuento:</h2>
+                    <!-- Aquí puedes agregar cualquier contenido relacionado con el descuento -->
+                </div>
+            </div>
+
+            <!-- Sección de Total -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 style="font-size: 20px;">Total:</h2>
+                    <!-- Aquí puedes agregar cualquier contenido relacionado con el total -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="receipt-header receipt-header-mid receipt-footer">
+                    <div class="col-xs-8 col-sm-8 col-md-8 text-left">
+                        <div class="receipt-right">
+                            <p><b>fecha :</b> 4/3/2024</p>
+                            <h5 style="color: rgb(140, 140, 140);">Gracias por comprar!</h5>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <div class="receipt-left">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+
+body{
+background:#eee;
+margin-top:20px;
+}
+.text-danger strong {
+        	color: #9f181c;
+		}
+		.receipt-main {
+			background: #ffffff none repeat scroll 0 0;
+			border-bottom: 12px solid #333333;
+			border-top: 12px solid #9f181c;
+			margin-top: 50px;
+			margin-bottom: 50px;
+			padding: 40px 30px !important;
+			position: relative;
+			box-shadow: 0 1px 21px #acacac;
+			color: #333333;
+			font-family: open sans;
+		}
+		.receipt-main p {
+			color: #333333;
+			font-family: open sans;
+			line-height: 1.42857;
+		}
+		.receipt-footer h1 {
+			font-size: 15px;
+			font-weight: 400 !important;
+			margin: 0 !important;
+		}
+		.receipt-main::after {
+			background: #414143 none repeat scroll 0 0;
+			content: "";
+			height: 5px;
+			left: 0;
+			position: absolute;
+			right: 0;
+			top: -13px;
+		}
+		.receipt-main thead {
+			background: #414143 none repeat scroll 0 0;
+		}
+		.receipt-main thead th {
+			color:#fff;
+		}
+		.receipt-right h5 {
+			font-size: 16px;
+			font-weight: bold;
+			margin: 0 0 7px 0;
+		}
+		.receipt-right p {
+			font-size: 12px;
+			margin: 0px;
+		}
+		.receipt-right p i {
+			text-align: center;
+			width: 18px;
+		}
+		.receipt-main td {
+			padding: 9px 20px !important;
+		}
+		.receipt-main th {
+			padding: 13px 20px !important;
+		}
+		.receipt-main td {
+			font-size: 13px;
+			font-weight: initial !important;
+		}
+		.receipt-main td p:last-child {
+			margin: 0;
+			padding: 0;
+		}	
+		.receipt-main td h2 {
+			font-size: 20px;
+			font-weight: 900;
+			margin: 0;
+			text-transform: uppercase;
+		}
+		.receipt-header-mid .receipt-left h1 {
+			font-weight: 100;
+			margin: 34px 0 0;
+			text-align: right;
+			text-transform: uppercase;
+		}
+		.receipt-header-mid {
+			margin: 24px 0;
+			overflow: hidden;
+		}
+		
+		#container {
+			background-color: #dcdcdc;
+		}
+
+  
+</style>
+
+
+@code {
+     private async Task PrintPageAsync()
+    {
+
+        urlHelper.NavigateTo("/reporteproveedor");
+        //await JSRuntime.InvokeVoidAsync("printPage");
+
+
+    }
+    private List<FacturaDetalleResponse> detallesUltimaFactura = new List<FacturaDetalleResponse>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resultado = await facturaServices.ObtenerDetallesUltimaFactura();
+        if (resultado.Success)
+        {
+            detallesUltimaFactura = resultado.Data;
+        }
+        else
+        {
+            // Manejo de error si no se pueden obtener los detalles de la última factura
+        }
+    }
+}

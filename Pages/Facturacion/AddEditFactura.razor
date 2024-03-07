@@ -278,7 +278,7 @@
                                 </button>
                                 <button 
                                     class="btn btn-success d-print-none" 
-                                    type="submit" @onclick="PrintPageAsync">
+                                    type="submit" @onclick="PrintPageAsync" >
                                     <span class="oi oi-check"></span>
                                 </button>
                             </div>
@@ -306,6 +306,7 @@
         opciones = false;
 
     }
+
 
     public bool Chance { get; set; } = false;
     public string? Message { get; set; } = null;
@@ -392,7 +393,7 @@
             Message = null;
         }
     }
-   async Task CargarContacto()
+    async Task CargarContacto()
     { 
         //Llenar la lista de contactos para mostrar al usuario...
         var r = await clienteServices.Consultar("");
@@ -435,33 +436,33 @@
     }
     public string TypePayment {get; set;} = string.Empty;
     async Task Send()
-{
-    if (facturaRequest.SaldoPagado > facturaRequest.SaldoPagado - facturaRequest.TotalDesc 
-        && facturaRequest.TypePayment == "2")
     {
-        Pendiente();
+        if (facturaRequest.SaldoPagado > facturaRequest.SaldoPagado - facturaRequest.TotalDesc 
+            && facturaRequest.TypePayment == "2")
+        {
+            Pendiente();
 
-        return;
+            return;
+        }
+
+        BuscarSeleccionarCliente(Nombre);
+
+        // Convertir ICollection a List antes de llamar a la función ActualizarStock
+        var detallesList = facturaRequest.Detalles.ToList();
+
+        // Llamada a la función para actualizar el stock
+        await productoServices.ActualizarStock(
+            detallesList.Select(d => d.ProductoId).ToList(), detallesList);
+
+        var result = await facturaServices.Crear(facturaRequest);
+        Message = null;
+
+        if (!result.Success)
+        {
+            Message = "Estoy cansado de trabajar 😥";
+            return;
+        }
     }
-    
-    BuscarSeleccionarCliente(Nombre);
-
-    // Convertir ICollection a List antes de llamar a la función ActualizarStock
-    var detallesList = facturaRequest.Detalles.ToList();
-
-    // Llamada a la función para actualizar el stock
-    await productoServices.ActualizarStock(
-        detallesList.Select(d => d.ProductoId).ToList(), detallesList);
-
-    var result = await facturaServices.Crear(facturaRequest);
-    Message = null;
-
-    if (!result.Success)
-    {
-        Message = "Estoy cansado de trabajar 😥";
-        return;
-    }
-}
 
     void CancelarPago()
     {
@@ -495,7 +496,7 @@
             return;
         }
 
-        
+
         var clienteSeleccionado = Contactos.FirstOrDefault(c => c.Nombre + " " + c.Apellidos == Nombre);
         if (facturaRequest.TypePayment == "2" && LimiteCreditoExcedido())
         {
@@ -515,7 +516,7 @@
         // Aquí deberías obtener el límite de crédito del cliente seleccionado
         // Puedes acceder a la información del cliente desde la lista de contactos
         var clienteSeleccionado = Contactos.FirstOrDefault(c => c.Nombre + " " + c.Apellidos == Nombre);
-        
+
         if (clienteSeleccionado != null && clienteSeleccionado.Limitecredito < 
             facturaRequest.SubTotal - facturaRequest.TotalDesc)
         {
@@ -543,7 +544,10 @@
     private async Task PrintPageAsync()
     {
         // Llama a la función JavaScript para imprimir la página
-        await JSRuntime.InvokeVoidAsync("printPage");
-        UpdatePage();
+        await Reporte();
+    }
+    private async Task Reporte()
+    {
+        urlHelper.NavigateTo("/reportefactura");
     }
 }
