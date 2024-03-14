@@ -353,7 +353,10 @@
                                         </label>
                                         <br>
                     <label for=""><b>Total: </b></label>
-                    @($"{(facturaRequest.SubTotal - facturaRequest.TotalDesc):N2}")
+                                            @($"{(facturaRequest.SubTotal - facturaRequest.TotalDesc + facturaRequest.SubTotal * 0.18m  ):N2}")
+                                         
+
+
                                       @*  @if (!string.IsNullOrEmpty(FechaActual))
                                         {
                                             <p>Fecha : @FechaActual</p>
@@ -409,6 +412,8 @@
 </CascadingAuthenticationState>
 
 @code {
+
+
     [Parameter]
     public string? Format { get; set; }
 
@@ -469,6 +474,7 @@
     }
     void AgregarAlDetalle()
     {
+   
         var producto = Productos.FirstOrDefault(p => p.Id == IdProducto);
 
         if (producto != null)
@@ -673,5 +679,7 @@
         ocultar = true;
 
     }
+
+
    
 }

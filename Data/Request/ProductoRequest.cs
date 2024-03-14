@@ -13,4 +13,5 @@ public class ProductoRequest
     public int CategoriaID { get; set; }
     public decimal PrecioCompra { get; set; }
     public decimal Precio { get; set; }
+
 }
