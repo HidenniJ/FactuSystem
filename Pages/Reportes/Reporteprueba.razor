@@ -1,0 +1,108 @@
+﻿@page "/factura/reporte/{Nombre}"
+@using FactuSystem.Data.Response
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime;
+@inject IFacturaServices FacturaServices; // Inyectar el servicio de facturas
+
+<button class="btn btn-outline-primary d-print-none" @onclick="async () => { await PrintPageAsync(); }">
+    <span class="oi oi-print"></span>
+</button>
+@if (Factura == null)
+{
+    <p>No hay factura seleccionada.</p>
+}
+else
+{
+    <h1>Reporte de Factura</h1>
+    <div>
+        <h2>Detalles de la Factura</h2>
+
+        <p><b>Número de Factura:</b> @Nombre</p>
+        @if (Factura.TypePayment != null)
+        {
+            <p><b>Tipo de Venta:</b> @Factura.TypePayment</p>
+        }
+        else
+        {
+            <p><b>Tipo de Venta:</b> Tipo de venta desconocido</p>
+        }
+        <p><b>Fecha:</b> @Factura.Fecha.ToString("dd/MM/yyyy")</p>
+
+        <table class="table table-hover">
+            <!-- Detalles de la factura -->
+            <thead>
+                <tr>
+                    <th>Numero de factura</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detalle in Factura.Detalles)
+                {
+                    <tr>
+                        <td>@detalle.Id</td>
+                        <td>@detalle.Producto.Nombre</td>
+                        <td>@detalle.Cantidad</td>
+                        <td>$@detalle.Precio</td>
+                        <td>$@(detalle.Cantidad * detalle.Precio)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Otros detalles de la factura -->
+        @if (Factura.TypePayment == "1") // Venta al contado
+        {
+            <p>Tipo de venta : Contado</p>
+            <p><b>Saldo Pagado:</b> $@Factura.SaldoPagado</p>
+            <p><b>Cambio:</b> $@(Factura.SaldoPagado - Factura.SubTotal)</p>
+        }
+        else if (Factura.TypePayment == "2") // Venta a crédito
+        {
+            <p>Tipo de venta : Crédito</p>
+            <p><b>Saldo Pendiente:</b> $@Factura.SaldoPendiente</p>
+        }
+
+        <p><b>Subtotal:</b> $@Factura.SubTotal</p>
+        <p><b>ITBIS:</b> $@(Factura.SubTotal * 0.18m)</p>
+        <p><b>Descuento:</b> $@Factura.TotalDesc</p>
+        <p><b>Total:</b> $@(Factura.SubTotal - Factura.TotalDesc)</p>
+    </div>
+}
+
+@code {
+    async Task PrintPageAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("printPage");
+        urlHelper.NavigateTo("/paginaprincipal");
+    }
+
+    [Parameter]
+    public string Nombre { get; set; }
+
+    public FacturaResponse Factura { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Aquí debes llamar a los métodos para obtener la última factura de cada tipo
+        var facturaContadoResult = await FacturaServices.ObtenerUltimaFacturaContado();
+        var facturaCreditoResult = await FacturaServices.ObtenerUltimaFacturaCredito();
+
+        if (facturaContadoResult.Success)
+        {
+            Factura = facturaContadoResult.Data;
+        }
+        else if (facturaCreditoResult.Success)
+        {
+            Factura = facturaCreditoResult.Data;
+        }
+        else
+        {
+            // Si ninguna operación fue exitosa, muestra un mensaje de error o maneja la situación de otra manera
+            Console.WriteLine("Error al obtener las últimas facturas.");
+        }
+    }
+}

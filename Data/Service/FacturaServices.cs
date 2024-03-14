@@ -247,6 +247,124 @@ public class FacturaServices : IFacturaServices
             };
         }
     }
+    public async Task<Result<FacturaResponse>> ObtenerDetallesUltimaFacturaConTipoVenta()
+    {
+        try
+        {
+            // Obtener todas las facturas
+            var todasLasFacturas = await dbContext.Facturas
+                .Include(f => f.Detalles)
+                .ToListAsync();
+
+            // Ordenar las facturas por fecha de manera descendente
+            var facturasOrdenadas = todasLasFacturas.OrderByDescending(f => f.Fecha);
+
+            // Encontrar la última factura que no esté completamente pagada
+            var ultimaFactura = facturasOrdenadas.FirstOrDefault(f => f.SaldoPendiente > 0);
+
+            if (ultimaFactura == null)
+            {
+                return new Result<FacturaResponse>()
+                {
+                    Success = false,
+                    Message = "No se encontró ninguna factura pendiente de pago"
+                };
+            }
+
+            // Crear un objeto FacturaResponse con los detalles y el tipo de venta
+            var facturaResponse = new FacturaResponse
+            {
+                Detalles = ultimaFactura.Detalles.Select(d => d.ToResponse()).ToList(),
+                TypePayment = ultimaFactura.TypePayment,
+                SaldoPagado = ultimaFactura.SaldoPagado
+            };
+
+            return new Result<FacturaResponse>()
+            {
+                Success = true,
+                Message = "Detalles de la última factura obtenidos correctamente",
+                Data = facturaResponse
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<FacturaResponse>()
+            {
+                Success = false,
+                Message = ex.Message
+            };
+        }
+    }
+    public async Task<Result<FacturaResponse>> ObtenerUltimaFacturaContado()
+    {
+        try
+        {
+            var factura = await dbContext.Facturas
+                .Include(f => f.Detalles)
+                .OrderByDescending(f => f.Fecha)
+                .FirstOrDefaultAsync(f => f.TypePayment == "1"); // Filtrar por tipo de venta al contado
+
+            if (factura == null)
+            {
+                return new Result<FacturaResponse>()
+                {
+                    Success = false,
+                    Message = "No se encontró ninguna factura de venta al contado"
+                };
+            }
+
+            return new Result<FacturaResponse>()
+            {
+                Success = true,
+                Message = "Última factura de venta al contado obtenida correctamente",
+                Data = factura.ToResponse()
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<FacturaResponse>()
+            {
+                Success = false,
+                Message = ex.Message
+            };
+        }
+    }
+
+    public async Task<Result<FacturaResponse>> ObtenerUltimaFacturaCredito()
+    {
+        try
+        {
+            var factura = await dbContext.Facturas
+                .Include(f => f.Detalles)
+                .OrderByDescending(f => f.Fecha)
+                .FirstOrDefaultAsync(f => f.TypePayment == "2"); // Filtrar por tipo de venta a crédito
+
+            if (factura == null)
+            {
+                return new Result<FacturaResponse>()
+                {
+                    Success = false,
+                    Message = "No se encontró ninguna factura de venta a crédito"
+                };
+            }
+
+            return new Result<FacturaResponse>()
+            {
+                Success = true,
+                Message = "Última factura de venta a crédito obtenida correctamente",
+                Data = factura.ToResponse()
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<FacturaResponse>()
+            {
+                Success = false,
+                Message = ex.Message
+            };
+        }
+    }
+
 }
 
 
@@ -260,4 +378,9 @@ public interface IFacturaServices
     Task<Result<List<FacturaResponse>>> BuscarFacturas(DateTime? fecha);
     Task<Result<FacturaResponse>> Modificar(FacturaRequest request);
     Task<Result<List<FacturaDetalleResponse>>> ObtenerDetallesUltimaFactura();
-}
+    Task<Result<FacturaResponse>> ObtenerDetallesUltimaFacturaConTipoVenta();
+    Task<Result<FacturaResponse>> ObtenerUltimaFacturaCredito();
+    Task<Result<FacturaResponse>> ObtenerUltimaFacturaContado();
+
+
+    }

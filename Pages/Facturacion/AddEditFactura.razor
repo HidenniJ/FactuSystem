@@ -2,17 +2,46 @@
 @using FactuSystem.Data.Request;
 @using FactuSystem.Data.Response;
 @inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+@using System
+@attribute [Authorize(Roles = "Administrator,User")]
+<CascadingAuthenticationState>
 
 
-<div style="margin-left: 450px;">
+
+<div style="margin-left: 30px;">
+    @if (ocultar = false)
+    {
+
+    <div class="d-print-block">
+        <img id="logoImage" src="/logoempresa.jpg" style="display: block;" class="estilo-imagen" />
+        <div class="col-xs-6 col-sm-6 col-md-6 text-center" style="margin-left: 230px;">
+            <div class="receipt-right "  >
+                <h5>Rnc: 3732199193-19</h5>
+                <p>
+                    Direccion :Calle No.71 Provincia Sánchez Ramírez, La Cueva
+                    de Cevicos, RD.
+                </p>
+                <p>Telefono : 8092670797 <i class="fa fa-phone"></i></p>
+                <p>Email :  LaGrandota@gmail.com <i class="fa fa-envelope-o"></i></p>
+            </div>
+        </div>
+    </div>
+    }
 @*<script>
     function printPage() {
     window.print();
 }
 </script>*@
 <style>
-     
-        .titulo-clientes {
+
+        .estilo-imagen {
+            color: #ffffff; /* Texto blanco */
+            text-align: center; /* Centrar texto */
+            padding: 10px; /* A�adir espacio alrededor del texto */
+            width: 270px;
+            margin-left: 300px;
+            .titulo-clientes {
             color: white; /* Texto blanco */
             text-align: center; /* Centrar texto */
             padding: 10px; 
@@ -33,11 +62,12 @@
 
             
   <div class="table-container" >
-        <div class="card w-130">
-            <div class="card-body">
+        <div class="card w-130 ">
+                    <div class="card-body d-print-block ">
 
-                        <h1 class="titulo-clientes">Facturacion
-                            <button style=" margin-left:650px;" class="btn btn-danger text-end " @onclick="Opciones">
+                        <h1 class="titulo-clientes d-print-none">
+                            Facturacion
+                            <button style=" margin-left:1200px;" class="btn btn-danger text-end d-print-none " @onclick="Opciones">
                                 <span aria-hidden="true" class="oi oi-arrow-left"></span>
 
                             </button>
@@ -51,8 +81,7 @@
 
                     <div class="input-group mb-3" style="margin-top:20px;">
      
-        <input 
-               class="form-control"
+        <input class="form-control d-print-none"
                placeholder="Cliente"
                aria-label="Cliente"
                aria-describedby="button-addon2" list="contactos"
@@ -79,12 +108,12 @@
     </div>
     @*Disenar el espacio para los productos a facturar*@
     <div class="card p-2">
-            <div class="card-header card-title" style="background-color: steelblue; color: #ffffff;">
+                            <div class="card-header card-title d-print-none" style="background-color: steelblue; color: #ffffff;">
             <h5>¿Que desea facturar ?</h5>
         </div>
         <div class="input-group mb-3 mt-2">
-            <input class="form-control"
-                   placeholder="Producto"
+                                <input class="form-control d-print-none"
+                                       placeholder="Producto"
                    aria-label="Producto"
                    aria-describedby="button-addon2" list="productos"
                    @onchange="(value)=>{
@@ -108,21 +137,21 @@
             </button>
             
         </div>
-        <div class="input-group mb-3">
-            <span class="form-control w-50">
+        <div class="input-group mb-3 ">
+                                <span class="form-control w-50 d-print-none">
                 $@Precio.ToString("N2")
             </span>
-            <input class="form-control w-25" type="number" @bind="@Cantidad" />
+                                <input class="form-control w-25 d-print-none" type="number" @bind="@Cantidad" />
             <button class="btn btn-success d-print-none"
                 type="button" id="button-addon2"
                 @onclick="AgregarAlDetalle">
                 <span class="oi oi-collapse-down"></span>
             </button>
         </div>
-        <div class="input-group mb-3">
-            <label for="Descuento" class="input-group-text">Descuento:</label>
+                            <div class="input-group mb-3 d-print-none">
+                                <label for="Descuento" class="input-group-text d-print-none">Descuento:</label>
             <input @bind="detalleFacturaRequest.Descuento" type="number" 
-            id="Descuento" placeholder="Descuento" class="form-control" />
+            id="Descuento" placeholder="Descuento" class="form-control " />
         </div>
         @if (Message != null)
         {
@@ -132,7 +161,47 @@
         }
     </div>
     @*Disenar los elementos que se cargan a la factura*@
-    <h5><b>Detalle de la factura N°:</b> @ultimoIdFactura</h5>
+
+                        @if (!string.IsNullOrEmpty(FechaActual))
+                        {
+                            <div style="margin-left:300px;">
+
+                            <p>Fecha : @FechaActual</p>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <p>Fecha actual no disponible</p>
+                        }
+    <h5><b>Detalle de la factura N°:</b> @ultimoIdFactura </h5>
+                        @if (facturaRequest.TypePayment == "1")
+                        {
+                            <label for="">
+                               <h5>
+                                   <b>
+                                    Tipo de  venta: Contado
+                                    </b>
+                                </h5>
+                            </label>
+                        }
+                        @if (facturaRequest.TypePayment == "2")
+                        {
+                            <label for="">
+                                <h5>
+                                    <b>
+                                    Tipo de  venta: Credito
+                                      </b>
+                                </h5>
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="">
+                                <b>
+                                </b>
+                            </label>
+                        }
     <table class="table table-hover">
             <thead style="background-color:#1c4775;  color: #ffffff;">
             <tr>
@@ -140,7 +209,7 @@
                     Cantidad
                 </th>
                 <th>Descripcion</th>
-                <th>Costo</th>
+                <th >Costo</th>
                 <th>ITBIS</th>
                 <th>Precio</th>
                 <th>Total</th>
@@ -153,11 +222,9 @@
             @foreach (var detalle in facturaRequest.Detalles)
             {
                 <tr>
-                    <td class="col w-25 text-center">
-                        <InputNumber 
-                            class="form-control" 
-                            @bind-Value="@detalle.Cantidad" />
-                    </td>
+                                        <td class="col w-25">
+                                            @detalle.Cantidad
+                                        </td>
                     <td class="col w-25">
                         @detalle.Descripcion
                      </td>
@@ -191,7 +258,7 @@
                     <td>
                         <button 
                             type="button"
-                            class="btn btn-outline-danger"
+                                                    class="btn btn-outline-danger d-print-none"
                         @onclick="()=>EliminarDetalle(detalle.ProductoId)">
                     <span 
                         class="oi oi-trash">
@@ -211,8 +278,9 @@
                         <h5><b>Resumen:</b></h5>
                     </div>
                     <div class="col-4">
+
                         <div class="input-group">
-                            <select class="form-control" required @bind="@facturaRequest.TypePayment">
+                            <select class="form-control d-print-none" required @bind="@facturaRequest.TypePayment">
                                 <option disabled selected value="">Tipo de Venta</option>
                                 <option value="1">Contado 💲</option>
                                 <option value="2">Crédito 💳</option>
@@ -252,11 +320,49 @@
                     <label for=""><b>Descuento: </b></label>
                     @facturaRequest.TotalDesc.ToString("N2")
                     <br>
+                                       
+                                            
+                                               @* @if(facturaRequest.TypePayment== "1")
+                                                {
+                                            <label for="">
+                                                <b>
+                                                    Tipo de pago : Contado
+                                                </b>
+                                            </label>
+                                        }
+                                        @if (facturaRequest.TypePayment == "2")
+                                        {
+                                            <label for="">
+                                                <b>
+                                                    Tipo de  pago: Credito
+                                                </b>
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label for="">
+                                                <b>
+                                                </b>
+                                            </label>                                            
+                                        }*@
 
-
+                                        
+                                        <label for=""><b>Saldo pagado:
+                                                @($"{(facturaRequest.SaldoPagado):N2}")
+                                            </b>
+                                        </label>
+                                        <br>
                     <label for=""><b>Total: </b></label>
                     @($"{(facturaRequest.SubTotal - facturaRequest.TotalDesc):N2}")
-
+                                      @*  @if (!string.IsNullOrEmpty(FechaActual))
+                                        {
+                                            <p>Fecha : @FechaActual</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Fecha actual no disponible</p>
+                                        }*@
+                   
 
                     <div class="mb-3">
                         
@@ -300,7 +406,16 @@
 {
     <Facturaciongeneral></Facturaciongeneral>
 }
+</CascadingAuthenticationState>
+
 @code {
+    [Parameter]
+    public string? Format { get; set; }
+
+    public string FechaActual { get; set; }
+
+
+
     private bool opciones  = true;
     private void Opciones()
     {
@@ -308,6 +423,7 @@
         opciones = false;
 
     }
+    private bool ocultar  = true;
 
 
     public bool Chance { get; set; } = false;
@@ -322,6 +438,9 @@
     public decimal Precio { get; set; } = 0;
     public int Cantidad { get; set; } = 1;
     public int IdProducto { get; set; } = 0;
+
+
+
     void UpdatePaymentType(ChangeEventArgs e)
     {
         facturaRequest.TypePayment = e.Value.ToString();
@@ -434,6 +553,7 @@
         await CargarContacto();
         await CargarProducto();
         await Consultar();
+        FechaActual = DateTime.Now.ToString(Format ?? "dd/MM/yyyy");
 
     }
     public string TypePayment {get; set;} = string.Empty;
@@ -498,12 +618,10 @@
             return;
         }
 
-
         var clienteSeleccionado = Contactos.FirstOrDefault(c => c.Nombre + " " + c.Apellidos == Nombre);
         if (facturaRequest.TypePayment == "2" && LimiteCreditoExcedido())
         {
-            Message = "😥 El límite de crédito del cliente ha sido excedido. $"
-            + clienteSeleccionado.Limitecredito.ToString("N2");
+            Message = "😥 El límite de crédito del cliente ha sido excedido. $" + clienteSeleccionado.Limitecredito.ToString("N2");
             return;
         }
 
@@ -512,6 +630,12 @@
         Total = facturaRequest.SubTotal - facturaRequest.TotalDesc;
         Cambio = MontoPagado - Total;
         Message = null;
+
+        // Llamar a Pendiente solo si el tipo de pago es crédito y el monto pagado es menor que el total
+        if (facturaRequest.TypePayment == "2" && MontoPagado < Total)
+        {
+            Pendiente();
+        }
     }
     bool LimiteCreditoExcedido()
     {
@@ -545,11 +669,10 @@
     }
     private async Task PrintPageAsync()
     {
-        // Llama a la función JavaScript para imprimir la página
-        await Reporte();
+
+        await JSRuntime.InvokeVoidAsync("printPage");
+        ocultar = true;
+
     }
-    private async Task Reporte()
-    {
-        urlHelper.NavigateTo("/reportefactura");
-    }
+   
 }

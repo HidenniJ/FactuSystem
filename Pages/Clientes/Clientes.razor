@@ -4,7 +4,6 @@
 
 <div style="margin-left: 450px;">
 
-    <h1 class="titulo-clientes">Listado de clientes</h1>
 
     <style>
 
@@ -132,6 +131,9 @@
                     <span class="oi oi-plus"></span>
                     Nuevo cliente
                 </button>
+                <button class="btn btn-outline-primary d-print-none" @onclick="async ()=>{await PrintPageAsync();}">
+                    <span class="oi oi-print"></span>
+                </button>
 
                 <div class="row justify-content-end">
                     <div class="col-6">
@@ -202,7 +204,14 @@
     public ClienteRequest clienterequest { get; set; } = new();
     public bool showCard { get; set; } = false;
 
+    private async Task PrintPageAsync()
+    {
 
+        urlHelper.NavigateTo("/reporteclientes");
+        //await JSRuntime.InvokeVoidAsync("printPage");
+
+
+    }
 
     void ShowCard()
     {
